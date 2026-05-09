@@ -3,9 +3,86 @@ const express = require("express");
 const web = express();
 
 web.get("/", (req, res) => {
-  res.send("Web verify online");
+  res.send(`
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>MVS Verify</title>
+  <style>
+    body {
+      margin: 0;
+      background: #101114;
+      color: white;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      width: 500px;
+      background: #24262b;
+      border-radius: 18px;
+      text-align: center;
+      padding: 35px;
+      box-shadow: 0 0 45px rgba(0,0,0,.55);
+      border-top: 4px solid #66865c;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin: 10px 0;
+    }
+
+    h1 span {
+      color: #6f9365;
+    }
+
+    p {
+      color: #cfcfcf;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .btn {
+      display: block;
+      margin-top: 28px;
+      padding: 16px;
+      border-radius: 10px;
+      background: #6f9365;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .footer {
+      margin-top: 32px;
+      color: #777;
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Vincula tu cuenta de <span>Roblox</span></h1>
+    <p>Estás a punto de vincular tu cuenta de Roblox a tu cuenta de Discord en <b>MVS Duels</b>.</p>
+    <p>Este enlace caduca en <b>10 minutos</b>.</p>
+
+    <a class="btn" href="/roblox">Sigue con Roblox</a>
+
+    <div class="footer">MVSDUELS.COM</div>
+  </div>
+</body>
+</html>
+  `);
 });
 
+web.get("/roblox", (req, res) => {
+  res.send("Próximo paso: conectar OAuth de Roblox.");
+});
 web.listen(process.env.PORT || 3000, () => {
   console.log("🌐 Web online");
 });
