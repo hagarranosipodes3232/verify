@@ -3,7 +3,12 @@ const express = require("express");
 const web = express();
 
 web.get("/", (req, res) => {
-  res.send(`
+  res.send("Web verify online");
+});
+
+web.listen(process.env.PORT || 3000, () => {
+  console.log("🌐 Web online");
+});
 <!DOCTYPE html>
 <html lang="es">
 <head>
