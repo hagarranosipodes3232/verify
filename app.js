@@ -103,15 +103,110 @@ web.get("/roblox", (req, res) => {
 // CALLBACK
 
 web.get("/callback", async (req, res) => {
+  try {
+    const code = req.query.code;
+    const discordId = req.query.state;
 
-  const code = req.query.code;
+    if (!code) return res.send("❌ No se recibió código de Roblox.");
+    if (!discordId) return res.send("❌ No se recibió el ID de Discord.");
 
-  if (!code) {
-    return res.send("❌ No se recibió código.");
+    const tokenResponse = await fetch("https://apis.roblox.com/oauth/v1/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        client_id: process.env.ROBLOX_CLIENT_ID,
+        client_secret: process.env.ROBLOX_CLIENT_SECRET,
+        grant_type: "authorization_code",
+        code: code,
+        redirect_uri: process.env.ROBLOX_REDIRECT_URI
+      })
+    });
+
+    const tokenData = await tokenResponse.json();
+
+    if (!tokenData.access_token) {
+      console.log(tokenData);
+      return res.send("❌ Error al obtener el token de Roblox.");
+    }
+
+    const userResponse = await fetch("https://apis.roblox.com/oauth/v1/userinfo", {
+      headers: {
+        Authorization: `Bearer ${tokenData.access_token}`
+      }
+    });
+
+    const robloxUser = await userResponse.json();
+
+    const robloxId = robloxUser.sub;
+    const robloxName = robloxUser.preferred_username || robloxUser.name || "Desconocido";
+
+    const detailsResponse = await fetch(`https://users.roblox.com/v1/users/${robloxId}`);
+    const details = await detailsResponse.json();
+
+    const createdDate = new Date(details.created);
+    const now = new Date();
+
+    const daysOld = Math.floor((now - createdDate) / (1000 * 60 * 60 * 24));
+    const yearsOld = Math.floor(daysOld / 365);
+
+    const estadoCuenta = daysOld < 30
+      ? "⚠️ Posible alt / cuenta nueva"
+      : "✅ Cuenta segura";
+
+    const avatarResponse = await fetch(
+      `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${robloxId}&size=420x420&format=Png&isCircular=false`
+    );
+
+    const avatarData = await avatarResponse.json();
+    const avatarUrl = avatarData.data?.[0]?.imageUrl || null;
+
+    const guild = await client.guilds.fetch(GUILD_ID);
+    const member = await guild.members.fetch(discordId);
+
+    await member.roles.add(VERIFY_ROLE_ID);
+
+    const logChannel = await client.channels.fetch(VERIFY_LOGS_ID);
+
+    const embed = new EmbedBuilder()
+      .setTitle("✅ Usuario Verificado")
+      .setColor("#6f9365")
+      .setThumbnail(avatarUrl)
+      .setDescription(
+        "━━━━━━━━━━━━━━━━━━\n\n" +
+
+        `👤 **Discord:** ${member.user}\n` +
+        `🆔 **Discord ID:** \`${discordId}\`\n\n` +
+
+        `🎮 **Roblox:** \`${robloxName}\`\n` +
+        `🆔 **Roblox ID:** \`${robloxId}\`\n\n` +
+
+        `📅 **Cuenta Roblox creada:**\n` +
+        `<t:${Math.floor(createdDate.getTime() / 1000)}:F>\n\n` +
+
+        `⏳ **Antigüedad:**\n` +
+        `${daysOld} días aprox. ${yearsOld > 0 ? `(${yearsOld} año/s)` : ""}\n\n` +
+
+        `🛡️ **Estado:**\n${estadoCuenta}\n\n` +
+
+        "━━━━━━━━━━━━━━━━━━"
+      )
+      .setFooter({
+        text: "Sistema premium de verificación Roblox"
+      })
+      .setTimestamp();
+
+    if (logChannel) {
+      await logChannel.send({ embeds: [embed] });
+    }
+
+    res.send("✅ Verificación completada. Ya recibiste tu rol en Discord.");
+
+  } catch (error) {
+    console.log(error);
+    res.send("❌ Ocurrió un error al completar la verificación.");
   }
-
-  res.send("✅ Roblox respondió correctamente.");
-
 });
 
 // WEB ONLINE
