@@ -84,9 +84,32 @@ web.listen(process.env.PORT || 3000, () => {
 </html>
   `);
 });
-
 web.get("/roblox", (req, res) => {
-  res.send("Próximo paso: conectar OAuth de Roblox.");
+
+  const params = new URLSearchParams({
+    client_id: process.env.ROBLOX_CLIENT_ID,
+    redirect_uri: process.env.ROBLOX_REDIRECT_URI,
+    response_type: "code",
+    scope: "openid profile"
+  });
+
+  res.redirect(
+    "https://apis.roblox.com/oauth/v1/authorize?" +
+    params.toString()
+  );
+
+});
+
+web.get("/callback", async (req, res) => {
+
+  const code = req.query.code;
+
+  if (!code) {
+    return res.send("❌ No se recibió código de Roblox.");
+  }
+
+  res.send("✅ Roblox respondió correctamente. Tu cuenta fue autorizada.");
+
 });
 web.listen(process.env.PORT || 3000, () => {
   console.log("🌐 Web online");
