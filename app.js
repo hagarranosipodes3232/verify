@@ -1,5 +1,14 @@
 require("dotenv").config();
+const express = require("express");
+const web = express();
 
+web.get("/", (req, res) => {
+  res.send("Web verify online");
+});
+
+web.listen(process.env.PORT || 3000, () => {
+  console.log("🌐 Web online");
+});
 const {
   Client,
   GatewayIntentBits,
@@ -193,106 +202,31 @@ client.on("interactionCreate", async interaction => {
   if (interaction.isButton()) {
 
     // VERIFY BUTTON
+if (interaction.customId === "verify") {
 
-    if (interaction.customId === "verify") {
+  const embed = new EmbedBuilder()
+    .setTitle("Link your Roblox account")
+    .setDescription(
+      "Open the verification dashboard to sign in with Roblox and link your Roblox account.\n\n" +
+      "The whole flow takes about 30 seconds."
+    )
+    .setColor("#ff0000");
 
-      const member = interaction.member;
+  const boton = new ActionRowBuilder()
+    .addComponents(
+      new ButtonBuilder()
+        .setLabel("Open Verify Dashboard")
+        .setStyle(ButtonStyle.Link)
+        .setURL("https://verify-z2au.onrender.com")
+    );
 
-      await member.roles.add(VERIFY_ROLE_ID);
+  return interaction.reply({
+    embeds: [embed],
+    components: [boton],
+    ephemeral: true
+  });
 
-      const fechaCreacion = `<t:${Math.floor(interaction.user.createdTimestamp / 1000)}:F>`;
-      const fechaIngreso = `<t:${Math.floor(member.joinedTimestamp / 1000)}:F>`;
-
-      const canalLogs = interaction.guild.channels.cache.get(VERIFY_LOGS_ID);
-
-      if (canalLogs) {
-
-       const diasCuenta = Math.floor(
-  (Date.now() - interaction.user.createdTimestamp) / (1000 * 60 * 60 * 24)
-);
-
-const sospechosa = diasCuenta < 30
-  ? "⚠️ Sospechosa"
-  : "✅ Confiable";
-
-const badges = interaction.user.flags
-  ? interaction.user.flags.toArray().join(", ")
-  : "Sin badges";
-
-const estado = interaction.member.presence
-  ? interaction.member.presence.status
-  : "offline";
-
-const nitro = interaction.member.premiumSince
-  ? "✅ Tiene Nitro"
-  : "❌ No tiene Nitro";
-
-const tipoCuenta = interaction.user.bot
-  ? "🤖 Bot"
-  : "👤 Humano";
-
-// DECORATIVO
-const dispositivo = "💻 Desktop";
-const pais = "Argentina";
-const invitadoPor = "No detectado";
-
-const embed = new EmbedBuilder()
-
-  .setTitle("🔐 Información de Verificación")
-
-  .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-
-  .setDescription(
-
-    `👤 Usuario: ${interaction.user}\n` +
-    `🆔 ID: ${interaction.user.id}\n\n` +
-
-    `📅 Cuenta creada:\n<t:${Math.floor(interaction.user.createdTimestamp / 1000)}:F>\n\n` +
-
-    `⏳ Edad de cuenta:\n${diasCuenta} días\n\n` +
-
-    `🚪 Entró al servidor:\n<t:${Math.floor(interaction.member.joinedTimestamp / 1000)}:F>\n\n` +
-
-    `🛡️ Estado:\n${sospechosa}\n\n` +
-
-    `💎 Nitro:\n${nitro}\n\n` +
-
-    `🌐 Estado actual:\n${estado}\n\n` +
-
-    `🎖️ Badges:\n${badges || "Sin badges"}\n\n` +
-
-    `🤖 Tipo de cuenta:\n${tipoCuenta}\n\n` +
-
-    `📱 Dispositivo:\n${dispositivo}\n\n` +
-
-    `🌍 País:\n${pais}\n\n` +
-
-    `📨 Invitado por:\n${invitadoPor}\n\n` +
-
-    `⚠️ Riesgo:\n${diasCuenta < 30 ? "Alto" : "Bajo"}\n\n` +
-
-    `📌 Verificación completada correctamente.`
-
-  )
-
-  .setColor("#5b09e4")
-
-  .setTimestamp();
-
-const canalLogs = interaction.guild.channels.cache.get("1502547730600427570");
-
-canalLogs.send({
-  embeds: [embed]
-});
-      }
-
-      return interaction.reply({
-        content: "✅ Te verificaste correctamente.",
-        ephemeral: true
-      });
-
-    }
-
+}
     // INFO BUTTON
 
     if (interaction.customId === "info") {
