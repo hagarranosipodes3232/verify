@@ -2,13 +2,17 @@ require("dotenv").config();
 const express = require("express");
 const web = express();
 
+// PAGINA PRINCIPAL
+
 web.get("/", (req, res) => {
+
   res.send(`
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>MVS Verify</title>
+
   <style>
     body {
       margin: 0;
@@ -31,19 +35,8 @@ web.get("/", (req, res) => {
       border-top: 4px solid #66865c;
     }
 
-    h1 {
-      font-size: 32px;
-      margin: 10px 0;
-    }
-
     h1 span {
       color: #6f9365;
-    }
-
-    p {
-      color: #cfcfcf;
-      font-size: 16px;
-      line-height: 1.5;
     }
 
     .btn {
@@ -56,46 +49,48 @@ web.get("/", (req, res) => {
       text-decoration: none;
       font-weight: bold;
     }
-
-    .footer {
-      margin-top: 32px;
-      color: #777;
-      font-size: 12px;
-      letter-spacing: 2px;
-    }
   </style>
+
 </head>
+
 <body>
-  <div class="card">
-    <h1>Vincula tu cuenta de <span>Roblox</span></h1>
 
-    <p>
-      Estás a punto de vincular tu cuenta de Roblox
-      a tu cuenta de Discord en <b>MVS Duels</b>.
-    </p>
+<div class="card">
 
-    <p>
-      Este enlace caduca en <b>10 minutos</b>.
-    </p>
+<h1>Vincula tu cuenta de <span>Roblox</span></h1>
 
-    <a class="btn" href="/roblox">
-      Sigue con Roblox
-    </a>
+<p>
+Estás a punto de vincular tu cuenta Roblox.
+</p>
 
-    <div class="footer">MVSDUELS.COM</div>
-  </div>
+<a class="btn" href="/roblox">
+Sigue con Roblox
+</a>
+
+</div>
+
 </body>
 </html>
   `);
+
 });
 
+// ROBLOX OAUTH
+
 web.get("/roblox", (req, res) => {
+
+  const discordId = req.query.discord_id;
+
+  if (!discordId) {
+    return res.send("❌ No se recibió el ID de Discord.");
+  }
 
   const params = new URLSearchParams({
     client_id: process.env.ROBLOX_CLIENT_ID,
     redirect_uri: process.env.ROBLOX_REDIRECT_URI,
     response_type: "code",
-    scope: "openid profile"
+    scope: "openid profile",
+    state: discordId
   });
 
   res.redirect(
@@ -105,25 +100,21 @@ web.get("/roblox", (req, res) => {
 
 });
 
+// CALLBACK
+
 web.get("/callback", async (req, res) => {
 
   const code = req.query.code;
 
   if (!code) {
-    return res.send("❌ No se recibió código de Roblox.");
+    return res.send("❌ No se recibió código.");
   }
 
-  res.send("✅ Roblox respondió correctamente. Tu cuenta fue autorizada.");
+  res.send("✅ Roblox respondió correctamente.");
 
 });
 
-web.get("/privacy", (req, res) => {
-  res.send("Política de privacidad de MVS Duels.");
-});
-
-web.get("/terms", (req, res) => {
-  res.send("Términos de servicio de MVS Duels.");
-});
+// WEB ONLINE
 
 web.listen(process.env.PORT || 3000, () => {
   console.log("🌐 Web online");
@@ -336,7 +327,8 @@ if (interaction.customId === "verify") {
       new ButtonBuilder()
         .setLabel("Open Verify Dashboard")
         .setStyle(ButtonStyle.Link)
-        .setURL("https://verify-z2au.onrender.com")
+        .setURL(`https://verify-z2au.onrender.com/roblox?discord_id=${interaction.user.id}`)
+
     );
 
   return interaction.reply({
