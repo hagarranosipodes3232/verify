@@ -3,12 +3,7 @@ const express = require("express");
 const web = express();
 
 web.get("/", (req, res) => {
-  res.send("Web verify online");
-});
-
-web.listen(process.env.PORT || 3000, () => {
-  console.log("🌐 Web online");
-});
+  res.send(`
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -73,10 +68,19 @@ web.listen(process.env.PORT || 3000, () => {
 <body>
   <div class="card">
     <h1>Vincula tu cuenta de <span>Roblox</span></h1>
-    <p>Estás a punto de vincular tu cuenta de Roblox a tu cuenta de Discord en <b>MVS Duels</b>.</p>
-    <p>Este enlace caduca en <b>10 minutos</b>.</p>
 
-    <a class="btn" href="/roblox">Sigue con Roblox</a>
+    <p>
+      Estás a punto de vincular tu cuenta de Roblox
+      a tu cuenta de Discord en <b>MVS Duels</b>.
+    </p>
+
+    <p>
+      Este enlace caduca en <b>10 minutos</b>.
+    </p>
+
+    <a class="btn" href="/roblox">
+      Sigue con Roblox
+    </a>
 
     <div class="footer">MVSDUELS.COM</div>
   </div>
@@ -84,6 +88,7 @@ web.listen(process.env.PORT || 3000, () => {
 </html>
   `);
 });
+
 web.get("/roblox", (req, res) => {
 
   const params = new URLSearchParams({
@@ -102,13 +107,6 @@ web.get("/roblox", (req, res) => {
 
 web.get("/callback", async (req, res) => {
 
-web.get("/privacy", (req, res) => {
-  res.send("Política de privacidad de MVS Duels.");
-});
-
-web.get("/terms", (req, res) => {
-  res.send("Términos de servicio de MVS Duels.");
-});
   const code = req.query.code;
 
   if (!code) {
@@ -118,6 +116,15 @@ web.get("/terms", (req, res) => {
   res.send("✅ Roblox respondió correctamente. Tu cuenta fue autorizada.");
 
 });
+
+web.get("/privacy", (req, res) => {
+  res.send("Política de privacidad de MVS Duels.");
+});
+
+web.get("/terms", (req, res) => {
+  res.send("Términos de servicio de MVS Duels.");
+});
+
 web.listen(process.env.PORT || 3000, () => {
   console.log("🌐 Web online");
 });
