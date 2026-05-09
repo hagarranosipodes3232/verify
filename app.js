@@ -102,6 +102,13 @@ web.get("/roblox", (req, res) => {
 
 web.get("/callback", async (req, res) => {
 
+web.get("/privacy", (req, res) => {
+  res.send("Política de privacidad de MVS Duels.");
+});
+
+web.get("/terms", (req, res) => {
+  res.send("Términos de servicio de MVS Duels.");
+});
   const code = req.query.code;
 
   if (!code) {
