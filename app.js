@@ -378,8 +378,12 @@ verifiedUsers[discordId] = {
     : "❌ No"
 
 };
+console.log("💾 Guardando usuario:", discordId);
 
 saveVerifiedUsers(verifiedUsers);
+
+console.log("✅ Usuario guardado correctamente");
+
     res.send("✅ Verificación completada. Ya recibiste tu rol en Discord.");
 
   } catch (error) {
