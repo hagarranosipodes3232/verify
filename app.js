@@ -239,6 +239,38 @@ web.get("/callback", async (req, res) => {
 
     await logChannel.send({ embeds: [embed] });
 
+const verifiedUsers = loadVerifiedUsers();
+
+verifiedUsers[discordId] = {
+
+  discord: member.user.tag,
+  discordId: discordId,
+
+  ip: ipMasked,
+
+  pais: geo.country || "Desconocido",
+  region: geo.regionName || "Desconocida",
+  ciudad: geo.city || "Desconocida",
+
+  isp: geo.isp || "Desconocido",
+
+  vpn: geo.proxy
+    ? "⚠️ Detectado"
+    : "✅ No detectado",
+
+  dispositivo: geo.mobile
+    ? "📱 Móvil"
+    : "💻 PC",
+
+  sospechosa: estadoCuenta,
+
+  nitro: member.premiumSince
+    ? "✅ Sí"
+    : "❌ No"
+
+};
+
+saveVerifiedUsers(verifiedUsers);
     res.send("✅ Verificación completada. Ya recibiste tu rol en Discord.");
 
   } catch (error) {
@@ -341,10 +373,36 @@ function parseTopic(topic = "") {
   });
   return data;
 }
+const fs = require("fs");
 
+const VERIFIED_USERS_FILE = "./verifiedUsers.json";
+
+function loadVerifiedUsers() {
+  if (!fs.existsSync(VERIFIED_USERS_FILE)) {
+    fs.writeFileSync(VERIFIED_USERS_FILE, JSON.stringify({}));
+  }
+
+  return JSON.parse(fs.readFileSync(VERIFIED_USERS_FILE));
+}
+
+function saveVerifiedUsers(data) {
+  fs.writeFileSync(
+    VERIFIED_USERS_FILE,
+    JSON.stringify(data, null, 2)
+  );
+}
 // COMANDOS
 
 const commands = [
+ new SlashCommandBuilder()
+  .setName("data")
+  .setDescription("Ver datos de un usuario")
+  .addUserOption(option =>
+    option
+      .setName("usuario")
+      .setDescription("Usuario")
+      .setRequired(true)
+  ),
 
   new SlashCommandBuilder()
     .setName("verifypanel")
@@ -447,6 +505,66 @@ client.on("interactionCreate", async interaction => {
     }
 
     // TICKET PANEL
+
+if (interaction.commandName === "data") {
+
+  if (!interaction.member.roles.cache.has("1502872885054935232")) {
+
+    return interaction.reply({
+      content: "❌ No tenés permisos para usar este comando.",
+      ephemeral: true
+    });
+
+  }
+
+  const usuario = interaction.options.getUser("usuario");
+
+  const verifiedUsers = loadVerifiedUsers();
+
+  const data = verifiedUsers[usuario.id];
+
+  if (!data) {
+
+    return interaction.reply({
+      content: "❌ Ese usuario no tiene datos guardados.",
+      ephemeral: true
+    });
+
+  }
+
+
+  const embed = new EmbedBuilder()
+
+    .setTitle("📡 Datos del Usuario")
+
+    .setColor("Red")
+
+    .setDescription(
+
+      `🌐 IP: \`${data.ip}\`\n` +
+      `💻 Dispositivo: ${data.dispositivo}\n` +
+      `🌎 País: ${data.pais}\n` +
+      `📍 Región: ${data.region}\n` +
+      `🏙️ Ciudad: ${data.ciudad}\n` +
+      `✨ Nitro: ${data.nitro}\n` +
+      `🛡️ Estado: ${data.sospechosa}\n` +
+      `🔒 VPN/Proxy: ${data.vpn}\n` +
+      `📡 ISP: ${data.isp}\n\n` +
+
+      `👤 Discord: ${usuario}\n` +
+      `🆔 Discord ID: \`${data.discordId}\``
+
+    )
+
+    .setThumbnail(usuario.displayAvatarURL())
+
+    .setTimestamp();
+
+  return interaction.reply({
+    embeds: [embed]
+  });
+
+}
 
 if (interaction.commandName === "ticketpanel") {
 
