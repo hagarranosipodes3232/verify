@@ -268,22 +268,6 @@ h3 {
   >
 </div>
 
-<div class="charts">
-
-  <div class="chart-card">
-    <canvas id="countryChart"></canvas>
-  </div>
-
-  <div class="chart-card">
-    <canvas id="vpnChart"></canvas>
-  </div>
-
-  <div class="chart-card">
-    <canvas id="deviceChart"></canvas>
-  </div>
-
-</div>
-
 <div class="container" id="users">
 
 ${usersHtml}
@@ -314,96 +298,6 @@ search.addEventListener("input", () => {
 });
 
 </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-
-const users = ${JSON.stringify(Object.values(verifiedUsers))};
-
-const paises = {};
-const vpn = {
-  Detectado: 0,
-  Seguro: 0
-};
-
-const dispositivos = {
-  Movil: 0,
-  PC: 0
-};
-const total = users.length;
-
-const moviles = users.filter(u =>
-  u.dispositivo && u.dispositivo.includes("Móvil")
-).length;
-
-const pcs = users.filter(u =>
-  u.dispositivo && u.dispositivo.includes("PC")
-).length;
-
-const vpns = users.filter(u =>
-  u.vpn && u.vpn.includes("Detectado")
-).length;
-
-const nitros = users.filter(u =>
-  u.nitro && u.nitro.includes("Sí")
-).length;
-document.getElementById("stats").innerHTML =
-  "✅ Usuarios verificados: " + total + "<br><br>" +
-  "👥 Total: " + total + "<br>" +
-  "📱 Móvil: " + moviles + "<br>" +
-  "💻 PC: " + pcs + "<br>" +
-  "⚠️ VPN: " + vpns + "<br>" +
-  "💎 Nitro: " + nitros;
-users.forEach(user => {
-
-  const pais = user.pais || "Desconocido";
-
-  paises[pais] = (paises[pais] || 0) + 1;
-
-  if (user.vpn && user.vpn.includes("Detectado")) {
-    vpn.Detectado++;
-  } else {
-    vpn.Seguro++;
-  }
-
- if (user.dispositivo && user.dispositivo.includes("Móvil")) {
-  dispositivos.Movil++;
-} else {
-  dispositivos.PC++;
-}
-
-});
-
-new Chart(document.getElementById("countryChart"), {
-  type: "bar",
-  data: {
-    labels: Object.keys(paises),
-    datasets: [{
-      label: "Usuarios por país",
-      data: Object.values(paises)
-    }]
-  }
-});
-
-new Chart(document.getElementById("vpnChart"), {
-  type: "doughnut",
-  data: {
-    labels: ["VPN Detectada", "Sin VPN"],
-    datasets: [{
-      data: [vpn.Detectado, vpn.Seguro]
-    }]
-  }
-});
-
-new Chart(document.getElementById("deviceChart"), {
-  type: "pie",
-  data: {
-    labels: ["Móvil", "PC"],
-    datasets: [{
-      data: [dispositivos.Movil, dispositivos.PC]
-    }]
-  }
-});
 </body>
 
 </html>
