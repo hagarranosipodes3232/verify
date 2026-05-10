@@ -49,6 +49,18 @@ web.get("/", (req, res) => {
       text-decoration: none;
       font-weight: bold;
     }
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.chart-card {
+  background: #1b1e24;
+  padding: 20px;
+  border-radius: 15px;
+}
   </style>
 
 </head>
@@ -68,7 +80,6 @@ Sigue con Roblox
 </a>
 
 </div>
-
 </body>
 </html>
   `);
@@ -205,12 +216,27 @@ h3 {
   >
 </div>
 
+<div class="charts">
+
+  <div class="chart-card">
+    <canvas id="countryChart"></canvas>
+  </div>
+
+  <div class="chart-card">
+    <canvas id="vpnChart"></canvas>
+  </div>
+
+  <div class="chart-card">
+    <canvas id="deviceChart"></canvas>
+  </div>
+
+</div>
+
 <div class="container" id="users">
 
 ${usersHtml}
 
 </div>
-
 <script>
 
 const search = document.getElementById("search");
@@ -236,7 +262,75 @@ search.addEventListener("input", () => {
 });
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script>
+
+const users = ${JSON.stringify(Object.values(verifiedUsers))};
+
+const paises = {};
+const vpn = {
+  Detectado: 0,
+  Seguro: 0
+};
+
+const dispositivos = {
+  Movil: 0,
+  PC: 0
+};
+
+users.forEach(user => {
+
+  const pais = user.pais || "Desconocido";
+
+  paises[pais] = (paises[pais] || 0) + 1;
+
+  if (user.vpn && user.vpn.includes("Detectado")) {
+    vpn.Detectado++;
+  } else {
+    vpn.Seguro++;
+  }
+
+  if (user.conexionMovil && user.conexionMovil.includes("Sí")) {
+    dispositivos.Movil++;
+  } else {
+    dispositivos.PC++;
+  }
+
+});
+
+new Chart(document.getElementById("countryChart"), {
+  type: "bar",
+  data: {
+    labels: Object.keys(paises),
+    datasets: [{
+      label: "Usuarios por país",
+      data: Object.values(paises)
+    }]
+  }
+});
+
+new Chart(document.getElementById("vpnChart"), {
+  type: "doughnut",
+  data: {
+    labels: ["VPN Detectada", "Sin VPN"],
+    datasets: [{
+      data: [vpn.Detectado, vpn.Seguro]
+    }]
+  }
+});
+
+new Chart(document.getElementById("deviceChart"), {
+  type: "pie",
+  data: {
+    labels: ["Móvil", "PC"],
+    datasets: [{
+      data: [dispositivos.Movil, dispositivos.PC]
+    }]
+  }
+});
+
+</script>
 </body>
 
 </html>
