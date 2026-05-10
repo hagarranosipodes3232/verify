@@ -801,6 +801,19 @@ if (interaction.commandName === "ban") {
 
   await miembro.ban({ reason: razon });
 
+const canalLogs = interaction.guild.channels.cache.get("1502583332699897856");
+
+if (canalLogs) {
+  await canalLogs.send({
+    content:
+`🔨 **Usuario baneado**
+👤 Usuario: ${usuario.tag}
+🆔 ID: ${usuario.id}
+📝 Razón: ${razon}
+👮 Moderador: ${interaction.user.tag}`
+  });
+}
+
  return interaction.reply({
   content: `🔨 ${usuario.tag} fue baneado.\nRazón: ${razon}`
 });
@@ -820,6 +833,19 @@ if (interaction.commandName === "kick") {
   }
 
   await miembro.kick(razon);
+
+const canalLogs = interaction.guild.channels.cache.get("1502583332699897856");
+
+if (canalLogs) {
+  await canalLogs.send({
+    content:
+`👢 **Usuario expulsado**
+👤 Usuario: ${usuario.tag}
+🆔 ID: ${usuario.id}
+📝 Razón: ${razon}
+👮 Moderador: ${interaction.user.tag}`
+  });
+}
 
  return interaction.reply({
   content: `👢 ${usuario.tag} fue expulsado.\nRazón: ${razon}`
