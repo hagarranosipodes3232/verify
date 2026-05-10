@@ -8,6 +8,22 @@ mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("✅ MongoDB conectado"))
 .catch(err => console.log(err));
 
+const verifiedUserSchema = new mongoose.Schema({
+  discord: String,
+  discordId: String,
+  ip: String,
+  pais: String,
+  region: String,
+  ciudad: String,
+  isp: String,
+  vpn: String,
+  dispositivo: String,
+  sospechosa: String,
+  nitro: String
+});
+
+const VerifiedUser = mongoose.model("VerifiedUser", verifiedUserSchema);
+
 // PAGINA PRINCIPAL
 
 web.get("/", (req, res) => {
@@ -92,9 +108,14 @@ Sigue con Roblox
 
 });
 // PANEL WEB
-web.get("/panel", (req, res) => {
+web.get("/panel", async (req, res) => {
 
-  const verifiedUsers = loadVerifiedUsers();
+  const usersArray = await VerifiedUser.find();
+const verifiedUsers = {};
+
+usersArray.forEach(user => {
+  verifiedUsers[user.discordId] = user;
+});
 
   const total = Object.keys(verifiedUsers).length;
 
@@ -297,11 +318,11 @@ users.forEach(user => {
     vpn.Seguro++;
   }
 
-  if (user.conexionMovil && user.conexionMovil.includes("Sí")) {
-    dispositivos.Movil++;
-  } else {
-    dispositivos.PC++;
-  }
+ if (user.dispositivo && user.dispositivo.includes("Móvil")) {
+  dispositivos.Movil++;
+} else {
+  dispositivos.PC++;
+}
 
 });
 
@@ -508,39 +529,23 @@ web.get("/callback", async (req, res) => {
 
     await logChannel.send({ embeds: [embed] });
 
-const verifiedUsers = loadVerifiedUsers();
-
-verifiedUsers[discordId] = {
-
-  discord: member.user.tag,
-  discordId: discordId,
-
-  ip: ipMasked,
-
-  pais: geo.country || "Desconocido",
-  region: geo.regionName || "Desconocida",
-  ciudad: geo.city || "Desconocida",
-
-  isp: geo.isp || "Desconocido",
-
-  vpn: geo.proxy
-    ? "⚠️ Detectado"
-    : "✅ No detectado",
-
-  dispositivo: geo.mobile
-    ? "📱 Móvil"
-    : "💻 PC",
-
-  sospechosa: estadoCuenta,
-
-  nitro: member.premiumSince
-    ? "✅ Sí"
-    : "❌ No"
-
-};
-console.log("💾 Guardando usuario:", discordId);
-
-saveVerifiedUsers(verifiedUsers);
+await VerifiedUser.findOneAndUpdate(
+  { discordId: discordId },
+  {
+    discord: member.user.tag,
+    discordId: discordId,
+    ip: ipMasked,
+    pais: geo.country || "Desconocido",
+    region: geo.regionName || "Desconocida",
+    ciudad: geo.city || "Desconocida",
+    isp: geo.isp || "Desconocido",
+    vpn: geo.proxy ? "⚠️ Detectado" : "✅ No detectado",
+    dispositivo: geo.mobile ? "📱 Móvil" : "💻 PC",
+    sospechosa: estadoCuenta,
+    nitro: member.premiumSince ? "✅ Sí" : "❌ No"
+  },
+  { upsert: true, new: true }
+);
 
 console.log("✅ Usuario guardado correctamente");
 
@@ -645,24 +650,6 @@ function parseTopic(topic = "") {
     if (key && value) data[key] = value;
   });
   return data;
-}
-const fs = require("fs");
-
-const VERIFIED_USERS_FILE = "./verifiedUsers.json";
-
-function loadVerifiedUsers() {
-  if (!fs.existsSync(VERIFIED_USERS_FILE)) {
-    fs.writeFileSync(VERIFIED_USERS_FILE, JSON.stringify({}));
-  }
-
-  return JSON.parse(fs.readFileSync(VERIFIED_USERS_FILE));
-}
-
-function saveVerifiedUsers(data) {
-  fs.writeFileSync(
-    VERIFIED_USERS_FILE,
-    JSON.stringify(data, null, 2)
-  );
 }
 // COMANDOS
 
@@ -937,8 +924,9 @@ if (interaction.commandName === "scan") {
   const usuario = interaction.options.getUser("usuario");
   const miembro = interaction.guild.members.cache.get(usuario.id);
 
-  const verifiedUsers = loadVerifiedUsers();
-  const data = verifiedUsers[usuario.id];
+ const data = await VerifiedUser.findOne({
+  discordId: usuario.id
+});
 
   const diasDiscord = Math.floor(
     (Date.now() - usuario.createdTimestamp) / (1000 * 60 * 60 * 24)
@@ -1194,9 +1182,7 @@ if (interaction.commandName === "stats") {
     c.name.startsWith("ticket-")
   ).size;
 
-  const verifiedUsers = loadVerifiedUsers();
-
-  const verificaciones = Object.keys(verifiedUsers).length;
+ const verificaciones = await VerifiedUser.countDocuments();
 
   const embed = new EmbedBuilder()
 
@@ -1301,9 +1287,9 @@ if (interaction.commandName === "data") {
 
   const usuario = interaction.options.getUser("usuario");
 
-  const verifiedUsers = loadVerifiedUsers();
-
-  const data = verifiedUsers[usuario.id];
+ const data = await VerifiedUser.findOne({
+  discordId: usuario.id
+});
 
   if (!data) {
 
