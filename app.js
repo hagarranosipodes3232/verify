@@ -291,6 +291,56 @@ const VERIFY_LOGS_ID = "1502547730600427570";
 const STAFF_ROLE_ID = "1502573600840880179";
 const TICKET_CATEGORY_ID = "1502573361472077855";
 const TICKET_LOGS_ID = "1502573180278149140";
+const TICKET_TYPES = {
+  ticket_compras: {
+    tipo: "Compras",
+    emoji: "💰",
+    prioridad: "Alta",
+    color: "#2ecc71",
+    pregunta: "Explicá qué querés comprar, método de pago, comprobante si tenés y cualquier detalle importante."
+  },
+  ticket_soporte: {
+    tipo: "Soporte",
+    emoji: "🛠️",
+    prioridad: "Media",
+    color: "#2ecc71",
+    pregunta: "Contanos qué problema tenés, desde cuándo pasa y mandá capturas si hace falta."
+  },
+  ticket_dudas: {
+    tipo: "Dudas",
+    emoji: "❓",
+    prioridad: "Baja",
+    color: "#2ecc71",
+    pregunta: "Escribí claramente cuál es tu duda para que el staff pueda ayudarte rápido."
+  },
+  ticket_apelaciones: {
+    tipo: "Apelaciones",
+    emoji: "🔨",
+    prioridad: "Alta",
+    color: "#3498db",
+    pregunta: "Explicá qué sanción querés apelar, quién te sancionó, cuándo pasó y por qué creés que debe revisarse."
+  }
+};
+
+function formatDuration(ms) {
+  const min = Math.floor(ms / 60000);
+  const h = Math.floor(min / 60);
+  const d = Math.floor(h / 24);
+
+  if (d > 0) return `${d} día/s`;
+  if (h > 0) return `${h} hora/s`;
+  if (min > 0) return `${min} minuto/s`;
+  return "menos de 1 minuto";
+}
+
+function parseTopic(topic = "") {
+  const data = {};
+  topic.split(";").forEach(part => {
+    const [key, value] = part.split("=");
+    if (key && value) data[key] = value;
+  });
+  return data;
+}
 
 // COMANDOS
 
@@ -398,46 +448,67 @@ client.on("interactionCreate", async interaction => {
 
     // TICKET PANEL
 
-    if (interaction.commandName === "ticketpanel") {
+if (interaction.commandName === "ticketpanel") {
 
-      const embed = new EmbedBuilder()
+  const embed = new EmbedBuilder()
 
-        .setTitle("🎫 Sistema de Tickets")
+    .setTitle("🎫 Sistema Oficial de Tickets")
 
-        .setDescription(
-          "Bienvenido al sistema oficial de tickets.\n\n" +
+    .setDescription(
 
-          "📩 ¿Necesitás ayuda o soporte?\n" +
-          "Nuestro equipo está listo para ayudarte.\n\n" +
+      "Bienvenido al sistema oficial de atención.\n\n" +
 
-          "✅ Soporte rápido\n" +
-          "🛡️ Atención privada\n" +
-          "📨 Contacto con staff\n\n" +
+      "Seleccioná el tipo de ticket que necesitás abrir.\n\n" +
 
-          "Presioná el botón de abajo para crear un ticket."
-        )
+      "💰 **Compras:** compras, pagos o productos.\n" +
+      "🛠️ **Soporte:** ayuda técnica o problemas.\n" +
+      "❓ **Dudas:** consultas generales.\n" +
+      "🔨 **Apelaciones:** apelar sanciones.\n\n" +
 
-        .setColor("#5b09e4");
+      "📌 Todos los tickets son privados y atendidos por el staff."
 
-      const botones = new ActionRowBuilder()
-        .addComponents(
+    )
 
-          new ButtonBuilder()
-            .setCustomId("crear_ticket")
-            .setLabel("🎫 Crear Ticket")
-            .setStyle(ButtonStyle.Primary)
+    .setColor("#5b09e4")
 
-        );
+    .setFooter({
+      text: "Sistema premium de tickets"
+    })
 
-      return interaction.reply({
-        embeds: [embed],
-        components: [botones]
-      });
+    .setTimestamp();
 
-    }
+  const botones = new ActionRowBuilder()
 
-  }
+    .addComponents(
 
+      new ButtonBuilder()
+        .setCustomId("ticket_compras")
+        .setLabel("💰 Compras")
+        .setStyle(ButtonStyle.Success),
+
+      new ButtonBuilder()
+        .setCustomId("ticket_soporte")
+        .setLabel("🛠️ Soporte")
+        .setStyle(ButtonStyle.Success),
+
+      new ButtonBuilder()
+        .setCustomId("ticket_dudas")
+        .setLabel("❓ Dudas")
+        .setStyle(ButtonStyle.Success),
+
+      new ButtonBuilder()
+        .setCustomId("ticket_apelaciones")
+        .setLabel("🔨 Apelaciones")
+        .setStyle(ButtonStyle.Primary)
+
+    );
+
+  return interaction.reply({
+    embeds: [embed],
+    components: [botones]
+  });
+
+}
   // =====================================================
   // BOTONES
   // =====================================================
@@ -477,137 +548,6 @@ if (interaction.customId === "verify") {
 
       return interaction.reply({
         content: "ℹ️ Sistema automático de verificación Roblox.",
-        ephemeral: true
-      });
-
-    }
-
-    // CREAR TICKET
-
-    if (interaction.customId === "crear_ticket") {
-
-      const ticketExistente = interaction.guild.channels.cache.find(
-        c => c.name === `ticket-${interaction.user.id}`
-      );
-
-      if (ticketExistente) {
-
-        return interaction.reply({
-          content: `❌ Ya tenés un ticket abierto: ${ticketExistente}`,
-          ephemeral: true
-        });
-
-      }
-
-      const canal = await interaction.guild.channels.create({
-
-        name: `ticket-${interaction.user.id}`,
-
-        type: ChannelType.GuildText,
-
-        parent: TICKET_CATEGORY_ID,
-
-        permissionOverwrites: [
-
-          {
-            id: interaction.guild.id,
-            deny: [PermissionsBitField.Flags.ViewChannel]
-          },
-
-          {
-            id: interaction.user.id,
-            allow: [
-              PermissionsBitField.Flags.ViewChannel,
-              PermissionsBitField.Flags.SendMessages,
-              PermissionsBitField.Flags.ReadMessageHistory
-            ]
-          },
-
-          {
-            id: STAFF_ROLE_ID,
-            allow: [
-              PermissionsBitField.Flags.ViewChannel,
-              PermissionsBitField.Flags.SendMessages,
-              PermissionsBitField.Flags.ReadMessageHistory
-            ]
-          }
-
-        ]
-
-      });
-
-      const ticketButtons = new ActionRowBuilder()
-        .addComponents(
-
-          new ButtonBuilder()
-            .setCustomId("claim_ticket")
-            .setLabel("📌 Reclamar")
-            .setStyle(ButtonStyle.Success),
-
-          new ButtonBuilder()
-            .setCustomId("cerrar_ticket")
-            .setLabel("🔒 Cerrar")
-            .setStyle(ButtonStyle.Danger)
-
-        );
-
-      // DATOS USUARIO
-
-      const fechaCreacionCuenta = `<t:${Math.floor(interaction.user.createdTimestamp / 1000)}:F>`;
-      const fechaIngresoServidor = `<t:${Math.floor(interaction.member.joinedTimestamp / 1000)}:F>`;
-
-      const diasCuenta = Math.floor(
-        (Date.now() - interaction.user.createdTimestamp) / (1000 * 60 * 60 * 24)
-      );
-
-      const sospechosa = diasCuenta < 30 ? "⚠️ Posible alt" : "✅ Normal";
-
-      const embedTicket = new EmbedBuilder()
-
-        .setAuthor({
-          name: interaction.user.tag,
-          iconURL: interaction.user.displayAvatarURL()
-        })
-
-        .setTitle("🎫 Ticket Creado")
-
-        .setDescription(
-          `Bienvenido ${interaction.user}.\n\n` +
-
-          `📩 Explicá detalladamente tu problema o consulta.\n\n` +
-
-          `━━━━━━━━━━━━━━━━━━\n\n` +
-
-          `👤 Usuario: ${interaction.user}\n` +
-          `🆔 ID: ${interaction.user.id}\n\n` +
-
-          `📅 Cuenta creada:\n${fechaCreacionCuenta}\n\n` +
-
-          `🚪 Entró al servidor:\n${fechaIngresoServidor}\n\n` +
-
-          `🛡️ Estado de cuenta:\n${sospechosa}\n\n` +
-
-          `━━━━━━━━━━━━━━━━━━`
-        )
-
-        .setThumbnail(interaction.user.displayAvatarURL())
-
-        .setColor("#5b09e4")
-
-        .setFooter({
-          text: "Sistema premium de tickets"
-        })
-
-        .setTimestamp();
-
-      await canal.send({
-        content: `${interaction.user} <@&${STAFF_ROLE_ID}>`,
-        embeds: [embedTicket],
-        components: [ticketButtons]
-      });
-
-      return interaction.reply({
-        content: `✅ Ticket creado correctamente: ${canal}`,
         ephemeral: true
       });
 
