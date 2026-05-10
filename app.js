@@ -364,7 +364,7 @@ new Chart(document.getElementById("deviceChart"), {
   `);
 } catch (error) {
   console.log(error);
-  res.send("Error cargando panel");
+  res.send("Error cargando panel: " + error.message);
 }
 
 });
