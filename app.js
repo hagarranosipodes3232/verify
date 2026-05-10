@@ -323,18 +323,13 @@ const vpns = users.filter(u =>
 const nitros = users.filter(u =>
   u.nitro && u.nitro.includes("Sí")
 ).length;
-document.getElementById("stats").innerHTML = `
-
-✅ Usuarios verificados: ${total}<br><br>
-
-👥 Total: ${total}<br>
-📱 Móvil: ${moviles}<br>
-💻 PC: ${pcs}<br>
-⚠️ VPN: ${vpns}<br>
-💎 Nitro: ${nitros}
-
-`;
-
+document.getElementById("stats").innerHTML =
+  "✅ Usuarios verificados: " + total + "<br><br>" +
+  "👥 Total: " + total + "<br>" +
+  "📱 Móvil: " + moviles + "<br>" +
+  "💻 PC: " + pcs + "<br>" +
+  "⚠️ VPN: " + vpns + "<br>" +
+  "💎 Nitro: " + nitros;
 users.forEach(user => {
 
   const pais = user.pais || "Desconocido";
