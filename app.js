@@ -504,6 +504,15 @@ function saveVerifiedUsers(data) {
 
 const commands = [
 new SlashCommandBuilder()
+  .setName("roblox")
+  .setDescription("Buscar información de una cuenta Roblox")
+  .addStringOption(option =>
+    option
+      .setName("username")
+      .setDescription("Nombre de usuario Roblox")
+      .setRequired(true)
+  ),
+new SlashCommandBuilder()
   .setName("userinfo")
   .setDescription("Ver información de un usuario")
   .addUserOption(option =>
@@ -575,6 +584,96 @@ client.on("interactionCreate", async interaction => {
   // =====================================================
 
   if (interaction.isChatInputCommand()) {
+if (interaction.commandName === "roblox") {
+
+  await interaction.deferReply();
+
+  const username = interaction.options.getString("username");
+
+  const searchResponse = await fetch("https://users.roblox.com/v1/usernames/users", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      usernames: [username],
+      excludeBannedUsers: false
+    })
+  });
+
+  const searchData = await searchResponse.json();
+
+  if (!searchData.data || searchData.data.length === 0) {
+    return interaction.editReply("❌ No encontré ese usuario de Roblox.");
+  }
+
+  const robloxUser = searchData.data[0];
+  const robloxId = robloxUser.id;
+
+  const details = await fetch(`https://users.roblox.com/v1/users/${robloxId}`)
+    .then(r => r.json());
+
+  const friends = await fetch(`https://friends.roblox.com/v1/users/${robloxId}/friends/count`)
+    .then(r => r.json()).catch(() => ({ count: "No disponible" }));
+
+  const followers = await fetch(`https://friends.roblox.com/v1/users/${robloxId}/followers/count`)
+    .then(r => r.json()).catch(() => ({ count: "No disponible" }));
+
+  const following = await fetch(`https://friends.roblox.com/v1/users/${robloxId}/followings/count`)
+    .then(r => r.json()).catch(() => ({ count: "No disponible" }));
+
+  const groups = await fetch(`https://groups.roblox.com/v1/users/${robloxId}/groups/roles`)
+    .then(r => r.json()).catch(() => ({ data: [] }));
+
+  const badges = await fetch(`https://badges.roblox.com/v1/users/${robloxId}/badges?limit=100&sortOrder=Desc`)
+    .then(r => r.json()).catch(() => ({ data: [] }));
+
+  const premium = await fetch(`https://premiumfeatures.roblox.com/v1/users/${robloxId}/validate-membership`)
+    .then(r => r.json()).catch(() => false);
+
+  const avatar = await fetch(
+    `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${robloxId}&size=420x420&format=Png&isCircular=false`
+  ).then(r => r.json()).catch(() => ({ data: [] }));
+
+  const avatarUrl = avatar.data?.[0]?.imageUrl || null;
+
+  const createdDate = new Date(details.created);
+  const daysOld = Math.floor((Date.now() - createdDate) / (1000 * 60 * 60 * 24));
+  const yearsOld = Math.floor(daysOld / 365);
+
+  const estadoCuenta = daysOld < 30
+    ? "⚠️ Cuenta nueva / posible alt"
+    : "✅ Cuenta normal";
+
+  const embed = new EmbedBuilder()
+    .setTitle(`🎮 Información Roblox | ${username}`)
+    .setColor("#ff0000")
+    .setThumbnail(avatarUrl)
+    .setDescription(
+      `👤 **Username:** \`${details.name}\`\n` +
+      `🪪 **Display Name:** \`${details.displayName || "No disponible"}\`\n` +
+      `🆔 **Roblox ID:** \`${robloxId}\`\n` +
+      `🔗 **Perfil:** https://www.roblox.com/users/${robloxId}/profile\n\n` +
+
+      `📅 **Cuenta creada:**\n<t:${Math.floor(createdDate.getTime() / 1000)}:F>\n\n` +
+      `⏳ **Antigüedad:** ${daysOld} días ${yearsOld > 0 ? `(${yearsOld} año/s)` : ""}\n` +
+      `🛡️ **Estado:** ${estadoCuenta}\n` +
+      `💎 **Premium:** ${premium === true ? "✅ Sí" : "❌ No / no visible"}\n\n` +
+
+      `👥 **Amigos:** \`${friends.count}\`\n` +
+      `👤 **Seguidores:** \`${followers.count}\`\n` +
+      `➡️ **Siguiendo:** \`${following.count}\`\n` +
+      `👨‍👩‍👧 **Grupos visibles:** \`${groups.data?.length || 0}\`\n` +
+      `🏆 **Badges públicos:** \`${badges.data?.length || 0}${badges.nextPageCursor ? "+" : ""}\`\n\n` +
+
+      `📝 **Descripción:**\n${details.description || "Sin descripción"}`
+    )
+    .setFooter({ text: "Roblox Lookup System" })
+    .setTimestamp();
+
+  return interaction.editReply({
+    embeds: [embed]
+  });
+
+}
 if (interaction.commandName === "userinfo") {
 
   const usuario = interaction.options.getUser("usuario");
