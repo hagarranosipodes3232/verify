@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 
 const web = express();
 
+web.use(express.json());
+
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("✅ MongoDB conectado"))
 .catch(err => console.log(err));
@@ -82,6 +84,36 @@ web.get("/", (req, res) => {
   background: #1b1e24;
   padding: 20px;
   border-radius: 15px;
+}
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+  background: #111827;
+  padding: 20px;
+  width: 400px;
+  margin: 10% auto;
+  border-radius: 12px;
+  color: white;
+}
+
+.modal textarea {
+  width: 100%;
+  height: 120px;
+  margin-top: 10px;
+  background: #0f172a;
+  color: white;
+  border: 1px solid #7c3aed;
+  border-radius: 8px;
+  padding: 10px;
 }
   </style>
 
@@ -167,10 +199,10 @@ const nitros = usersStats.filter(u =>
         <p>📡 ${user.isp}</p>
         <p>🛡️ ${user.vpn}</p>
         <p>🌐 ${user.ip}</p>
-<a class="btn-action"
-href="/admin/dm/${user.discordId}?key=${process.env.ADMIN_KEY}">
+<button class="btn-action"
+onclick="openDM('${user.discordId}')">
 📩 Enviar DM
-</a>
+</button>
 
 <a class="btn-danger"
 href="/admin/kick/${user.discordId}?key=${process.env.ADMIN_KEY}">
@@ -302,7 +334,37 @@ ${usersHtml}
 
 </div>
 <script>
+let selectedUser = "";
 
+function openDM(id) {
+  selectedUser = id;
+  document.getElementById("dmModal").style.display = "block";
+}
+
+function closeDM() {
+  document.getElementById("dmModal").style.display = "none";
+}
+
+async function sendDM() {
+
+  const message =
+    document.getElementById("dmMessage").value;
+
+  await fetch(
+    `/admin/dm/${selectedUser}?key=${process.env.ADMIN_KEY}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
+    }
+  );
+
+  alert("Mensaje enviado.");
+
+  closeDM();
+}
 const search = document.getElementById("search");
 
 search.addEventListener("input", () => {
@@ -326,6 +388,26 @@ search.addEventListener("input", () => {
 });
 
 </script>
+<div id="dmModal" class="modal">
+
+  <div class="modal-content">
+
+    <h2>📩 Enviar mensaje privado</h2>
+
+    <textarea id="dmMessage"
+    placeholder="Escribí el mensaje..."></textarea>
+
+    <button onclick="sendDM()">
+      Enviar
+    </button>
+
+    <button onclick="closeDM()">
+      Cancelar
+    </button>
+
+  </div>
+
+</div>
 </body>
 
 </html>
@@ -337,20 +419,26 @@ search.addEventListener("input", () => {
 }
 
 });
-web.get("/admin/dm/:id", async (req, res) => {
+web.post("/admin/dm/:id", async (req, res) => {
+
   if (req.query.key !== process.env.ADMIN_KEY) {
     return res.send("❌ No autorizado");
   }
 
   try {
-    const user = await client.users.fetch(req.params.id);
 
-    await user.send("📩 Hola, este es un mensaje del staff del servidor.");
+    const user =
+      await client.users.fetch(req.params.id);
 
-    res.send("✅ Mensaje enviado por privado.");
+    await user.send(req.body.message);
+
+    res.send("✅ Mensaje enviado.");
+
   } catch (error) {
+
     console.log(error);
-    res.send("❌ No pude enviar el mensaje.");
+
+    res.send("❌ Error enviando mensaje.");
   }
 });
 
