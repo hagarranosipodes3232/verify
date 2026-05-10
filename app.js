@@ -232,8 +232,14 @@ h3 {
 📡 Panel MVS
 </div>
 
-<div class="stats" id="stats">
-✅ Cargando estadísticas...
+<div class="stats">
+
+👥 Total: ${total}<br>
+📱 Móvil: ${moviles}<br>
+💻 PC: ${pcs}<br>
+⚠️ VPN: ${vpns}<br>
+💎 Nitro: ${nitros}
+
 </div>
 
 <div class="search-box">
