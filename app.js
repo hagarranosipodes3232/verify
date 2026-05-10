@@ -1,6 +1,12 @@
 require("dotenv").config();
 const express = require("express");
+const mongoose = require("mongoose");
+
 const web = express();
+
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("✅ MongoDB conectado"))
+.catch(err => console.log(err));
 
 // PAGINA PRINCIPAL
 
