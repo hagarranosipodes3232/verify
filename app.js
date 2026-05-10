@@ -532,12 +532,11 @@ web.get("/callback", async (req, res) => {
       .setTimestamp();
 
     await logChannel.send({ embeds: [embed] });
-
-await VerifiedUser.findOneAndUpdate(
-  { discordId: discordId },
+const savedUser = await VerifiedUser.findOneAndUpdate(
+  { discordId: String(discordId) },
   {
     discord: member.user.tag,
-    discordId: discordId,
+    discordId: String(discordId),
     ip: ipMasked,
     pais: geo.country || "Desconocido",
     region: geo.regionName || "Desconocida",
@@ -551,8 +550,10 @@ await VerifiedUser.findOneAndUpdate(
   { upsert: true, new: true }
 );
 
-console.log("✅ Usuario guardado correctamente");
+const totalGuardados = await VerifiedUser.countDocuments();
 
+console.log("✅ Usuario guardado en MongoDB:", savedUser.discord);
+console.log("📊 Total guardados:", totalGuardados);
     res.send("✅ Verificación completada. Ya recibiste tu rol en Discord.");
 
   } catch (error) {
