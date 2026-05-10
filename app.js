@@ -668,6 +668,32 @@ function saveVerifiedUsers(data) {
 
 const commands = [
 new SlashCommandBuilder()
+  .setName("ban")
+  .setDescription("Banear a un usuario")
+  .addUserOption(option =>
+    option.setName("usuario").setDescription("Usuario a banear").setRequired(true)
+  )
+  .addStringOption(option =>
+    option.setName("razon").setDescription("Razón del ban").setRequired(false)
+  ),
+
+new SlashCommandBuilder()
+  .setName("kick")
+  .setDescription("Expulsar a un usuario")
+  .addUserOption(option =>
+    option.setName("usuario").setDescription("Usuario a expulsar").setRequired(true)
+  )
+  .addStringOption(option =>
+    option.setName("razon").setDescription("Razón del kick").setRequired(false)
+  ),
+
+new SlashCommandBuilder()
+  .setName("clear")
+  .setDescription("Borrar mensajes del canal")
+  .addIntegerOption(option =>
+    option.setName("cantidad").setDescription("Cantidad de mensajes").setRequired(true)
+  ),
+new SlashCommandBuilder()
   .setName("dashboard")
   .setDescription("Ver dashboard del sistema"),
 new SlashCommandBuilder()
@@ -760,6 +786,64 @@ client.on("interactionCreate", async interaction => {
   // =====================================================
 
   if (interaction.isChatInputCommand()) {
+if (interaction.commandName === "ban") {
+  if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
+    return interaction.reply({ content: "❌ No tenés permiso para banear.", ephemeral: true });
+  }
+
+  const usuario = interaction.options.getUser("usuario");
+  const razon = interaction.options.getString("razon") || "Sin razón";
+  const miembro = await interaction.guild.members.fetch(usuario.id).catch(() => null);
+
+  if (!miembro) {
+    return interaction.reply({ content: "❌ No encontré ese usuario en el servidor.", ephemeral: true });
+  }
+
+  await miembro.ban({ reason: razon });
+
+ return interaction.reply({
+  content: `🔨 ${usuario.tag} fue baneado.\nRazón: ${razon}`
+});
+
+}
+if (interaction.commandName === "kick") {
+  if (!interaction.member.permissions.has(PermissionsBitField.Flags.KickMembers)) {
+    return interaction.reply({ content: "❌ No tenés permiso para expulsar.", ephemeral: true });
+  }
+
+  const usuario = interaction.options.getUser("usuario");
+  const razon = interaction.options.getString("razon") || "Sin razón";
+  const miembro = await interaction.guild.members.fetch(usuario.id).catch(() => null);
+
+  if (!miembro) {
+    return interaction.reply({ content: "❌ No encontré ese usuario en el servidor.", ephemeral: true });
+  }
+
+  await miembro.kick(razon);
+
+ return interaction.reply({
+  content: `👢 ${usuario.tag} fue expulsado.\nRazón: ${razon}`
+});
+
+}
+if (interaction.commandName === "clear") {
+  if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+    return interaction.reply({ content: "❌ No tenés permiso para borrar mensajes.", ephemeral: true });
+  }
+
+  const cantidad = interaction.options.getInteger("cantidad");
+
+  if (cantidad < 1 || cantidad > 100) {
+    return interaction.reply({ content: "❌ Poné un número entre 1 y 100.", ephemeral: true });
+  }
+
+  const mensajes = await interaction.channel.bulkDelete(cantidad, true);
+
+  return interaction.reply({
+    content: `🧹 Se borraron ${mensajes.size} mensajes.`,
+    ephemeral: true
+  });
+}
 if (interaction.commandName === "dashboard") {
 
 const embed = new EmbedBuilder()
