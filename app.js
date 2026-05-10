@@ -120,6 +120,24 @@ usersArray.forEach(user => {
 
   const total = Object.keys(verifiedUsers).length;
 
+const usersStats = Object.values(verifiedUsers);
+
+const moviles = usersStats.filter(u =>
+  u.dispositivo && u.dispositivo.includes("Móvil")
+).length;
+
+const pcs = usersStats.filter(u =>
+  u.dispositivo && u.dispositivo.includes("PC")
+).length;
+
+const vpns = usersStats.filter(u =>
+  u.vpn && u.vpn.includes("Detectado")
+).length;
+
+const nitros = usersStats.filter(u =>
+  u.nitro && u.nitro.includes("Sí")
+).length;
+
   let usersHtml = "";
 
   for (const id in verifiedUsers) {
