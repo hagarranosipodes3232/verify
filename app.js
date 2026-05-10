@@ -507,12 +507,11 @@ if (interaction.commandName === "ticketpanel") {
     embeds: [embed],
     components: [botones]
   });
-
-}
+   
   // =====================================================
   // BOTONES
   // =====================================================
-
+}
   if (interaction.isButton()) {
 
     // VERIFY BUTTON
