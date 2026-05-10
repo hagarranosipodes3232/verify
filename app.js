@@ -74,7 +74,116 @@ Sigue con Roblox
   `);
 
 });
+// PANEL WEB
 
+web.get("/panel", (req, res) => {
+
+  const verifiedUsers = loadVerifiedUsers();
+
+  const total = Object.keys(verifiedUsers).length;
+
+  let usersHtml = "";
+
+  for (const id in verifiedUsers) {
+
+    const user = verifiedUsers[id];
+
+    usersHtml += `
+
+      <div class="card">
+
+        <h3>${user.discord}</h3>
+
+        <p>🌎 ${user.pais}</p>
+        <p>🏙️ ${user.ciudad}</p>
+        <p>📡 ${user.isp}</p>
+        <p>🛡️ ${user.vpn}</p>
+        <p>🌐 ${user.ip}</p>
+
+      </div>
+
+    `;
+
+  }
+
+  res.send(`
+
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Panel MVS</title>
+
+<style>
+
+body {
+  margin: 0;
+  background: #0f1115;
+  color: white;
+  font-family: Arial;
+  padding: 30px;
+}
+
+.title {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.stats {
+  background: #1b1e24;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #1b1e24;
+  border-left: 5px solid #7b5cff;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+h3 {
+  margin-top: 0;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="title">
+📡 Panel MVS
+</div>
+
+<div class="stats">
+✅ Usuarios verificados: ${total}
+</div>
+
+<div class="container">
+
+${usersHtml}
+
+</div>
+
+</body>
+
+</html>
+
+  `);
+
+});
 // ROBLOX OAUTH
 
 web.get("/roblox", (req, res) => {
