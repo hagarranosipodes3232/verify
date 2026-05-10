@@ -232,8 +232,8 @@ h3 {
 📡 Panel MVS
 </div>
 
-<div class="stats">
-✅ Usuarios verificados: ${total}
+<div class="stats" id="stats">
+✅ Cargando estadísticas...
 </div>
 
 <div class="search-box">
@@ -306,6 +306,34 @@ const dispositivos = {
   Movil: 0,
   PC: 0
 };
+const total = users.length;
+
+const moviles = users.filter(u =>
+  u.dispositivo && u.dispositivo.includes("Móvil")
+).length;
+
+const pcs = users.filter(u =>
+  u.dispositivo && u.dispositivo.includes("PC")
+).length;
+
+const vpns = users.filter(u =>
+  u.vpn && u.vpn.includes("Detectado")
+).length;
+
+const nitros = users.filter(u =>
+  u.nitro && u.nitro.includes("Sí")
+).length;
+document.getElementById("stats").innerHTML = `
+
+✅ Usuarios verificados: ${total}<br><br>
+
+👥 Total: ${total}<br>
+📱 Móvil: ${moviles}<br>
+💻 PC: ${pcs}<br>
+⚠️ VPN: ${vpns}<br>
+💎 Nitro: ${nitros}
+
+`;
 
 users.forEach(user => {
 
