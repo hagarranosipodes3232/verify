@@ -504,6 +504,9 @@ function saveVerifiedUsers(data) {
 
 const commands = [
 new SlashCommandBuilder()
+  .setName("dashboard")
+  .setDescription("Ver dashboard del sistema"),
+new SlashCommandBuilder()
   .setName("scan")
   .setDescription("Escanear riesgo de un usuario")
   .addUserOption(option =>
@@ -593,6 +596,53 @@ client.on("interactionCreate", async interaction => {
   // =====================================================
 
   if (interaction.isChatInputCommand()) {
+if (interaction.commandName === "dashboard") {
+
+const embed = new EmbedBuilder()
+
+  .setTitle("📡 Dashboard Oficial")
+
+  .setDescription(
+
+    "Bienvenido al dashboard oficial del sistema.\n\n" +
+
+    "Desde aquí podrás visualizar:\n\n" +
+
+    "✅ Usuarios verificados\n" +
+    "🌎 País y región\n" +
+    "📡 ISP y conexión\n" +
+    "🛡️ VPN/Proxy detectado\n" +
+    "📊 Estadísticas del sistema\n\n" +
+
+    "⚡ Sistema web premium en tiempo real."
+
+  )
+
+  .setColor("#5b09e4")
+
+  .setFooter({
+    text: "MVS Dashboard System"
+  })
+
+  .setTimestamp();
+
+const botones = new ActionRowBuilder()
+
+  .addComponents(
+
+    new ButtonBuilder()
+      .setLabel("Ir a Dashboard")
+      .setStyle(ButtonStyle.Link)
+      .setURL("https://verify-z2au.onrender.com/panel")
+
+  );
+
+return interaction.reply({
+  embeds: [embed],
+  components: [botones]
+});
+
+}
 if (interaction.commandName === "scan") {
 
   const usuario = interaction.options.getUser("usuario");
