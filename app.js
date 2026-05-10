@@ -731,49 +731,121 @@ if (TICKET_TYPES[interaction.customId]) {
   // MODAL CERRAR TICKET
   // =====================================================
 
-  if (interaction.isModalSubmit()) {
+ // =====================================================
+// MODAL CERRAR TICKET
+// =====================================================
 
-    if (interaction.customId === "cerrar_modal") {
+if (interaction.isModalSubmit()) {
 
-      const razon = interaction.fields.getTextInputValue("razon");
+  if (interaction.customId === "cerrar_modal") {
 
-      const transcript = await discordTranscripts.createTranscript(interaction.channel);
+    const razon = interaction.fields.getTextInputValue("razon");
 
-      const canalLogs = interaction.guild.channels.cache.get(TICKET_LOGS_ID);
-
-      if (canalLogs) {
-
-        const embed = new EmbedBuilder()
-
-          .setTitle("🔒 Ticket Cerrado")
-
-          .setDescription(
-            `👤 Cerrado por: ${interaction.user}\n\n` +
-            `📝 Razón:\n${razon}`
-          )
-
-          .setColor("Red")
-          .setTimestamp();
-
-        canalLogs.send({
-          embeds: [embed],
-          files: [transcript]
-        });
-
+    const transcript = await discordTranscripts.createTranscript(
+      interaction.channel,
+      {
+        limit: -1,
+        returnType: "attachment",
+        filename: `transcript-${interaction.channel.id}.html`
       }
+    );
 
-      await interaction.reply({
-        content: "🔒 Ticket cerrado correctamente.",
-        ephemeral: true
+    const topicData = parseTopic(interaction.channel.topic);
+
+    const openedAt = Number(topicData.opened || Date.now());
+
+    const tiempoAbierto = formatDuration(Date.now() - openedAt);
+
+    const claimedId = topicData.claimed || "No reclamado";
+
+    let claimedUser = "No reclamado";
+
+    try {
+      const fetched = await client.users.fetch(claimedId);
+      claimedUser = fetched.toString();
+    } catch {}
+
+    const mensajes = interaction.channel.messages.cache.size;
+
+    const archivos = interaction.channel.messages.cache.filter(
+      m => m.attachments.size > 0
+    ).size;
+
+    const canalLogs = interaction.guild.channels.cache.get(TICKET_LOGS_ID);
+
+    const embed = new EmbedBuilder()
+
+      .setTitle("🎫 Ticket Cerrado")
+
+      .setDescription(
+
+        `👤 Usuario: <@${topicData.owner}>\n` +
+        `👮 Staff: ${claimedUser}\n` +
+        `📅 Abierto: ${tiempoAbierto}\n` +
+        `💬 Mensajes: ${mensajes}\n` +
+        `📎 Archivos: ${archivos}\n\n` +
+
+        `📝 Razón:\n${razon}\n\n` +
+
+        `⭐ Calificación:\nPendiente`
+
+      )
+
+      .setColor("Red")
+
+      .setTimestamp();
+
+    if (canalLogs) {
+
+      await canalLogs.send({
+        embeds: [embed],
+        files: [transcript]
       });
-
-      setTimeout(() => {
-        interaction.channel.delete();
-      }, 3000);
 
     }
 
+    try {
+
+      const dueño = await client.users.fetch(topicData.owner);
+
+      const dmEmbed = new EmbedBuilder()
+
+        .setTitle("🎫 Tu ticket fue cerrado")
+
+        .setDescription(
+
+          `👮 Staff que cerró el ticket:\n${claimedUser}\n\n` +
+
+          `📝 Razón:\n${razon}\n\n` +
+
+          `⭐ Por favor calificá la atención del staff respondiendo con:\n` +
+          `1⭐ 2⭐ 3⭐ 4⭐ o 5⭐`
+
+        )
+
+        .setColor("#5b09e4")
+
+        .setTimestamp();
+
+      await dueño.send({
+        embeds: [dmEmbed],
+        files: [transcript]
+      });
+
+    } catch {}
+
+    await interaction.reply({
+      content: "🔒 Ticket cerrado correctamente.",
+      ephemeral: true
+    });
+
+    setTimeout(() => {
+      interaction.channel.delete();
+    }, 3000);
+
   }
+
+}
 
 });
 
