@@ -109,6 +109,7 @@ Sigue con Roblox
 });
 // PANEL WEB
 web.get("/panel", async (req, res) => {
+try {
 
   const usersArray = await VerifiedUser.find();
 const verifiedUsers = {};
