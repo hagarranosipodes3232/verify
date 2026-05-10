@@ -504,6 +504,15 @@ function saveVerifiedUsers(data) {
 
 const commands = [
 new SlashCommandBuilder()
+  .setName("userinfo")
+  .setDescription("Ver información de un usuario")
+  .addUserOption(option =>
+    option
+      .setName("usuario")
+      .setDescription("Usuario")
+      .setRequired(true)
+  ),
+new SlashCommandBuilder()
   .setName("stats")
   .setDescription("Ver estadísticas completas del servidor"),
  new SlashCommandBuilder()
@@ -566,6 +575,66 @@ client.on("interactionCreate", async interaction => {
   // =====================================================
 
   if (interaction.isChatInputCommand()) {
+if (interaction.commandName === "userinfo") {
+
+  const usuario = interaction.options.getUser("usuario");
+
+  const miembro = interaction.guild.members.cache.get(usuario.id);
+
+  const roles = miembro.roles.cache
+    .filter(r => r.id !== interaction.guild.id)
+    .map(r => r.toString())
+    .join(", ") || "Sin roles";
+
+  const nitro = usuario.banner
+    ? "✅ Sí"
+    : "❌ No";
+
+  const estado = miembro.presence
+    ? miembro.presence.status
+    : "offline";
+
+  const embed = new EmbedBuilder()
+
+    .setTitle("👤 Información del Usuario")
+
+    .setThumbnail(usuario.displayAvatarURL({ dynamic: true }))
+
+    .setImage(usuario.displayAvatarURL({
+      dynamic: true,
+      size: 1024
+    }))
+
+    .setColor("#ff0000")
+
+    .setDescription(
+
+      `👤 Usuario: ${usuario}\n` +
+      `🆔 Discord ID: \`${usuario.id}\`\n\n` +
+
+      `🤖 Bot: ${usuario.bot ? "✅ Sí" : "❌ No"}\n` +
+      `💎 Nitro: ${nitro}\n` +
+      `🟢 Estado: ${estado}\n\n` +
+
+      `📅 Cuenta creada:\n<t:${Math.floor(usuario.createdTimestamp / 1000)}:F>\n\n` +
+
+      `📥 Entró al servidor:\n<t:${Math.floor(miembro.joinedTimestamp / 1000)}:F>\n\n` +
+
+      `🎭 Roles:\n${roles}`
+
+    )
+
+    .setFooter({
+      text: interaction.guild.name
+    })
+
+    .setTimestamp();
+
+  return interaction.reply({
+    embeds: [embed]
+  });
+
+}
 if (interaction.commandName === "stats") {
 
   const guild = interaction.guild;
