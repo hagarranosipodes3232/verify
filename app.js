@@ -75,7 +75,6 @@ Sigue con Roblox
 
 });
 // PANEL WEB
-
 web.get("/panel", (req, res) => {
 
   const verifiedUsers = loadVerifiedUsers();
@@ -88,13 +87,25 @@ web.get("/panel", (req, res) => {
 
     const user = verifiedUsers[id];
 
+    const searchData = `
+      ${user.discord}
+      ${user.discordId}
+      ${user.pais}
+      ${user.region}
+      ${user.ciudad}
+      ${user.isp}
+      ${user.ip}
+    `.toLowerCase();
+
     usersHtml += `
 
-      <div class="card">
+      <div class="card" data-search="${searchData}">
 
         <h3>${user.discord}</h3>
 
+        <p>🆔 ${user.discordId}</p>
         <p>🌎 ${user.pais}</p>
+        <p>📍 ${user.region}</p>
         <p>🏙️ ${user.ciudad}</p>
         <p>📡 ${user.isp}</p>
         <p>🛡️ ${user.vpn}</p>
@@ -137,7 +148,22 @@ body {
   background: #1b1e24;
   padding: 20px;
   border-radius: 15px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+}
+
+.search-box {
+  margin-bottom: 25px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  outline: none;
+  border-radius: 12px;
+  background: #1b1e24;
+  color: white;
+  font-size: 16px;
 }
 
 .container {
@@ -171,11 +197,45 @@ h3 {
 ✅ Usuarios verificados: ${total}
 </div>
 
-<div class="container">
+<div class="search-box">
+  <input
+    type="text"
+    id="search"
+    placeholder="🔎 Buscar usuario, ID, país, ciudad, ISP..."
+  >
+</div>
+
+<div class="container" id="users">
 
 ${usersHtml}
 
 </div>
+
+<script>
+
+const search = document.getElementById("search");
+
+search.addEventListener("input", () => {
+
+  const value = search.value.toLowerCase();
+
+  const cards = document.querySelectorAll(".card");
+
+  cards.forEach(card => {
+
+    const data = card.getAttribute("data-search");
+
+    if (data.includes(value)) {
+      card.style.display = "block";
+    } else {
+      card.style.display = "none";
+    }
+
+  });
+
+});
+
+</script>
 
 </body>
 
