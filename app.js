@@ -505,7 +505,7 @@ function saveVerifiedUsers(data) {
 const commands = [
 new SlashCommandBuilder()
   .setName("stats")
-  .setDescription("Ver estadísticas completas del servidor")
+  .setDescription("Ver estadísticas completas del servidor"),
  new SlashCommandBuilder()
   .setName("data")
   .setDescription("Ver datos de un usuario")
