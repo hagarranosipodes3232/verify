@@ -745,7 +745,37 @@ if (interaction.commandName === "ticketpanel") {
 // =====================================================
 
 if (interaction.isButton()) {
+if (interaction.customId.startsWith("rating_")) {
 
+  const parts = interaction.customId.split("_");
+  const rating = parts[1];
+  const staffId = parts[2];
+
+  const canalLogs = interaction.client.channels.cache.get(TICKET_LOGS_ID);
+
+  const embed = new EmbedBuilder()
+    .setTitle("⭐ Calificación de Ticket")
+    .setColor(
+      rating === "excelente" ? "Green" :
+      rating === "buena" ? "Blue" :
+      "Red"
+    )
+    .setDescription(
+      `👤 Usuario: ${interaction.user}\n` +
+      `👮 Staff: <@${staffId}>\n` +
+      `⭐ Calificación: **${rating.toUpperCase()}**`
+    )
+    .setTimestamp();
+
+  if (canalLogs) {
+    await canalLogs.send({ embeds: [embed] });
+  }
+
+  return interaction.reply({
+    content: "✅ Gracias por calificar la atención del staff.",
+    ephemeral: true
+  });
+}
     // VERIFY BUTTON
 if (interaction.customId === "verify") {
 
@@ -1035,30 +1065,47 @@ if (interaction.isModalSubmit()) {
 
       const dueño = await client.users.fetch(topicData.owner);
 
-      const dmEmbed = new EmbedBuilder()
+     const ratingButtons = new ActionRowBuilder()
+  .addComponents(
+    new ButtonBuilder()
+      .setCustomId(`rating_mala_${interaction.user.id}`)
+      .setLabel("Mala")
+      .setStyle(ButtonStyle.Danger),
 
-        .setTitle("🎫 Tu ticket fue cerrado")
+    new ButtonBuilder()
+      .setCustomId(`rating_buena_${interaction.user.id}`)
+      .setLabel("Buena")
+      .setStyle(ButtonStyle.Primary),
 
-        .setDescription(
+    new ButtonBuilder()
+      .setCustomId(`rating_excelente_${interaction.user.id}`)
+      .setLabel("Excelente")
+      .setStyle(ButtonStyle.Success)
+  );
 
-          `👮 Staff que cerró el ticket:\n${claimedUser}\n\n` +
+const dmEmbed = new EmbedBuilder()
+  .setAuthor({
+    name: "Reskate Roleplay | Soporte",
+    iconURL: interaction.guild.iconURL()
+  })
+  .setTitle("📩 Tu ticket fue cerrado")
+  .setDescription(
+    `Hola <@${topicData.owner}>!\n\n` +
+    `Gracias por contactarte con el soporte de **Reskate RP**.\n\n` +
+    `Tu ticket **${interaction.channel.name}** fue cerrado por ${interaction.user}.\n\n` +
+    `🔎 Adjuntamos el **transcript** del ticket.\n\n` +
+    `📝 **Razón:**\n${razon}\n\n` +
+    `Nos ayudaría mucho si podés calificar la atención con los botones de abajo.\n\n` +
+    `**Staff:** ${interaction.user} • <t:${Math.floor(Date.now() / 1000)}:f>`
+  )
+  .setColor("#2ecc71")
+  .setTimestamp();
 
-          `📝 Razón:\n${razon}\n\n` +
-
-          `⭐ Por favor calificá la atención del staff respondiendo con:\n` +
-          `1⭐ 2⭐ 3⭐ 4⭐ o 5⭐`
-
-        )
-
-        .setColor("#5b09e4")
-
-        .setTimestamp();
-
-      await dueño.send({
-        embeds: [dmEmbed],
-        files: [transcript]
-      });
-
+await dueño.send({
+  embeds: [dmEmbed],
+  files: [transcript],
+  components: [ratingButtons]
+});
     } catch {}
 
     await interaction.reply({
