@@ -167,8 +167,17 @@ const nitros = usersStats.filter(u =>
         <p>📡 ${user.isp}</p>
         <p>🛡️ ${user.vpn}</p>
         <p>🌐 ${user.ip}</p>
+<a class="btn-action"
+href="/admin/dm/${user.discordId}?key=${process.env.ADMIN_KEY}">
+📩 Enviar DM
+</a>
 
+<a class="btn-danger"
+href="/admin/kick/${user.discordId}?key=${process.env.ADMIN_KEY}">
+🚪 Expulsar
+</a>
       </div>
+
 
     `;
 
@@ -239,6 +248,25 @@ body {
 h3 {
   margin-top: 0;
 }
+.btn-action, .btn-danger {
+  display: inline-block;
+  margin-top: 10px;
+  margin-right: 8px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.btn-action {
+  background: #5865f2;
+}
+
+.btn-danger {
+  background: #dc2626;
+}
 
 </style>
 
@@ -308,6 +336,40 @@ search.addEventListener("input", () => {
   res.send("Error cargando panel: " + error.message);
 }
 
+});
+web.get("/admin/dm/:id", async (req, res) => {
+  if (req.query.key !== process.env.ADMIN_KEY) {
+    return res.send("❌ No autorizado");
+  }
+
+  try {
+    const user = await client.users.fetch(req.params.id);
+
+    await user.send("📩 Hola, este es un mensaje del staff del servidor.");
+
+    res.send("✅ Mensaje enviado por privado.");
+  } catch (error) {
+    console.log(error);
+    res.send("❌ No pude enviar el mensaje.");
+  }
+});
+
+web.get("/admin/kick/:id", async (req, res) => {
+  if (req.query.key !== process.env.ADMIN_KEY) {
+    return res.send("❌ No autorizado");
+  }
+
+  try {
+    const guild = await client.guilds.fetch(GUILD_ID);
+    const member = await guild.members.fetch(req.params.id);
+
+    await member.kick("Expulsado desde el dashboard");
+
+    res.send("✅ Usuario expulsado del servidor.");
+  } catch (error) {
+    console.log(error);
+    res.send("❌ No pude expulsar al usuario.");
+  }
 });
 
 // ROBLOX OAUTH
