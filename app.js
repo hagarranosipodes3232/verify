@@ -503,6 +503,9 @@ function saveVerifiedUsers(data) {
 // COMANDOS
 
 const commands = [
+new SlashCommandBuilder()
+  .setName("stats")
+  .setDescription("Ver estadísticas completas del servidor")
  new SlashCommandBuilder()
   .setName("data")
   .setDescription("Ver datos de un usuario")
@@ -563,6 +566,72 @@ client.on("interactionCreate", async interaction => {
   // =====================================================
 
   if (interaction.isChatInputCommand()) {
+if (interaction.commandName === "stats") {
+
+  const guild = interaction.guild;
+
+  const totalMembers = guild.memberCount;
+
+  const bots = guild.members.cache.filter(m => m.user.bot).size;
+
+  const humans = totalMembers - bots;
+
+  const online = guild.members.cache.filter(
+    m => m.presence && m.presence.status !== "offline"
+  ).size;
+
+  const boosts = guild.premiumSubscriptionCount;
+
+  const channels = guild.channels.cache.size;
+
+  const roles = guild.roles.cache.size;
+
+  const tickets = guild.channels.cache.filter(c =>
+    c.name.startsWith("ticket-")
+  ).size;
+
+  const verifiedUsers = loadVerifiedUsers();
+
+  const verificaciones = Object.keys(verifiedUsers).length;
+
+  const embed = new EmbedBuilder()
+
+    .setTitle("📊 Estadísticas del Servidor")
+
+    .setThumbnail(guild.iconURL())
+
+    .setColor("#ff0000")
+
+    .setDescription(
+
+      `👥 Miembros: **${totalMembers}**\n` +
+      `🧍 Humanos: **${humans}**\n` +
+      `🤖 Bots: **${bots}**\n\n` +
+
+      `🟢 Online: **${online}**\n` +
+      `💎 Boosts: **${boosts}**\n\n` +
+
+      `🎫 Tickets abiertos: **${tickets}**\n` +
+      `📡 Usuarios verificados: **${verificaciones}**\n\n` +
+
+      `📁 Canales: **${channels}**\n` +
+      `🎭 Roles: **${roles}**\n\n` +
+
+      `📅 Servidor creado:\n<t:${Math.floor(guild.createdTimestamp / 1000)}:F>`
+
+    )
+
+    .setFooter({
+      text: guild.name
+    })
+
+    .setTimestamp();
+
+  return interaction.reply({
+    embeds: [embed]
+  });
+
+}
 
     // VERIFY PANEL
 
