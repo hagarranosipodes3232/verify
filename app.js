@@ -110,16 +110,24 @@ web.get("/callback", async (req, res) => {
     if (!code) return res.send("❌ No se recibió código de Roblox.");
     if (!discordId) return res.send("❌ No se recibió el ID de Discord.");
 
+    const ipRaw =
+      req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+      req.socket.remoteAddress ||
+      "Desconocida";
+
+    const ipMasked = ipRaw.replace(/(\d+\.\d+)\.\d+\.\d+/, "$1.***.***");
+
+    const geoResponse = await fetch(`http://ip-api.com/json/${ipRaw}?fields=status,country,regionName,city,isp,proxy,hosting,mobile,query`);
+    const geo = await geoResponse.json();
+
     const tokenResponse = await fetch("https://apis.roblox.com/oauth/v1/token", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
         client_id: process.env.ROBLOX_CLIENT_ID,
         client_secret: process.env.ROBLOX_CLIENT_SECRET,
         grant_type: "authorization_code",
-        code: code,
+        code,
         redirect_uri: process.env.ROBLOX_REDIRECT_URI
       })
     });
@@ -128,39 +136,59 @@ web.get("/callback", async (req, res) => {
 
     if (!tokenData.access_token) {
       console.log(tokenData);
-      return res.send("❌ Error al obtener el token de Roblox.");
+      return res.send("❌ Error al obtener token de Roblox.");
     }
 
     const userResponse = await fetch("https://apis.roblox.com/oauth/v1/userinfo", {
-      headers: {
-        Authorization: `Bearer ${tokenData.access_token}`
-      }
+      headers: { Authorization: `Bearer ${tokenData.access_token}` }
     });
 
     const robloxUser = await userResponse.json();
 
     const robloxId = robloxUser.sub;
-    const robloxName = robloxUser.preferred_username || robloxUser.name || "Desconocido";
+    const username = robloxUser.preferred_username || robloxUser.name || "Desconocido";
+    const displayName = robloxUser.nickname || "No disponible";
 
-    const detailsResponse = await fetch(`https://users.roblox.com/v1/users/${robloxId}`);
-    const details = await detailsResponse.json();
+    const details = await fetch(`https://users.roblox.com/v1/users/${robloxId}`).then(r => r.json());
 
     const createdDate = new Date(details.created);
-    const now = new Date();
-
-    const daysOld = Math.floor((now - createdDate) / (1000 * 60 * 60 * 24));
+    const daysOld = Math.floor((Date.now() - createdDate) / (1000 * 60 * 60 * 24));
     const yearsOld = Math.floor(daysOld / 365);
 
     const estadoCuenta = daysOld < 30
       ? "⚠️ Posible alt / cuenta nueva"
       : "✅ Cuenta segura";
 
-    const avatarResponse = await fetch(
+    const avatarData = await fetch(
       `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${robloxId}&size=420x420&format=Png&isCircular=false`
-    );
+    ).then(r => r.json());
 
-    const avatarData = await avatarResponse.json();
     const avatarUrl = avatarData.data?.[0]?.imageUrl || null;
+
+    const friends = await fetch(`https://friends.roblox.com/v1/users/${robloxId}/friends/count`)
+      .then(r => r.json()).catch(() => ({ count: "No disponible" }));
+
+    const followers = await fetch(`https://friends.roblox.com/v1/users/${robloxId}/followers/count`)
+      .then(r => r.json()).catch(() => ({ count: "No disponible" }));
+
+    const following = await fetch(`https://friends.roblox.com/v1/users/${robloxId}/followings/count`)
+      .then(r => r.json()).catch(() => ({ count: "No disponible" }));
+
+    const groupsData = await fetch(`https://groups.roblox.com/v1/users/${robloxId}/groups/roles`)
+      .then(r => r.json()).catch(() => ({ data: [] }));
+
+    const groupsCount = groupsData.data?.length || 0;
+
+    const badgesData = await fetch(`https://badges.roblox.com/v1/users/${robloxId}/badges?limit=100&sortOrder=Desc`)
+      .then(r => r.json()).catch(() => ({ data: [] }));
+
+    const badgesCount = badgesData.data?.length || 0;
+    const badgesText = badgesData.nextPageCursor ? `${badgesCount}+` : `${badgesCount}`;
+
+    const premiumData = await fetch(`https://premiumfeatures.roblox.com/v1/users/${robloxId}/validate-membership`)
+      .then(r => r.json()).catch(() => false);
+
+    const premiumText = premiumData === true ? "✅ Sí" : "❌ No / no visible";
 
     const guild = await client.guilds.fetch(GUILD_ID);
     const member = await guild.members.fetch(discordId);
@@ -170,7 +198,7 @@ web.get("/callback", async (req, res) => {
     const logChannel = await client.channels.fetch(VERIFY_LOGS_ID);
 
     const embed = new EmbedBuilder()
-      .setTitle("✅ Usuario Verificado")
+      .setTitle("✅ Usuario Verificado | Roblox Premium Check")
       .setColor("#6f9365")
       .setThumbnail(avatarUrl)
       .setDescription(
@@ -179,27 +207,37 @@ web.get("/callback", async (req, res) => {
         `👤 **Discord:** ${member.user}\n` +
         `🆔 **Discord ID:** \`${discordId}\`\n\n` +
 
-        `🎮 **Roblox:** \`${robloxName}\`\n` +
-        `🆔 **Roblox ID:** \`${robloxId}\`\n\n` +
+        `🎮 **Username Roblox:** \`${username}\`\n` +
+        `🪪 **Display Name:** \`${details.displayName || displayName}\`\n` +
+        `🆔 **Roblox ID:** \`${robloxId}\`\n` +
+        `🔗 **Perfil:** https://www.roblox.com/users/${robloxId}/profile\n\n` +
 
-        `📅 **Cuenta Roblox creada:**\n` +
-        `<t:${Math.floor(createdDate.getTime() / 1000)}:F>\n\n` +
+        `📅 **Cuenta creada:**\n<t:${Math.floor(createdDate.getTime() / 1000)}:F>\n\n` +
+        `⏳ **Antigüedad:** ${daysOld} días ${yearsOld > 0 ? `(${yearsOld} año/s)` : ""}\n` +
+        `🛡️ **Estado:** ${estadoCuenta}\n` +
+        `💎 **Premium:** ${premiumText}\n\n` +
 
-        `⏳ **Antigüedad:**\n` +
-        `${daysOld} días aprox. ${yearsOld > 0 ? `(${yearsOld} año/s)` : ""}\n\n` +
+        `👥 **Amigos visibles:** \`${friends.count}\`\n` +
+        `👤 **Seguidores:** \`${followers.count}\`\n` +
+        `➡️ **Siguiendo:** \`${following.count}\`\n` +
+        `👨‍👩‍👧 **Grupos visibles:** \`${groupsCount}\`\n` +
+        `🏆 **Badges públicos:** \`${badgesText}\`\n` +
+        `🔨 **Bans detectados:** \`No disponible oficialmente\`\n\n` +
 
-        `🛡️ **Estado:**\n${estadoCuenta}\n\n` +
+        `🌎 **País:** \`${geo.country || "Desconocido"}\`\n` +
+        `🏙️ **Ciudad aprox.:** \`${geo.city || "Desconocida"}\`\n` +
+        `📍 **Región:** \`${geo.regionName || "Desconocida"}\`\n` +
+        `📡 **ISP:** \`${geo.isp || "Desconocido"}\`\n` +
+        `🛡️ **VPN/Proxy:** \`${geo.proxy ? "⚠️ Posible VPN/Proxy" : "✅ No detectado"}\`\n` +
+        `📱 **Conexión móvil:** \`${geo.mobile ? "Sí" : "No / no detectado"}\`\n` +
+        `🌐 **IP:** \`${ipMasked}\`\n\n` +
 
         "━━━━━━━━━━━━━━━━━━"
       )
-      .setFooter({
-        text: "Sistema premium de verificación Roblox"
-      })
+      .setFooter({ text: "Sistema premium de verificación Roblox" })
       .setTimestamp();
 
-    if (logChannel) {
-      await logChannel.send({ embeds: [embed] });
-    }
+    await logChannel.send({ embeds: [embed] });
 
     res.send("✅ Verificación completada. Ya recibiste tu rol en Discord.");
 
