@@ -503,16 +503,21 @@ if (interaction.commandName === "ticketpanel") {
 
     );
 
-  return interaction.reply({
-    embeds: [embed],
-    components: [botones]
-  });
-   
-  // =====================================================
-  // BOTONES
-  // =====================================================
+ return interaction.reply({
+  embeds: [embed],
+  components: [botones]
+});
+
 }
-  if (interaction.isButton()) {
+
+
+}
+
+// =====================================================
+// BOTONES
+// =====================================================
+
+if (interaction.isButton()) {
 
     // VERIFY BUTTON
 if (interaction.customId === "verify") {
@@ -525,14 +530,15 @@ if (interaction.customId === "verify") {
     )
     .setColor("#ff0000");
 
-  const boton = new ActionRowBuilder()
-    .addComponents(
-      new ButtonBuilder()
-        .setLabel("Open Verify Dashboard")
-        .setStyle(ButtonStyle.Link)
-        .setURL(`https://verify-z2au.onrender.com/roblox?discord_id=${interaction.user.id}`)
+  const verifyUrl = "https://verify-z2au.onrender.com/roblox?discord_id=" + interaction.user.id;
 
-    );
+const boton = new ActionRowBuilder()
+  .addComponents(
+    new ButtonBuilder()
+      .setLabel("Open Verify Dashboard")
+      .setStyle(ButtonStyle.Link)
+      .setURL(verifyUrl)
+  );
 
   return interaction.reply({
     embeds: [embed],
