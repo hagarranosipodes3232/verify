@@ -357,15 +357,18 @@ new Chart(document.getElementById("deviceChart"), {
     }]
   }
 });
-
-</script>
 </body>
 
 </html>
 
   `);
 
-});
+} catch (error) {
+  console.log(error);
+  res.send("Error cargando panel");
+}
+
+}
 // ROBLOX OAUTH
 
 web.get("/roblox", (req, res) => {
