@@ -192,6 +192,10 @@ const nitros = usersStats.filter(u =>
 
         <h3>${user.discord}</h3>
 
+<p class="status" id="status-${user.discordId}">
+⚫ Estado: cargando...
+</p>
+
         <p>🆔 ${user.discordId}</p>
         <p>🌎 ${user.pais}</p>
         <p>📍 ${user.region}</p>
@@ -386,6 +390,26 @@ search.addEventListener("input", () => {
   });
 
 });
+async function cargarEstados() {
+
+  const res = await fetch("/api/status");
+
+  const estados = await res.json();
+
+  for (const id in estados) {
+
+    const el =
+      document.getElementById("status-" + id);
+
+    if (el) {
+      el.innerHTML = estados[id];
+    }
+  }
+}
+
+cargarEstados();
+
+setInterval(cargarEstados, 10000);
 
 </script>
 <div id="dmModal" class="modal">
@@ -459,7 +483,52 @@ web.get("/admin/kick/:id", async (req, res) => {
     res.send("❌ No pude expulsar al usuario.");
   }
 });
+web.get("/api/status", async (req, res) => {
 
+  const users = await VerifiedUser.find();
+
+  const guild =
+    await client.guilds.fetch(GUILD_ID);
+
+  const estados = {};
+
+  for (const user of users) {
+
+    const member =
+      await guild.members
+      .fetch(user.discordId)
+      .catch(() => null);
+
+    if (!member) {
+
+      estados[user.discordId] =
+      "❌ Ya no está";
+
+      continue;
+    }
+
+    const estado =
+      member.presence?.status || "offline";
+
+    if (estado === "online")
+      estados[user.discordId] =
+      "🟢 Estado: Online";
+
+    else if (estado === "idle")
+      estados[user.discordId] =
+      "🌙 Estado: Ausente";
+
+    else if (estado === "dnd")
+      estados[user.discordId] =
+      "⛔ Estado: No molestar";
+
+    else
+      estados[user.discordId] =
+      "⚫ Estado: Offline";
+  }
+
+  res.json(estados);
+});
 // ROBLOX OAUTH
 
 web.get("/roblox", (req, res) => {
@@ -683,6 +752,8 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent
+    GatewayIntentBits.GuildPresences,
+
   ]
 });
 
