@@ -504,6 +504,15 @@ function saveVerifiedUsers(data) {
 
 const commands = [
 new SlashCommandBuilder()
+  .setName("scan")
+  .setDescription("Escanear riesgo de un usuario")
+  .addUserOption(option =>
+    option
+      .setName("usuario")
+      .setDescription("Usuario a escanear")
+      .setRequired(true)
+  ),
+new SlashCommandBuilder()
   .setName("roblox")
   .setDescription("Buscar información de una cuenta Roblox")
   .addStringOption(option =>
@@ -584,6 +593,94 @@ client.on("interactionCreate", async interaction => {
   // =====================================================
 
   if (interaction.isChatInputCommand()) {
+if (interaction.commandName === "scan") {
+
+  const usuario = interaction.options.getUser("usuario");
+  const miembro = interaction.guild.members.cache.get(usuario.id);
+
+  const verifiedUsers = loadVerifiedUsers();
+  const data = verifiedUsers[usuario.id];
+
+  const diasDiscord = Math.floor(
+    (Date.now() - usuario.createdTimestamp) / (1000 * 60 * 60 * 24)
+  );
+
+  let puntosRiesgo = 0;
+  let motivos = [];
+
+  if (diasDiscord < 7) {
+    puntosRiesgo += 2;
+    motivos.push("⚠️ Cuenta de Discord muy nueva");
+  }
+
+  if (diasDiscord < 30) {
+    puntosRiesgo += 1;
+    motivos.push("⚠️ Cuenta de Discord reciente");
+  }
+
+  if (!data) {
+    puntosRiesgo += 3;
+    motivos.push("❌ Usuario no verificado");
+  }
+
+  if (data?.vpn?.includes("Detectado")) {
+    puntosRiesgo += 3;
+    motivos.push("🛡️ VPN/Proxy detectado");
+  }
+
+  if (data?.sospechosa?.includes("Posible")) {
+    puntosRiesgo += 2;
+    motivos.push("⚠️ Cuenta marcada como sospechosa");
+  }
+
+  if (usuario.bot) {
+    puntosRiesgo += 1;
+    motivos.push("🤖 Es un bot");
+  }
+
+  let riesgo = "🟢 Riesgo bajo";
+  let color = "Green";
+
+  if (puntosRiesgo >= 3) {
+    riesgo = "🟠 Riesgo medio";
+    color = "Orange";
+  }
+
+  if (puntosRiesgo >= 6) {
+    riesgo = "🔴 Riesgo alto";
+    color = "Red";
+  }
+
+  const embed = new EmbedBuilder()
+    .setTitle("🛡️ Escaneo de Usuario")
+    .setColor(color)
+    .setThumbnail(usuario.displayAvatarURL({ dynamic: true }))
+    .setDescription(
+      `👤 Usuario: ${usuario}\n` +
+      `🆔 Discord ID: \`${usuario.id}\`\n\n` +
+
+      `📅 Cuenta creada:\n<t:${Math.floor(usuario.createdTimestamp / 1000)}:F>\n` +
+      `📥 Entró al servidor:\n<t:${Math.floor(miembro.joinedTimestamp / 1000)}:F>\n\n` +
+
+      `📡 Verificado: ${data ? "✅ Sí" : "❌ No"}\n` +
+      `🌎 País: ${data?.pais || "No disponible"}\n` +
+      `📍 Región: ${data?.region || "No disponible"}\n` +
+      `🏙️ Ciudad: ${data?.ciudad || "No disponible"}\n` +
+      `📡 ISP: ${data?.isp || "No disponible"}\n` +
+      `💻 Dispositivo: ${data?.dispositivo || "No disponible"}\n` +
+      `🔒 VPN/Proxy: ${data?.vpn || "No disponible"}\n\n` +
+
+      `🚨 Resultado: **${riesgo}**\n\n` +
+      `📌 Motivos:\n${motivos.length ? motivos.join("\n") : "✅ Sin alertas importantes"}`
+    )
+    .setFooter({ text: "Sistema de escaneo premium" })
+    .setTimestamp();
+
+  return interaction.reply({
+    embeds: [embed]
+  });
+
+}
 if (interaction.commandName === "roblox") {
 
   await interaction.deferReply();
