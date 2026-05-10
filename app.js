@@ -350,9 +350,9 @@ async function sendDM() {
   const message =
     document.getElementById("dmMessage").value;
 
-  await fetch(
-    `/admin/dm/${selectedUser}?key=${process.env.ADMIN_KEY}`,
-    {
+await fetch(
+  "/admin/dm/" + selectedUser + "?key=${process.env.ADMIN_KEY}",
+      {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
