@@ -804,16 +804,31 @@ if (interaction.commandName === "ban") {
 const canalLogs = interaction.guild.channels.cache.get("1502583332699897856");
 
 if (canalLogs) {
-  await canalLogs.send({
-    content:
-`🔨 **Usuario baneado**
-👤 Usuario: ${usuario.tag}
-🆔 ID: ${usuario.id}
-📝 Razón: ${razon}
-👮 Moderador: ${interaction.user.tag}`
-  });
-}
 
+const embed = new EmbedBuilder()
+
+.setTitle("🔨 Usuario Baneado")
+
+.setColor("DarkRed")
+
+.setThumbnail(usuario.displayAvatarURL({ dynamic: true }))
+
+.setDescription(
+
+`👤 **Usuario:** ${usuario}\n` +
+`🆔 **ID:** \`${usuario.id}\`\n` +
+`📝 **Razón:** ${razon}\n` +
+`👮 **Moderador:** ${interaction.user}`
+
+)
+
+.setTimestamp();
+
+await canalLogs.send({
+  embeds: [embed]
+});
+
+}
  return interaction.reply({
   content: `🔨 ${usuario.tag} fue baneado.\nRazón: ${razon}`
 });
