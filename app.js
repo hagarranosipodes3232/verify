@@ -220,6 +220,41 @@ web.get("/", (req, res) => {
   50%{ opacity:.25; }
   100%{ opacity:1; }
 }
+.top-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+  width:100%;
+}
+
+.system-clock{
+  margin-left:auto;
+  text-align:right;
+  background:#151821;
+  padding:12px 16px;
+  border-radius:12px;
+  border:1px solid rgba(34,197,94,.35);
+  box-shadow:0 0 18px rgba(34,197,94,.18);
+  font-size:14px;
+}
+
+.bot-active{
+  margin-top:6px;
+  color:#22c55e;
+  font-weight:bold;
+  letter-spacing:1px;
+}
+
+.pulse-dot{
+  animation: blinkSlow 1.8s infinite;
+}
+
+@keyframes blinkSlow{
+  0%{ opacity:1; }
+  50%{ opacity:.25; }
+  100%{ opacity:1; }
+}
 #globalMap {
   height: 420px;
   width: 100%;
