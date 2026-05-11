@@ -159,6 +159,36 @@ web.get("/", (req, res) => {
   overflow: hidden;
   box-shadow: 0 0 25px rgba(123,92,255,0.25);
 }
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+  background: #111827;
+  padding: 20px;
+  width: 400px;
+  margin: 10% auto;
+  border-radius: 12px;
+  color: white;
+}
+
+.modal textarea {
+  width: 100%;
+  height: 120px;
+  margin-top: 10px;
+  background: #0f172a;
+  color: white;
+  border: 1px solid #7c3aed;
+  border-radius: 8px;
+  padding: 10px;
+}
   </style>
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet/dist/leaflet.css"/>
