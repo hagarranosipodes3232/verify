@@ -189,6 +189,25 @@ web.get("/", (req, res) => {
   border-radius: 8px;
   padding: 10px;
 }
+.glow{
+  animation: glowPulse 3s infinite;
+}
+
+@keyframes glowPulse{
+
+  0%{
+    box-shadow:0 0 10px rgba(123,92,255,.15);
+  }
+
+  50%{
+    box-shadow:0 0 25px rgba(123,92,255,.35);
+  }
+
+  100%{
+    box-shadow:0 0 10px rgba(123,92,255,.15);
+  }
+
+}
   </style>
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -271,7 +290,24 @@ const nitros = usersStats.filter(u =>
 
       <div class="card" data-search="${searchData}">
 
-        <h3>${user.discord}</h3>
+       <div class="user-header">
+
+<img
+class="avatar"
+src="https://cdn.discordapp.com/embed/avatars/0.png"
+>
+
+<div>
+
+<h3>${user.discord}</h3>
+
+<p class="mini-id">
+${user.discordId}
+</p>
+
+</div>
+
+</div>
 
 <p class="status" id="status-${user.discordId}">
 ⚫ Estado: cargando...
@@ -375,6 +411,26 @@ body {
 h3 {
   margin-top: 0;
 }
+.user-header{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:15px;
+}
+
+.avatar{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  border:2px solid #7b5cff;
+  object-fit:cover;
+}
+
+.mini-id{
+  font-size:12px;
+  color:#9ca3af;
+  margin-top:-8px;
+}
 .btn-action, .btn-danger {
   display: inline-block;
   margin-top: 10px;
@@ -450,7 +506,7 @@ h3 {
 📡 Panel MVS
 </div>
 
-<div class="stats">
+<div class="stats glow">
 
 👥 Total: ${total}<br>
 📱 Móvil: ${moviles}<br>
@@ -736,9 +792,17 @@ web.get("/api/status", async (req, res) => {
 
       if (actividad.type === 2) {
 
-        texto +=
-        `🎵 Escuchando Spotify<br>`;
+      const spotify = presence.activities.find(
+  a => a.name === "Spotify"
+);
 
+if (spotify) {
+
+  texto +=
+  `🎵 ${spotify.details}<br>` +
+  `👤 ${spotify.state}<br>`;
+
+}
       } else {
 
         texto +=
