@@ -28,6 +28,33 @@ const verifiedUserSchema = new mongoose.Schema({
 
 const VerifiedUser = mongoose.model("VerifiedUser", verifiedUserSchema);
 
+web.post("/api/verify", async (req, res) => {
+  try {
+    const nuevoUsuario = new VerifiedUser(req.body);
+    await nuevoUsuario.save();
+
+    res.json({
+      ok: true,
+      mensaje: "Usuario guardado correctamente",
+      usuario: nuevoUsuario
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: error.message
+    });
+  }
+});
+
+web.get("/debug-users", async (req, res) => {
+  try {
+    const users = await VerifiedUser.find().sort({ _id: -1 }).limit(20);
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // PAGINA PRINCIPAL
 
 web.get("/", (req, res) => {
@@ -2455,4 +2482,4 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
   });
 
 });
-client.login(process.env.TOKEN);
+client.login(process.env.TOKEN)
