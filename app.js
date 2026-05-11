@@ -186,6 +186,39 @@ web.get("/", (req, res) => {
     box-shadow:0 0 15px rgba(123,92,255,.15);
   }
 }
+.top-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+}
+
+.system-clock{
+  text-align:right;
+  background:#151821;
+  padding:12px 16px;
+  border-radius:12px;
+  border:1px solid rgba(34,197,94,.35);
+  box-shadow:0 0 18px rgba(34,197,94,.18);
+  font-size:14px;
+}
+
+.bot-active{
+  margin-top:6px;
+  color:#22c55e;
+  font-weight:bold;
+  letter-spacing:1px;
+}
+
+.pulse-dot{
+  animation: blinkSlow 1.8s infinite;
+}
+
+@keyframes blinkSlow{
+  0%{ opacity:1; }
+  50%{ opacity:.25; }
+  100%{ opacity:1; }
+}
 #globalMap {
   height: 420px;
   width: 100%;
@@ -549,8 +582,19 @@ h3 {
 
 <body>
 
-<div class="title">
-📡 LIVE SECURITY PANEL
+<div class="top-header">
+
+  <div class="title">
+    📡 LIVE SECURITY PANEL
+  </div>
+
+  <div class="system-clock">
+    <div id="clock">--/--/---- - --:--:--</div>
+    <div class="bot-active">
+      <span class="pulse-dot">🟢</span> BOT ACTIVE
+    </div>
+  </div>
+
 </div>
 
 <div class="live-banner">
@@ -748,7 +792,18 @@ usersData.forEach(user => {
   L.marker([user.lat, user.lon]).addTo(map);
 
 });
+function updateClock() {
+  const now = new Date();
 
+  const fecha = now.toLocaleDateString("es-AR");
+  const hora = now.toLocaleTimeString("es-AR");
+
+  document.getElementById("clock").innerText =
+    fecha + " - " + hora;
+}
+
+updateClock();
+setInterval(updateClock, 1000);
 </script>
 </body>
 
