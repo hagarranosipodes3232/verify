@@ -149,6 +149,43 @@ web.get("/", (req, res) => {
   line-height:1.7;
   color:#d1d5db;
 }
+.live-banner{
+  width:100%;
+  padding:35px;
+  margin-top:20px;
+  margin-bottom:20px;
+  border-radius:20px;
+  background:linear-gradient(135deg, rgba(123,92,255,.15), rgba(0,0,0,.2));
+  border:1px solid rgba(123,92,255,.35);
+  text-align:center;
+  animation:pulseGlow 3s infinite;
+}
+
+.live-banner h1{
+  font-size:42px;
+  color:white;
+  margin:0;
+  letter-spacing:3px;
+}
+
+.live-banner p{
+  color:#a78bfa;
+  margin-top:10px;
+}
+
+@keyframes pulseGlow{
+  0%{
+    box-shadow:0 0 15px rgba(123,92,255,.15);
+  }
+
+  50%{
+    box-shadow:0 0 35px rgba(123,92,255,.35);
+  }
+
+  100%{
+    box-shadow:0 0 15px rgba(123,92,255,.15);
+  }
+}
 #globalMap {
   height: 420px;
   width: 100%;
@@ -513,7 +550,12 @@ h3 {
 <body>
 
 <div class="title">
-📡 Panel MVS
+📡 LIVE SECURITY PANEL
+</div>
+
+<div class="live-banner">
+  <h1>LIVE SECURITY PANEL</h1>
+  <p>REALTIME USER TRACKING SYSTEM</p>
 </div>
 
 <div class="stats glow">
