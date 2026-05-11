@@ -942,7 +942,7 @@ console.log("📊 Total guardados:", totalGuardados);
 // WEB ONLINE
 
 web.listen(process.env.PORT || 3000, () => {
-  console.log("🌐 Web online");
+  console.log("🌐 Web online 🚀");
 });
 const {
   Client,
