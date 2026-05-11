@@ -439,6 +439,30 @@ href="/export/csv?key=${process.env.ADMIN_KEY}">
 ${usersHtml}
 
 </div>
+<div id="dmModal" class="modal">
+
+  <div class="modal-content">
+
+    <h2>📩 Enviar mensaje privado</h2>
+
+    <textarea
+      id="dmMessage"
+      placeholder="Escribí el mensaje..."
+    ></textarea>
+
+    <br><br>
+
+    <button onclick="sendDM()">
+      Enviar
+    </button>
+
+    <button onclick="closeDM()">
+      Cancelar
+    </button>
+
+  </div>
+
+</div>
 <script>
 let selectedUser = "";
 
@@ -557,26 +581,6 @@ usersData.forEach(user => {
 });
 
 </script>
-<div id="dmModal" class="modal">
-
-  <div class="modal-content">
-
-    <h2>📩 Enviar mensaje privado</h2>
-
-    <textarea id="dmMessage"
-    placeholder="Escribí el mensaje..."></textarea>
-
-    <button onclick="sendDM()">
-      Enviar
-    </button>
-
-    <button onclick="closeDM()">
-      Cancelar
-    </button>
-
-  </div>
-
-</div>
 </body>
 
 </html>
