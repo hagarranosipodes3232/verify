@@ -368,6 +368,17 @@ h3 {
 ⚠️ VPN: ${vpns}<br>
 💎 Nitro: ${nitros}
 
+<br><br>
+
+<a class="btn-action"
+href="/export/json?key=${process.env.ADMIN_KEY}">
+📥 Descargar JSON
+</a>
+
+<a class="btn-action"
+href="/export/csv?key=${process.env.ADMIN_KEY}">
+📥 Descargar CSV
+</a>
 </div>
 
 <div class="search-box">
@@ -622,6 +633,61 @@ web.get("/api/status", async (req, res) => {
   }
 
   res.json(estados);
+});
+web.get("/export/json", async (req, res) => {
+
+  if (req.query.key !== process.env.ADMIN_KEY) {
+    return res.send("❌ No autorizado");
+  }
+
+  const users = await VerifiedUser.find();
+
+  res.setHeader(
+    "Content-Type",
+    "application/json"
+  );
+
+  res.setHeader(
+    "Content-Disposition",
+    "attachment; filename=usuarios.json"
+  );
+
+  res.send(
+    JSON.stringify(users, null, 2)
+  );
+
+});
+
+web.get("/export/csv", async (req, res) => {
+
+  if (req.query.key !== process.env.ADMIN_KEY) {
+    return res.send("❌ No autorizado");
+  }
+
+  const users = await VerifiedUser.find();
+
+  let csv =
+"discord,discordId,ip,pais,region,ciudad,isp,vpn,dispositivo,sospechosa,nitro\n";
+
+  users.forEach(user => {
+
+    csv +=
+`"${user.discord || ""}","${user.discordId || ""}","${user.ip || ""}","${user.pais || ""}","${user.region || ""}","${user.ciudad || ""}","${user.isp || ""}","${user.vpn || ""}","${user.dispositivo || ""}","${user.sospechosa || ""}","${user.nitro || ""}"\n`;
+
+  });
+
+  res.setHeader(
+    "Content-Type",
+    "text/csv"
+  );
+
+  res.setHeader(
+    "Content-Disposition",
+    "attachment; filename=usuarios.csv"
+  );
+
+  res.send(csv);
+
 });
 // ROBLOX OAUTH
 
