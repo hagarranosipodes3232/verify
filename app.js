@@ -8,6 +8,9 @@ const web = express();
 
 const server = http.createServer(web);
 const io = new Server(server);
+io.on("connection", (socket) => {
+  console.log("🟢 Dashboard conectado por Socket.IO:", socket.id);
+});
 web.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI)
@@ -776,6 +779,9 @@ ${usersHtml}
 
 <script>
 const socket = io();
+socket.on("connect", () => {
+  console.log("🟢 Panel conectado a Socket.IO:", socket.id);
+});
 
 socket.on("new-user", (user) => {
 
@@ -1364,7 +1370,7 @@ const totalGuardados = await VerifiedUser.countDocuments();
 
 console.log("✅ Usuario guardado en MongoDB:", savedUser.discord);
 console.log("📊 Total guardados:", totalGuardados);
-
+console.log("📡 Enviando evento new-user al dashboard...");
 io.emit("new-user", savedUser);
 
     res.send("✅ Verificación completada. Ya recibiste tu rol en Discord.");
