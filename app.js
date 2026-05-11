@@ -712,11 +712,10 @@ socket.on("new-user", (user) => {
 
   const aviso = document.createElement("div");
 
-  aviso.innerHTML = `
-    <b>🟢 NUEVO VERIFICADO</b><br>
-    👤 ${user.discord || "Usuario"}<br>
-    🌎 ${user.pais || "Desconocido"} - ${user.ciudad || "Desconocida"}
-  `;
+aviso.innerHTML =
+  "<b>🟢 NUEVO VERIFICADO</b><br>" +
+  "👤 " + (user.discord || "Usuario") + "<br>" +
+  "🌎 " + (user.pais || "Desconocido") + " - " + (user.ciudad || "Desconocida");
 
   aviso.style.position = "fixed";
   aviso.style.top = "25px";
