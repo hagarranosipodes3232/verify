@@ -115,6 +115,12 @@ web.get("/", (req, res) => {
   border-radius: 8px;
   padding: 10px;
 }
+.status{
+  margin-top:10px;
+  font-size:14px;
+  line-height:1.7;
+  color:#d1d5db;
+}
   </style>
 
 </head>
@@ -507,24 +513,51 @@ web.get("/api/status", async (req, res) => {
       continue;
     }
 
-    const estado =
-      member.presence?.status || "offline";
+    const presence = member.presence;
 
-    if (estado === "online")
-      estados[user.discordId] =
-      "🟢 Estado: Online";
+    if (!presence) {
 
-    else if (estado === "idle")
       estados[user.discordId] =
-      "🌙 Estado: Ausente";
+      "⚫ Offline";
 
-    else if (estado === "dnd")
-      estados[user.discordId] =
-      "⛔ Estado: No molestar";
+      continue;
+    }
+
+    let texto = "";
+
+    if (presence.status === "online")
+      texto += "🟢 Online<br>";
+
+    else if (presence.status === "idle")
+      texto += "🌙 Ausente<br>";
+
+    else if (presence.status === "dnd")
+      texto += "⛔ No molestar<br>";
 
     else
-      estados[user.discordId] =
-      "⚫ Estado: Offline";
+      texto += "⚫ Offline<br>";
+
+    const actividad = presence.activities[0];
+
+    if (actividad) {
+
+      if (actividad.type === 2) {
+
+        texto +=
+        `🎵 Escuchando Spotify<br>`;
+
+      } else {
+
+        texto +=
+        `🎮 ${actividad.name}<br>`;
+      }
+    }
+
+    texto +=
+    `🕒 Última vez visto:
+    ${new Date().toLocaleTimeString()}`;
+
+    estados[user.discordId] = texto;
   }
 
   res.json(estados);
