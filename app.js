@@ -191,9 +191,10 @@ web.get("/", (req, res) => {
   justify-content:space-between;
   align-items:flex-start;
   gap:20px;
+  width:100%;
 }
-
 .system-clock{
+  margin-left:auto;
   text-align:right;
   background:#151821;
   padding:12px 16px;
