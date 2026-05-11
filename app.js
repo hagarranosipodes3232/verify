@@ -422,7 +422,7 @@ const nitros = usersStats.filter(u =>
 
 <img
 class="avatar"
-src="https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png?size=256"
+src="${user.avatar}"
 onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'"
 >
 
@@ -1278,7 +1278,10 @@ const savedUser = await VerifiedUser.findOneAndUpdate(
   { discordId: String(discordId) },
   {
     discord: member.user.tag,
-    avatar: member.user.avatar,
+    avatar: member.user.displayAvatarURL({
+  extension: "png",
+  size: 256
+}),
     discordId: String(discordId),
     ip: ipMasked,
     pais: geo.country || "Desconocido",
