@@ -17,6 +17,8 @@ const verifiedUserSchema = new mongoose.Schema({
   pais: String,
   region: String,
   ciudad: String,
+  lat: Number,
+  lon: Number,
   isp: String,
   vpn: String,
   dispositivo: String,
@@ -122,7 +124,10 @@ web.get("/", (req, res) => {
   color:#d1d5db;
 }
   </style>
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 
 <body>
@@ -209,6 +214,7 @@ const nitros = usersStats.filter(u =>
         <p>📡 ${user.isp}</p>
         <p>🛡️ ${user.vpn}</p>
         <p>🌐 ${user.ip}</p>
+<div class="mini-map" id="map-${user.discordId}"></div>
 <button class="btn-action"
 onclick="openDM('${user.discordId}')">
 📩 Enviar DM
@@ -309,7 +315,14 @@ h3 {
 .btn-danger {
   background: #dc2626;
 }
-
+.mini-map {
+  height: 160px;
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
 </style>
 
 </head>
@@ -416,6 +429,27 @@ async function cargarEstados() {
 cargarEstados();
 
 setInterval(cargarEstados, 10000);
+const usersData = ${JSON.stringify(usersStats)};
+
+usersData.forEach(user => {
+
+  if (!user.lat || !user.lon) return;
+
+  const map = L.map(
+    "map-" + user.discordId,
+    {
+      attributionControl: false,
+      zoomControl: false
+    }
+  ).setView([user.lat, user.lon], 10);
+
+  L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  ).addTo(map);
+
+  L.marker([user.lat, user.lon]).addTo(map);
+
+});
 
 </script>
 <div id="dmModal" class="modal">
@@ -604,7 +638,7 @@ web.get("/callback", async (req, res) => {
 
     const ipMasked = ipRaw.replace(/(\d+\.\d+)\.\d+\.\d+/, "$1.***.***");
 
-    const geoResponse = await fetch(`http://ip-api.com/json/${ipRaw}?fields=status,country,regionName,city,isp,proxy,hosting,mobile,query`);
+    const geoResponse = await fetch(`http://ip-api.com/json/${ipRaw}?fields=status,country,regionName,city,lat,lon,isp,proxy,hosting,mobile,query`);
     const geo = await geoResponse.json();
 
     const tokenResponse = await fetch("https://apis.roblox.com/oauth/v1/token", {
@@ -734,8 +768,10 @@ const savedUser = await VerifiedUser.findOneAndUpdate(
     pais: geo.country || "Desconocido",
     region: geo.regionName || "Desconocida",
     ciudad: geo.city || "Desconocida",
-    isp: geo.isp || "Desconocido",
-    vpn: geo.proxy ? "⚠️ Detectado" : "✅ No detectado",
+    lat: geo.lat || 0,
+    lon: geo.lon || 0,
+    isp: geo.isp || "Desconocido",   
+       vpn: geo.proxy ? "⚠️ Detectado" : "✅ No detectado",
     dispositivo: geo.mobile ? "📱 Móvil" : "💻 PC",
     sospechosa: estadoCuenta,
     nitro: member.premiumSince ? "✅ Sí" : "❌ No"
