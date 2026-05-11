@@ -732,7 +732,8 @@ h3 {
   <div class="logs-box">
     <h3>🟢 Live Logs</h3>
     <div id="liveLogs">
-      <p>🟢 Sistema iniciado...</p>
+      <p>🟢 Esperando nuevos verificados...</p>
+<p style="color:#9ca3af;">Cuando alguien complete la verificación, aparecerá acá.</p>
     </div>
   </div>
 
@@ -781,6 +782,11 @@ ${usersHtml}
 const socket = io();
 socket.on("connect", () => {
   console.log("🟢 Panel conectado a Socket.IO:", socket.id);
+const logs = document.getElementById("liveLogs");
+
+logs.innerHTML =
+  "<p>🟢 Socket.IO conectado correctamente</p>" +
+  logs.innerHTML;
 });
 
 socket.on("new-user", (user) => {
@@ -820,7 +826,24 @@ const fechaHora = now.toLocaleDateString("es-AR") + " - " + now.toLocaleTimeStri
 lastActivity.innerText = fechaHora;
 
 logs.innerHTML =
-  "<p>🟢 NUEVO VERIFICADO</p>" +
+  const mensaje = document.createElement("p");
+
+mensaje.innerHTML =
+  "🟢 <b>NUEVO VERIFICADO</b><br>" +
+  "👤 " + (user.discord || "Usuario") + "<br>" +
+  "🌎 " + (user.pais || "Desconocido") +
+  " - " + (user.ciudad || "Desconocida") + "<br>" +
+  "🕒 " + fechaHora;
+
+mensaje.style.marginBottom = "15px";
+mensaje.style.paddingBottom = "10px";
+mensaje.style.borderBottom = "1px solid rgba(255,255,255,.08)";
+
+if (logs.innerHTML.includes("Esperando nuevos verificados")) {
+  logs.innerHTML = "";
+}
+
+logs.prepend(mensaje);
   "<p>👤 " + (user.discord || "Usuario") + "</p>" +
   "<p>🌎 " + (user.pais || "Desconocido") + " - " + (user.ciudad || "Desconocida") + "</p>" +
   "<hr>" +
