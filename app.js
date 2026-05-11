@@ -388,11 +388,10 @@ h3 {
 
 <br><br>
 
-<a class="btn-action"
-href="/export/json?key=${process.env.ADMIN_KEY}">
-📥 Descargar JSON
-</a>
-
+<button class="btn-action"
+onclick="openDM('${user.discordId}')">
+📩 Enviar DM
+</button>
 <a class="btn-action"
 href="/export/csv?key=${process.env.ADMIN_KEY}">
 📥 Descargar CSV
