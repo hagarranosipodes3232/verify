@@ -624,24 +624,9 @@ search.addEventListener("input", () => {
   });
 
 });
-setInterval(() => {
+cargarEstados();
 
-  fetch(window.location.href)
-    .then(r => r.text())
-    .then(html => {
-
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, "text/html");
-
-      const nuevosUsuarios =
-        doc.getElementById("users").innerHTML;
-
-      document.getElementById("users").innerHTML =
-        nuevosUsuarios;
-
-    });
-
-}, 10000);
+setInterval(cargarEstados, 10000);
 async function cargarEstados() {
 
   const res = await fetch("/api/status");
@@ -671,12 +656,9 @@ if (el) {
 
   }
     
+ }
+
 }
-
-cargarEstados();
-
-setInterval(cargarEstados, 10000);
-
 const mapUsers = ${JSON.stringify(usersStats)};
 console.log("Leaflet:", typeof L);
 console.log("Usuarios mapa:", mapUsers);
