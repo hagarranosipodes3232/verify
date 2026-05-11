@@ -591,6 +591,9 @@ web.get("/admin/kick/:id", async (req, res) => {
     const member = await guild.members.fetch(req.params.id);
 
     await member.kick("Expulsado desde el dashboard");
+await VerifiedUser.deleteOne({
+  discordId: req.params.id
+});
 
     res.send("✅ Usuario expulsado del servidor.");
   } catch (error) {
