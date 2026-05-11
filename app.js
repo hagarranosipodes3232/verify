@@ -78,8 +78,7 @@ web.get("/", (req, res) => {
       align-items: center;
     }
 
-    .card {
-      width: 500px;
+       width: 500px;
       background: #24262b;
       border-radius: 18px;
       text-align: center;
@@ -401,14 +400,24 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
-
 .card {
   background: #1b1e24;
   border-left: 5px solid #7b5cff;
   padding: 20px;
   border-radius: 15px;
+
+  transition: 0.25s;
+  cursor: pointer;
 }
 
+.card:hover{
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(123,92,255,.35);
+}
+.online-user{
+  border-left: 5px solid #22c55e !important;
+  box-shadow: 0 0 25px rgba(34,197,94,.35);
+}
 h3 {
   margin-top: 0;
 }
@@ -615,6 +624,24 @@ search.addEventListener("input", () => {
   });
 
 });
+setInterval(() => {
+
+  fetch(window.location.href)
+    .then(r => r.text())
+    .then(html => {
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+
+      const nuevosUsuarios =
+        doc.getElementById("users").innerHTML;
+
+      document.getElementById("users").innerHTML =
+        nuevosUsuarios;
+
+    });
+
+}, 10000);
 async function cargarEstados() {
 
   const res = await fetch("/api/status");
@@ -625,11 +652,25 @@ async function cargarEstados() {
 
     const el =
       document.getElementById("status-" + id);
+if (el) {
 
-    if (el) {
-      el.innerHTML = estados[id];
-    }
+  el.innerHTML = estados[id];
+
+  const card =
+    el.closest(".card");
+
+  if (estados[id].includes("🟢")) {
+
+    card.classList.add("online-user");
+
+  } else {
+
+    card.classList.remove("online-user");
+
+   }
+
   }
+    
 }
 
 cargarEstados();
