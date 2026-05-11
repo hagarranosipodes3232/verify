@@ -635,6 +635,37 @@ h3 {
   overflow: hidden;
   box-shadow: 0 0 25px rgba(123,92,255,0.25);
 }
+.top-panels{
+  display:grid;
+  grid-template-columns: 320px 1fr 1fr;
+  gap:20px;
+  margin-bottom:25px;
+}
+
+.activity-box,
+.logs-box{
+  background:#1b1e24;
+  border-radius:15px;
+  padding:20px;
+  border:1px solid rgba(123,92,255,.18);
+}
+
+.activity-box h3,
+.logs-box h3{
+  margin-top:0;
+  color:#a78bfa;
+}
+
+#liveLogs{
+  max-height:220px;
+  overflow:auto;
+  font-size:14px;
+  color:#d1d5db;
+}
+
+#liveLogs p{
+  margin:8px 0;
+}
 </style>
 
 </head>
@@ -668,24 +699,42 @@ h3 {
   <p>🟢 MongoDB: CONNECTED</p>
   <p>⚡ Socket.IO: REALTIME</p>
 </div>
-<div class="stats glow">
+<div class="top-panels">
 
-👥 Total: ${total}<br>
-📱 Móvil: ${moviles}<br>
-💻 PC: ${pcs}<br>
-⚠️ VPN: ${vpns}<br>
-💎 Nitro: ${nitros}
+  <div class="stats glow">
+    👥 Total: ${total}<br>
+    📱 Móvil: ${moviles}<br>
+    💻 PC: ${pcs}<br>
+    ⚠️ VPN: ${vpns}<br>
+    💎 Nitro: ${nitros}
 
-<br><br>
+    <br><br>
 
-<a class="btn-action"
-href="/export/csv?key=${process.env.ADMIN_KEY}">
-📥 Descargar CSV
-</a>
+    <a class="btn-action"
+    href="/export/csv?key=${process.env.ADMIN_KEY}">
+    📥 Descargar CSV
+    </a>
+  </div>
+
+  <div class="activity-box">
+    <h3>📈 Actividad</h3>
+    <p>⚡ Última actividad:</p>
+    <p id="lastActivity">Esperando actividad...</p>
+    <hr>
+    <p>📅 Hoy: <span id="todayCount">0</span></p>
+    <p>📅 Semana: <span id="weekCount">0</span></p>
+    <p>📅 Total: <span id="totalCount">0</span></p>
+  </div>
+
+  <div class="logs-box">
+    <h3>🟢 Live Logs</h3>
+    <div id="liveLogs">
+      <p>🟢 Sistema iniciado...</p>
+    </div>
+  </div>
+
 </div>
-
 <div id="globalMap"></div>
-
 <div class="search-box">
   <input
     type="text"
@@ -756,7 +805,20 @@ aviso.innerHTML =
   aviso.style.fontSize = "14px";
 
   document.body.appendChild(aviso);
+const logs = document.getElementById("liveLogs");
+const lastActivity = document.getElementById("lastActivity");
 
+const now = new Date();
+const fechaHora = now.toLocaleDateString("es-AR") + " - " + now.toLocaleTimeString("es-AR");
+
+lastActivity.innerText = fechaHora;
+
+logs.innerHTML =
+  "<p>🟢 NUEVO VERIFICADO</p>" +
+  "<p>👤 " + (user.discord || "Usuario") + "</p>" +
+  "<p>🌎 " + (user.pais || "Desconocido") + " - " + (user.ciudad || "Desconocida") + "</p>" +
+  "<hr>" +
+  logs.innerHTML;
   setTimeout(() => {
     aviso.remove();
     location.reload();
