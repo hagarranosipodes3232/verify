@@ -17,6 +17,7 @@ mongoose.connect(process.env.MONGO_URI)
 const verifiedUserSchema = new mongoose.Schema({
   discord: String,
   discordId: String,
+  avatar: String,
   ip: String,
   pais: String,
   region: String,
@@ -258,6 +259,24 @@ web.get("/", (req, res) => {
   0%{ opacity:1; }
   50%{ opacity:.25; }
   100%{ opacity:1; }
+}
+.server-status-box{
+  background:#111827;
+  border:1px solid rgba(34,197,94,.35);
+  box-shadow:0 0 25px rgba(34,197,94,.18);
+  border-radius:16px;
+  padding:18px 22px;
+  margin-bottom:20px;
+}
+
+.server-status-box h3{
+  margin-top:0;
+  color:#22c55e;
+}
+
+.server-status-box p{
+  margin:7px 0;
+  color:#e5e7eb;
 }
 #globalMap {
   height: 420px;
@@ -641,7 +660,14 @@ h3 {
   <h1>LIVE SECURITY PANEL</h1>
   <p>REALTIME USER TRACKING SYSTEM</p>
 </div>
+<div class="server-status-box">
+  <h3>📡 Estado del servidor</h3>
 
+  <p>🟢 Web: ONLINE</p>
+  <p>🟢 Bot: ACTIVE</p>
+  <p>🟢 MongoDB: CONNECTED</p>
+  <p>⚡ Socket.IO: REALTIME</p>
+</div>
 <div class="stats glow">
 
 👥 Total: ${total}<br>
@@ -1252,7 +1278,6 @@ const savedUser = await VerifiedUser.findOneAndUpdate(
   { discordId: String(discordId) },
   {
     discord: member.user.tag,
-    avatar: member.user.avatar,
     avatar: member.user.avatar,
     discordId: String(discordId),
     ip: ipMasked,
