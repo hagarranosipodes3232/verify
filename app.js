@@ -150,7 +150,20 @@ web.get("/", (req, res) => {
   line-height:1.7;
   color:#d1d5db;
 }
+#globalMap {
+  height: 420px;
+  width: 100%;
+  border-radius: 18px;
+  margin-bottom: 25px;
+  border: 1px solid #7b5cff;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(123,92,255,0.25);
+}
   </style>
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
@@ -381,6 +394,8 @@ href="/export/csv?key=${process.env.ADMIN_KEY}">
 </a>
 </div>
 
+<div id="globalMap"></div>
+
 <div class="search-box">
   <input
     type="text"
@@ -467,6 +482,28 @@ async function cargarEstados() {
 cargarEstados();
 
 setInterval(cargarEstados, 10000);
+const mapUsers = ${JSON.stringify(usersStats)};
+
+const globalMap = L.map("globalMap", {
+  attributionControl: false
+}).setView([-15, -60], 3);
+
+L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+).addTo(globalMap);
+
+mapUsers.forEach(user => {
+  if (!user.lat || !user.lon) return;
+
+  L.marker([user.lat, user.lon])
+    .addTo(globalMap)
+    .bindPopup(
+      "👤 " + (user.discord || "Usuario") + "<br>" +
+      "🌎 " + (user.pais || "Desconocido") + "<br>" +
+      "🏙️ " + (user.ciudad || "Desconocida") + "<br>" +
+      "📡 " + (user.isp || "Desconocido")
+    );
+});
 const usersData = ${JSON.stringify(usersStats)};
 
 usersData.forEach(user => {
