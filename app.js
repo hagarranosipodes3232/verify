@@ -1,9 +1,13 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const web = express();
 
+const server = http.createServer(web);
+const io = new Server(server);
 web.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI)
@@ -693,7 +697,19 @@ ${usersHtml}
   </div>
 
 </div>
+<script src="/socket.io/socket.io.js"></script>
+
 <script>
+const socket = io();
+
+socket.on("new-user", (user) => {
+
+  console.log("Nuevo usuario conectado:", user);
+
+  location.reload();
+
+});
+
 let selectedUser = "";
 
 function openDM(id) {
@@ -1231,6 +1247,9 @@ const totalGuardados = await VerifiedUser.countDocuments();
 
 console.log("✅ Usuario guardado en MongoDB:", savedUser.discord);
 console.log("📊 Total guardados:", totalGuardados);
+
+io.emit("new-user", savedUser);
+
     res.send("✅ Verificación completada. Ya recibiste tu rol en Discord.");
 
   } catch (error) {
@@ -1240,10 +1259,10 @@ console.log("📊 Total guardados:", totalGuardados);
 });
 
 // WEB ONLINE
-
-web.listen(process.env.PORT || 3000, () => {
+server.listen(process.env.PORT || 3000, () => {
   console.log("🌐 Web online 🚀");
 });
+
 const {
   Client,
   GatewayIntentBits,
