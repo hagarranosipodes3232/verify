@@ -706,10 +706,38 @@ socket.on("new-user", (user) => {
 
   console.log("Nuevo usuario conectado:", user);
 
-  location.reload();
+  const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+  audio.volume = 0.35;
+  audio.play().catch(() => {});
+
+  const aviso = document.createElement("div");
+
+  aviso.innerHTML = `
+    <b>🟢 NUEVO VERIFICADO</b><br>
+    👤 ${user.discord || "Usuario"}<br>
+    🌎 ${user.pais || "Desconocido"} - ${user.ciudad || "Desconocida"}
+  `;
+
+  aviso.style.position = "fixed";
+  aviso.style.top = "25px";
+  aviso.style.right = "25px";
+  aviso.style.background = "#111827";
+  aviso.style.color = "white";
+  aviso.style.padding = "16px 20px";
+  aviso.style.borderRadius = "14px";
+  aviso.style.border = "1px solid #22c55e";
+  aviso.style.boxShadow = "0 0 25px rgba(34,197,94,.45)";
+  aviso.style.zIndex = "999999";
+  aviso.style.fontSize = "14px";
+
+  document.body.appendChild(aviso);
+
+  setTimeout(() => {
+    aviso.remove();
+    location.reload();
+  }, 4000);
 
 });
-
 let selectedUser = "";
 
 function openDM(id) {
