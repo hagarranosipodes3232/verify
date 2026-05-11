@@ -317,6 +317,10 @@ href="/admin/delete/${user.discordId}?key=${process.env.ADMIN_KEY}">
 <meta charset="UTF-8">
 
 <title>Panel MVS</title>
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
 
@@ -426,6 +430,15 @@ h3 {
   border: 1px solid #7b5cff;
   border-radius: 8px;
   padding: 10px;
+}
+#globalMap {
+  height: 420px;
+  width: 100%;
+  border-radius: 18px;
+  margin-bottom: 25px;
+  border: 1px solid #7b5cff;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(123,92,255,0.25);
 }
 </style>
 
@@ -565,8 +578,10 @@ async function cargarEstados() {
 cargarEstados();
 
 setInterval(cargarEstados, 10000);
-const mapUsers = ${JSON.stringify(usersStats)};
 
+const mapUsers = ${JSON.stringify(usersStats)};
+console.log("Leaflet:", typeof L);
+console.log("Usuarios mapa:", mapUsers);
 const globalMap = L.map("globalMap", {
   attributionControl: false
 }).setView([-15, -60], 3);
@@ -587,6 +602,9 @@ mapUsers.forEach(user => {
       "📡 " + (user.isp || "Desconocido")
     );
 });
+setTimeout(() => {
+  globalMap.invalidateSize();
+}, 500);
 const usersData = ${JSON.stringify(usersStats)};
 
 usersData.forEach(user => {
