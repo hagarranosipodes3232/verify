@@ -264,6 +264,11 @@ onclick="openDM('${user.discordId}')">
 href="/admin/kick/${user.discordId}?key=${process.env.ADMIN_KEY}">
 🚪 Expulsar
 </a>
+
+<a class="btn-danger"
+href="/admin/delete/${user.discordId}?key=${process.env.ADMIN_KEY}">
+🗑️ Eliminar del panel
+</a>
       </div>
 
 
@@ -728,6 +733,17 @@ web.get("/export/csv", async (req, res) => {
 
   res.send(csv);
 
+});
+web.get("/admin/delete/:id", async (req, res) => {
+  if (req.query.key !== process.env.ADMIN_KEY) {
+    return res.send("❌ No autorizado");
+  }
+
+  await VerifiedUser.deleteOne({
+    discordId: req.params.id
+  });
+
+  res.redirect("/panel");
 });
 // ROBLOX OAUTH
 
