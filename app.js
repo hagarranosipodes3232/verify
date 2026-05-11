@@ -398,6 +398,35 @@ h3 {
   margin-bottom: 10px;
   overflow: hidden;
 }
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.75);
+}
+
+.modal-content {
+  background: #111827;
+  padding: 20px;
+  width: 420px;
+  margin: 10% auto;
+  border-radius: 14px;
+  color: white;
+}
+
+.modal textarea {
+  width: 100%;
+  height: 120px;
+  background: #0f172a;
+  color: white;
+  border: 1px solid #7b5cff;
+  border-radius: 8px;
+  padding: 10px;
+}
 </style>
 
 </head>
