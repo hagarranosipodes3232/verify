@@ -40,10 +40,13 @@ const VerifiedUser = mongoose.model("VerifiedUser", verifiedUserSchema);
 web.post("/api/verify", async (req, res) => {
   try {
     const nuevoUsuario = new VerifiedUser(req.body);
-    await nuevoUsuario.save();
 
-    res.json({
-      ok: true,
+await nuevoUsuario.save();
+
+io.emit("new-user", nuevoUsuario);
+
+res.json({
+  ok: true,
       mensaje: "Usuario guardado correctamente",
       usuario: nuevoUsuario
     });
@@ -420,8 +423,10 @@ const nitros = usersStats.filter(u =>
 
     usersHtml += `
 
-      <div class="card" data-search="${searchData}">
-
+    <div
+class="card"
+id="user-card-${user.discordId}"
+data-search="${searchData}">
        <div class="user-header">
 
 <img
@@ -585,6 +590,9 @@ body::after {
   gap: 20px;
 }
 .card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(123,92,255,.25);
   background: #1b1e24;
   border-left: 5px solid #7b5cff;
   padding: 20px;
@@ -595,8 +603,30 @@ body::after {
 }
 
 .card:hover{
-  transform: translateY(-5px);
+   transform: translateY(-5px);
   box-shadow: 0 0 25px rgba(123,92,255,.35);
+}
+.card::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:80%;
+  height:100%;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(34,197,94,.12),
+    transparent
+  );
+  animation: cardScan 5s infinite;
+  pointer-events:none;
+}
+
+@keyframes cardScan{
+  0%{ left:-100%; }
+  60%{ left:120%; }
+  100%{ left:120%; }
 }
 .online-user{
   border-left: 5px solid #22c55e !important;
