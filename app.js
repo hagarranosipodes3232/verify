@@ -1243,6 +1243,50 @@ function updateClock() {
 
 updateClock();
 setInterval(updateClock, 1000);
+const statsUsers = ${JSON.stringify(usersStats)};
+
+function actualizarStats() {
+
+  const hoy = new Date();
+
+  let hoyCount = 0;
+  let semanaCount = 0;
+
+  statsUsers.forEach(user => {
+
+    if (!user._id) return;
+
+    const fecha = new Date(user._id.getTimestamp());
+
+    const diff =
+      (hoy - fecha) / (1000 * 60 * 60 * 24);
+
+    if (
+      fecha.getDate() === hoy.getDate() &&
+      fecha.getMonth() === hoy.getMonth() &&
+      fecha.getFullYear() === hoy.getFullYear()
+    ) {
+      hoyCount++;
+    }
+
+    if (diff <= 7) {
+      semanaCount++;
+    }
+
+  });
+
+  document.getElementById("todayCount").innerText =
+    hoyCount;
+
+  document.getElementById("weekCount").innerText =
+    semanaCount;
+
+  document.getElementById("totalCount").innerText =
+    statsUsers.length;
+
+}
+
+actualizarStats();
 </script>
 </body>
 
