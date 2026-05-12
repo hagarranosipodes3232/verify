@@ -837,30 +837,88 @@ socket.on("new-user", function (user) {
   }
 
   logs.prepend(mensaje);
-const usersContainer = document.getElementById("users");
+setTimeout(function () {
+  aviso.remove();
+}, 4000);
 
-const newCard = document.createElement("div");
+
+
+var usersContainer = document.getElementById("users");
+
+var oldCard = document.getElementById("user-card-" + user.discordId);
+if (oldCard) oldCard.remove();
+
+var newCard = document.createElement("div");
 
 newCard.className = "card online-user";
+newCard.id = "user-card-" + user.discordId;
+
+newCard.setAttribute(
+  "data-search",
+  (
+    (user.discord || "") + " " +
+    (user.discordId || "") + " " +
+    (user.pais || "") + " " +
+    (user.region || "") + " " +
+    (user.ciudad || "") + " " +
+    (user.isp || "") + " " +
+    (user.ip || "")
+  ).toLowerCase()
+);
 
 newCard.innerHTML =
-  '<img src="' + (user.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png') + '" class="avatar">' +
-  '<h2>' + (user.discord || "Usuario") + '</h2>' +
-  '<p>🟢 Online</p>' +
+  '<div class="user-header">' +
+    '<img class="avatar" src="' + (user.avatar || "https://cdn.discordapp.com/embed/avatars/0.png") + '">' +
+    '<div>' +
+      '<h3>' + (user.discord || "Usuario") + '</h3>' +
+      '<p class="mini-id">' + (user.discordId || "Sin ID") + '</p>' +
+    '</div>' +
+  '</div>' +
+
+  '<p class="status">🟢 Online</p>' +
+
+  '<p>🆔 ' + (user.discordId || "") + '</p>' +
+  '<p>🌎 ' + (user.pais || "") + '</p>' +
+  '<p>📍 ' + (user.region || "") + '</p>' +
+  '<p>🏙️ ' + (user.ciudad || "") + '</p>' +
+  '<p>📡 ' + (user.isp || "") + '</p>' +
+  '<p>🛡️ ' + (user.vpn || "") + '</p>' +
   '<p>📱 ' + (user.sistema || "Sistema no detectado") + '</p>' +
-  '<p>🕒 Última vez visto: ' + fechaHora + '</p>' +
-  '<p>🆔 ' + (user.discordId || "Sin ID") + '</p>' +
-  '<p>🌎 ' + (user.pais || "Desconocido") + '</p>' +
-  '<p>📍 ' + (user.region || "Desconocida") + '</p>' +
-  '<p>🏙️ ' + (user.ciudad || "Desconocida") + '</p>' +
-  '<p>🛡️ ' + (user.vpn || "No detectado") + '</p>';
+  '<p>🌐 ' + (user.ip || "") + '</p>' +
+
+  '<div class="mini-map" id="map-' + user.discordId + '"></div>' +
+
+  '<button class="btn-action" onclick="openDM(\\'' + user.discordId + '\\')">📩 Enviar DM</button>' +
+
+  '<a class="btn-danger" href="/admin/kick/' + user.discordId + '?key=${process.env.ADMIN_KEY}">🚪 Expulsar</a>' +
+
+  '<a class="btn-danger" href="/admin/delete/' + user.discordId + '?key=${process.env.ADMIN_KEY}">🗑️ Eliminar del panel</a>';
 
 usersContainer.prepend(newCard);
+
+if (user.lat && user.lon) {
+
   setTimeout(function () {
-    aviso.remove();
-  }, 4000);
+
+    var liveMap = L.map("map-" + user.discordId, {
+      attributionControl: false,
+      zoomControl: false
+    }).setView([user.lat, user.lon], 10);
+
+    L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    ).addTo(liveMap);
+
+    L.marker([user.lat, user.lon]).addTo(liveMap);
+
+    liveMap.invalidateSize();
+
+  }, 300);
+
+}
 
 });
+
 let selectedUser = "";
 
 function openDM(id) {
