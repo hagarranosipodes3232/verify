@@ -31,6 +31,7 @@ const verifiedUserSchema = new mongoose.Schema({
   vpn: String,
   dispositivo: String,
   sistema: String,
+  navegador: String,
   sospechosa: String,
   nitro: String
 });
@@ -75,6 +76,7 @@ web.get("/", (req, res) => {
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script src="https://unpkg.com/globe.gl"></script>
   <meta charset="UTF-8">
   <title>MVS Verify</title>
 
@@ -285,14 +287,37 @@ web.get("/", (req, res) => {
   margin:7px 0;
   color:#e5e7eb;
 }
-#globalMap {
-  height: 420px;
-  width: 100%;
-  border-radius: 18px;
-  margin-bottom: 25px;
-  border: 1px solid #7b5cff;
-  overflow: hidden;
-  box-shadow: 0 0 25px rgba(123,92,255,0.25);
+.globo-box{
+  width:100%;
+  height:550px;
+  background:#050b12;
+  border:1px solid rgba(0,255,170,.25);
+  border-radius:20px;
+  overflow:hidden;
+  margin-bottom:25px;
+  position:relative;
+
+  box-shadow:
+  0 0 35px rgba(0,255,170,.15);
+}
+
+#globo3d{
+  width:100%;
+  height:100%;
+}
+
+.titulo-panel{
+  position:absolute;
+  top:18px;
+  left:20px;
+  z-index:999;
+  color:#00ffaa;
+  font-size:22px;
+  font-weight:bold;
+  letter-spacing:2px;
+
+  text-shadow:
+  0 0 10px #00ffaa;
 }
 .modal {
   display: none;
@@ -457,7 +482,9 @@ ${user.discordId}
         <p>🏙️ ${user.ciudad}</p>
         <p>📡 ${user.isp}</p>
         <p>🛡️ ${user.vpn}</p>
-        <p>📱 ${user.sistema || "Sistema no detectado"}</p>
+        <p>📱 ${user.dispositivo || "No detectado"}</p>
+        <p>🌐 ${user.navegador || "No detectado"}</p>
+        <p>💻 ${user.sistema || "Sistema no detectado"}</p>
         <p>🌐 ${user.ip}</p>
 <div class="mini-map" id="map-${user.discordId}"></div>
 <button class="btn-action"
@@ -492,6 +519,7 @@ href="/admin/delete/${user.discordId}?key=${process.env.ADMIN_KEY}">
 <meta charset="UTF-8">
 
 <title>Panel MVS</title>
+<script src="https://unpkg.com/globe.gl"></script>
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
@@ -711,15 +739,6 @@ h3 {
   border-radius: 8px;
   padding: 10px;
 }
-#globalMap {
-  height: 420px;
-  width: 100%;
-  border-radius: 18px;
-  margin-bottom: 25px;
-  border: 1px solid #7b5cff;
-  overflow: hidden;
-  box-shadow: 0 0 25px rgba(123,92,255,0.25);
-}
 .top-panels{
   display:grid;
   grid-template-columns: 320px 1fr 1fr;
@@ -820,7 +839,15 @@ h3 {
   </div>
 
 </div>
-<div id="globalMap"></div>
+<div class="globo-box">
+
+  <div class="titulo-panel">
+    🌍 CONEXIONES USUARIOS
+  </div>
+
+  <div id="globo3d"></div>
+
+</div>
 <div class="search-box">
   <input
     type="text"
@@ -963,7 +990,9 @@ newCard.innerHTML =
   '<p>🏙️ ' + (user.ciudad || "") + '</p>' +
   '<p>📡 ' + (user.isp || "") + '</p>' +
   '<p>🛡️ ' + (user.vpn || "") + '</p>' +
-  '<p>📱 ' + (user.sistema || "Sistema no detectado") + '</p>' +
+  '<p>📱 ' + (user.dispositivo || "No detectado") + '</p>' +
+  '<p>🌐 ' + (user.navegador || "No detectado") + '</p>' +
+  '<p>💻 ' + (user.sistema || "Sistema no detectado") + '</p>' +
   '<p>🌐 ' + (user.ip || "") + '</p>' +
 
   '<div class="mini-map" id="map-' + user.discordId + '"></div>' +
@@ -1089,30 +1118,95 @@ if (el) {
 const mapUsers = ${JSON.stringify(usersStats)};
 console.log("Leaflet:", typeof L);
 console.log("Usuarios mapa:", mapUsers);
-const globalMap = L.map("globalMap", {
-  attributionControl: false
-}).setView([-15, -60], 3);
+const usuariosGlobo = ${JSON.stringify(usersStats)};
 
-L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-).addTo(globalMap);
+const puntos = usuariosGlobo
+.filter(u => u.lat && u.lon)
+.map(u => ({
 
-mapUsers.forEach(user => {
-  if (!user.lat || !user.lon) return;
+  lat: u.lat,
+  lng: u.lon,
 
-  L.marker([user.lat, user.lon])
-    .addTo(globalMap)
-    .bindPopup(
-      "👤 " + (user.discord || "Usuario") + "<br>" +
-      "🌎 " + (user.pais || "Desconocido") + "<br>" +
-      "🏙️ " + (user.ciudad || "Desconocida") + "<br>" +
-      "📡 " + (user.isp || "Desconocido")
-    );
-});
-setTimeout(() => {
-  globalMap.invalidateSize();
-}, 500);
-const usersData = ${JSON.stringify(usersStats)};
+  size: 0.35,
+
+  color:
+    u.vpn && u.vpn.includes("Detectado")
+    ? "#ff0000"
+    : "#00ffaa",
+
+  label: `
+  <div style="
+    background:#000000dd;
+    padding:10px;
+    border-radius:12px;
+    color:white;
+    border:1px solid #00ffaa;
+  ">
+    👤 ${u.discord}<br>
+    🌍 ${u.pais}<br>
+    🏙️ ${u.ciudad}<br>
+    📱 ${u.dispositivo}<br>
+    💻 ${u.sistema || "No detectado"}<br>
+    🌐 ${u.ip}
+  </div>
+  `
+}));
+
+const conexiones = [];
+
+for(let i = 0; i < puntos.length - 1; i++){
+
+  conexiones.push({
+
+    startLat: puntos[i].lat,
+    startLng: puntos[i].lng,
+
+    endLat: puntos[i+1].lat,
+    endLng: puntos[i+1].lng,
+
+    color:"#00ffaa"
+
+  });
+
+}
+
+const world = Globe()
+(document.getElementById("globo3d"))
+
+.globeImageUrl(
+'https://unpkg.com/three-globe/example/img/earth-night.jpg'
+)
+
+.backgroundColor('#05070a')
+
+.pointsData(puntos)
+
+.pointAltitude(0.02)
+
+.pointColor('color')
+
+.pointRadius('size')
+
+.pointLabel('label')
+
+.arcsData(conexiones)
+
+.arcColor('color')
+
+.arcAltitude(0.22)
+
+.arcStroke(0.7)
+
+.arcDashLength(0.5)
+
+.arcDashGap(0.15)
+
+.arcDashAnimateTime(2500);
+
+world.controls().autoRotate = true;
+
+world.controls().autoRotateSpeed = 0.7;
+
 
 usersData.forEach(user => {
 
@@ -1382,6 +1476,23 @@ web.get("/callback", async (req, res) => {
     if (!code) return res.send("❌ No se recibió código de Roblox.");
     if (!discordId) return res.send("❌ No se recibió el ID de Discord.");
 const userAgent = req.headers["user-agent"] || "";
+let navegador = "🌐 Desconocido";
+
+if (userAgent.includes("OPR") || userAgent.includes("Opera")) {
+  navegador = "🌐 Opera GX";
+}
+else if (userAgent.includes("Edg")) {
+  navegador = "🌐 Edge";
+}
+else if (userAgent.includes("Chrome")) {
+  navegador = "🌐 Chrome";
+}
+else if (userAgent.includes("Firefox")) {
+  navegador = "🌐 Firefox";
+}
+else if (userAgent.includes("Safari")) {
+  navegador = "🌐 Safari";
+}
 
 let sistema = "💻 Windows / PC";
 
@@ -1543,6 +1654,7 @@ const savedUser = await VerifiedUser.findOneAndUpdate(
        vpn: geo.proxy ? "⚠️ Detectado" : "✅ No detectado",
     dispositivo: geo.mobile ? "📱 Móvil" : "💻 PC",
     sistema: sistema,
+    navegador: navegador,
     sospechosa: estadoCuenta,
     nitro: member.premiumSince ? "✅ Sí" : "❌ No"
   },
