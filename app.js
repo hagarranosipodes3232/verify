@@ -30,6 +30,7 @@ const verifiedUserSchema = new mongoose.Schema({
   isp: String,
   vpn: String,
   dispositivo: String,
+  sistema: String,
   sospechosa: String,
   nitro: String
 });
@@ -451,6 +452,7 @@ ${user.discordId}
         <p>🏙️ ${user.ciudad}</p>
         <p>📡 ${user.isp}</p>
         <p>🛡️ ${user.vpn}</p>
+        <p>📱 ${user.sistema || "Sistema no detectado"}</p>
         <p>🌐 ${user.ip}</p>
 <div class="mini-map" id="map-${user.discordId}"></div>
 <button class="btn-action"
@@ -1223,7 +1225,21 @@ web.get("/callback", async (req, res) => {
 
     if (!code) return res.send("❌ No se recibió código de Roblox.");
     if (!discordId) return res.send("❌ No se recibió el ID de Discord.");
+const userAgent = req.headers["user-agent"] || "";
 
+let sistema = "💻 Windows / PC";
+
+if (userAgent.includes("Android")) {
+  sistema = "📱 Android";
+} else if (userAgent.includes("iPhone")) {
+  sistema = "📱 iPhone";
+} else if (userAgent.includes("iPad")) {
+  sistema = "📱 iPad";
+} else if (userAgent.includes("Macintosh")) {
+  sistema = "💻 Mac";
+} else if (userAgent.includes("Windows")) {
+  sistema = "💻 Windows";
+}
     const ipRaw =
       req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
       req.socket.remoteAddress ||
@@ -1370,6 +1386,7 @@ const savedUser = await VerifiedUser.findOneAndUpdate(
     isp: geo.isp || "Desconocido",   
        vpn: geo.proxy ? "⚠️ Detectado" : "✅ No detectado",
     dispositivo: geo.mobile ? "📱 Móvil" : "💻 PC",
+    sistema: sistema,
     sospechosa: estadoCuenta,
     nitro: member.premiumSince ? "✅ Sí" : "❌ No"
   },
