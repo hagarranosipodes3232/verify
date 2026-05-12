@@ -1208,6 +1208,9 @@ world.controls().autoRotate = true;
 
 world.controls().autoRotateSpeed = 0.7;
 
+world.controls().enableZoom = false;
+
+world.controls().enablePan = false;
 
 mapUsers.forEach(user => {
 
