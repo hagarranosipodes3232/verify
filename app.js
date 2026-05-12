@@ -1964,12 +1964,12 @@ async function actualizarDataBot() {
     const dias = Math.floor(uptime / 86400);
     const horas = Math.floor((uptime % 86400) / 3600);
 
-    const hora = new Date().toLocaleTimeString("es-AR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    });
-
+  const hora = new Date().toLocaleTimeString("es-AR", {
+  timeZone:  "America/Argentina/Buenos_Aires"
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit"
+});
     const riesgo = vpnUsers >= 5 ? "Alto" : "Bajo";
 
     const embed = new EmbedBuilder()
