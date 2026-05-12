@@ -421,6 +421,13 @@ usersArray.forEach(user => {
   const total = Object.keys(verifiedUsers).length;
 
 const usersStats = Object.values(verifiedUsers);
+const ultimoUsuario = usersStats
+  .filter(u => u.updatedAt)
+  .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0];
+
+const ultimaActividadPanel = ultimoUsuario
+  ? `${ultimoUsuario.discord} verificado`
+  : "Esperando actividad...";
 
 const moviles = usersStats.filter(u =>
   u.dispositivo && u.dispositivo.includes("Móvil")
@@ -831,7 +838,7 @@ h3 {
   <div class="activity-box">
     <h3>📈 Actividad</h3>
     <p>⚡ Última actividad:</p>
-    <p id="lastActivity">Esperando actividad...</p>
+    <p id="lastActivity">${ultimaActividadPanel}</p>
     <hr>
     <p>📅 Hoy: <span id="todayCount">0</span></p>
     <p>📅 Semana: <span id="weekCount">0</span></p>
