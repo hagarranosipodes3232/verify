@@ -1150,14 +1150,8 @@ label:
 '🌐 ' + u.ip +
 
 '</div>'
-     🌍 ${u.pais}<br>
-    🏙️ ${u.ciudad}<br>
-    📱 ${u.dispositivo}<br>
-    💻 ${u.sistema || "No detectado"}<br>
-    🌐 ${u.ip}
-  </div>
-  `
-}));
+
+ }));
 
 const conexiones = [];
 
@@ -1215,7 +1209,7 @@ world.controls().autoRotate = true;
 world.controls().autoRotateSpeed = 0.7;
 
 
-usersData.forEach(user => {
+mapUsers.forEach(user => {
 
   if (!user.lat || !user.lon) return;
 
