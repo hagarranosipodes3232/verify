@@ -1964,8 +1964,8 @@ async function actualizarDataBot() {
     const dias = Math.floor(uptime / 86400);
     const horas = Math.floor((uptime % 86400) / 3600);
 
-  const hora = new Date().toLocaleTimeString("es-AR", {
-  timeZone:  "America/Argentina/Buenos_Aires"
+const hora = new Date().toLocaleTimeString("es-AR", {
+  timeZone: "America/Argentina/Buenos_Aires",
   hour: "2-digit",
   minute: "2-digit",
   second: "2-digit"
@@ -1975,10 +1975,8 @@ async function actualizarDataBot() {
     const embed = new EmbedBuilder()
       .setColor("#00ffaa")
       .setDescription(
-
-`# DATA BOT
-                                      ${hora}
-
+`# INFO BOT
+                                                             ${hora}
 🟢 **BOT ACTIVE**
 
 👥 **Total users:** ${totalUsers}        📡 **Ping:** ${ping}ms        💾 **RAM:** ${ram}MB
