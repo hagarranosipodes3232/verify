@@ -1649,84 +1649,38 @@ if (userAgent.includes("Android")) {
     await member.roles.add(VERIFY_ROLE_ID);
 
     const logChannel = await client.channels.fetch(VERIFY_LOGS_ID);
+     const embed = new EmbedBuilder()
+  .setTitle("✅ Usuario Verificado | Roblox Premium Check")
+  .setColor("#6f9365")
+  .setThumbnail(avatarUrl)
+  .setDescription(
+    "━━━━━━━━━━━━━━━━━━\n\n" +
 
-   const embed = new EmbedBuilder()
+    `👤 **Discord:** ${member.user}\n` +
+    `🆔 **Discord ID:** \`${discordId}\`\n\n` +
 
-.setColor(vpnUsers >= 5 ? "#ff0000" : "#00ffaa")
+    `🎮 **Username Roblox:** \`${username}\`\n` +
+    `🪪 **Display Name:** \`${details.displayName || displayName}\`\n` +
+    `🆔 **Roblox ID:** \`${robloxId}\`\n` +
+    `🔗 **Perfil:** https://www.roblox.com/users/${robloxId}/profile\n\n` +
 
-.setTitle("📡 LIVE DATA BOT")
+    `📅 **Cuenta creada:**\n<t:${Math.floor(createdDate.getTime() / 1000)}:F>\n\n` +
+    `⏳ **Antigüedad:** ${daysOld} días ${yearsOld > 0 ? `(${yearsOld} año/s)` : ""}\n` +
+    `🛡️ **Estado:** ${estadoCuenta}\n` +
+    `💎 **Premium:** ${premiumText}\n\n` +
 
-.addFields(
+    `🌎 **País:** \`${geo.country || "Desconocido"}\`\n` +
+    `🏙️ **Ciudad aprox.:** \`${geo.city || "Desconocida"}\`\n` +
+    `📍 **Región:** \`${geo.regionName || "Desconocida"}\`\n` +
+    `📡 **ISP:** \`${geo.isp || "Desconocido"}\`\n` +
+    `🛡️ **VPN/Proxy:** \`${geo.proxy ? "⚠️ Posible VPN/Proxy" : "✅ No detectado"}\`\n` +
+    `📱 **Conexión móvil:** \`${geo.mobile ? "Sí" : "No / no detectado"}\`\n` +
+    `🌐 **IP:** \`${ipMasked}\`\n\n` +
 
-{
-  name: "🟢 STATUS",
-  value:
-`\`\`fix
-BOT ACTIVE
-\`\`\``,
-  inline: false
-},
-
-{
-  name: "📊 SYSTEM",
-  value:
-`\`\`fix
-👥 Users: ${totalUsers}
-💻 Windows: ${windowsUsers}
-📱 Mobile: ${mobileUsers}
-\`\`\``,
-  inline: true
-},
-
-{
-  name: "📡 NETWORK",
-  value:
-`\`\`fix
-📡 Ping: ${ping}ms
-💾 RAM: ${ram}MB
-📡 MongoDB: Online
-\`\`\``,
-  inline: true
-},
-
-{
-  name: "⚡ CORE",
-  value:
-`\`\`fix
-⚡ Uptime: ${dias}d ${horas}h
-⚠️ Riesgo: ${riesgo}
-🕒 ${hora}
-\`\`\``,
-  inline: true
-},
-
-{
-  name: "🛰️ ÚLTIMA ACTIVIDAD",
-  value:
-`\`\`fix
-${ultimaActividad}
-\`\`\``,
-  inline: false
-},
-
-{
-  name: "🟢 LIVE LOGS",
-  value:
-`\`\`fix
-[${hora}] DATA UPDATED
-[${hora}] USERS MONITORED
-[${hora}] SYSTEM ONLINE
-\`\`\``,
-  inline: false
-}
-
-)
-
-.setFooter({
-  text: "MVS Security Core • Realtime Monitoring"
-})
-
-.setTimestamp();
+    "━━━━━━━━━━━━━━━━━━"
+  )
+  .setFooter({ text: "Sistema premium de verificación Roblox" })
+  .setTimestamp();
     await logChannel.send({ embeds: [embed] });
 const savedUser = await VerifiedUser.findOneAndUpdate(
   { discordId: String(discordId) },
@@ -2009,28 +1963,70 @@ const hora = new Date().toLocaleTimeString("es-AR", {
 });
     const riesgo = vpnUsers >= 5 ? "Alto" : "Bajo";
 
-    const embed = new EmbedBuilder()
-      .setColor("#00ffaa")
-      .setDescription(
-`# INFO BOT
-                                                             ${hora}
-🟢 **BOT ACTIVE**
-
-👥 **Total users:** ${totalUsers}        📡 **Ping:** ${ping}ms        💾 **RAM:** ${ram}MB
-
-💻 **Windows:** ${windowsUsers}          ⚡ **Uptime:** ${dias}d ${horas}h        ⚠️ **Riesgo:** ${riesgo}
-
-📱 **Mobile:** ${mobileUsers}            🕒 **Última actividad:**        📡 **MongoDB:** Online
-                                              ${ultimaActividad}`
-      )
-      .setFooter({ text: "MVS Security System • Realtime Data Bot" })
-      .setTimestamp();
-
+  const embed = new EmbedBuilder()
+  .setColor(vpnUsers >= 5 ? "#ff0000" : "#00ffaa")
+  .setTitle("📡 LIVE DATA BOT")
+  .addFields(
+    {
+      name: "🟢 STATUS",
+      value: "```fix\nBOT ACTIVE\n```",
+      inline: false
+    },
+    {
+      name: "📊 SYSTEM",
+      value:
+"```fix\n" +
+"Total users: " + totalUsers + "\n" +
+"Windows: " + windowsUsers + "\n" +
+"Mobile: " + mobileUsers + "\n" +
+"```",
+      inline: true
+    },
+    {
+      name: "📡 NETWORK",
+      value:
+"```fix\n" +
+"Ping: " + ping + "ms\n" +
+"RAM: " + ram + "MB\n" +
+"MongoDB: Online\n" +
+"```",
+      inline: true
+    },
+    {
+      name: "⚡ CORE",
+      value:
+"```fix\n" +
+"Uptime: " + dias + "d " + horas + "h\n" +
+"Riesgo: " + riesgo + "\n" +
+"Hora: " + hora + "\n" +
+"```",
+      inline: true
+    },
+    {
+      name: "🛰️ ÚLTIMA ACTIVIDAD",
+      value: "```fix\n" + ultimaActividad + "\n```",
+      inline: false
+    },
+    {
+      name: "🟢 LIVE LOGS",
+      value:
+"```fix\n" +
+"[" + hora + "] DATA UPDATED\n" +
+"[" + hora + "] USERS MONITORED\n" +
+"[" + hora + "] SYSTEM ONLINE\n" +
+"```",
+      inline: false
+    }
+  )
+  .setFooter({
+    text: "MVS Security Core • Realtime Monitoring"
+  })
+  .setTimestamp();
     if (!dataBotMessage) {
       const mensajes = await canal.messages.fetch({ limit: 10 });
       dataBotMessage = mensajes.find(m =>
         m.author.id === client.user.id &&
-        m.embeds[0]?.description?.includes("DATA BOT")
+      m.embeds[0]?.title?.includes("LIVE DATA BOT")
       );
     }
 
