@@ -837,7 +837,35 @@ socket.on("new-user", function (user) {
   }
 
   logs.prepend(mensaje);
+const usersContainer = document.getElementById("users");
 
+const newCard = document.createElement("div");
+
+newCard.className = "card online-user";
+
+newCard.innerHTML = `
+<img src="${user.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png'}" class="avatar">
+
+<h2>${user.discord || "Usuario"}</h2>
+
+<p>🟢 Online</p>
+
+<p>📱 ${user.sistema || "Sistema no detectado"}</p>
+
+<p>🕒 Última vez visto: ${fechaHora}</p>
+
+<p>🆔 ${user.discordId || "Sin ID"}</p>
+
+<p>🌎 ${user.pais || "Desconocido"}</p>
+
+<p>📍 ${user.region || "Desconocida"}</p>
+
+<p>🏙️ ${user.ciudad || "Desconocida"}</p>
+
+<p>🛡️ ${user.vpn || "No detectado"}</p>
+`;
+
+usersContainer.prepend(newCard);
   setTimeout(function () {
     aviso.remove();
   }, 4000);
