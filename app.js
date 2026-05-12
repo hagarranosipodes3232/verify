@@ -18,6 +18,7 @@ mongoose.connect(process.env.MONGO_URI)
 .catch(err => console.log(err));
 
 const verifiedUserSchema = new mongoose.Schema({
+
   discord: String,
   discordId: String,
   avatar: String,
@@ -34,8 +35,10 @@ const verifiedUserSchema = new mongoose.Schema({
   navegador: String,
   sospechosa: String,
   nitro: String
-});
 
+}, {
+  timestamps: true
+});
 const VerifiedUser = mongoose.model("VerifiedUser", verifiedUserSchema);
 
 web.post("/api/verify", async (req, res) => {
@@ -1254,11 +1257,11 @@ function actualizarStats() {
 
   statsUsers.forEach(user => {
 
-    if (!user._id) return;
+    if (!user.createdAt) return;
 
-    const fecha = new Date(user._id.getTimestamp());
+    const fecha = new Date(user.createdAt);
 
-    const diff =
+    const diffDias =
       (hoy - fecha) / (1000 * 60 * 60 * 24);
 
     if (
@@ -1269,7 +1272,7 @@ function actualizarStats() {
       hoyCount++;
     }
 
-    if (diff <= 7) {
+    if (diffDias <= 7) {
       semanaCount++;
     }
 
