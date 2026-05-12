@@ -780,15 +780,18 @@ ${usersHtml}
 
 <script>
 const socket = io();
-socket.on("connect", () => {
+
+socket.on("connect", function () {
+
   console.log("🟢 Panel conectado a Socket.IO:", socket.id);
-const logs = document.getElementById("liveLogs");
 
-logs.innerHTML =
-  "<p>🟢 Socket.IO conectado correctamente</p>" +
-  logs.innerHTML;
+  var logs = document.getElementById("liveLogs");
+
+  logs.innerHTML =
+    "<p>🟢 Socket.IO conectado correctamente</p>" +
+    logs.innerHTML;
+
 });
-
 socket.on("new-user", (user) => {
 
   console.log("Nuevo usuario conectado:", user);
