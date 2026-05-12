@@ -781,31 +781,20 @@ ${usersHtml}
 <script>
 const socket = io();
 
-socket.on("connect", function () {
-
-  console.log("🟢 Panel conectado a Socket.IO:", socket.id);
-
-  var logs = document.getElementById("liveLogs");
-
-  logs.innerHTML =
-    "<p>🟢 Socket.IO conectado correctamente</p>" +
-    logs.innerHTML;
-
-});
-socket.on("new-user", (user) => {
+socket.on("new-user", function (user) {
 
   console.log("Nuevo usuario conectado:", user);
 
-  const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+  var audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
   audio.volume = 0.35;
-  audio.play().catch(() => {});
+  audio.play().catch(function () {});
 
-  const aviso = document.createElement("div");
+  var aviso = document.createElement("div");
 
-aviso.innerHTML =
-  "<b>🟢 NUEVO VERIFICADO</b><br>" +
-  "👤 " + (user.discord || "Usuario") + "<br>" +
-  "🌎 " + (user.pais || "Desconocido") + " - " + (user.ciudad || "Desconocida");
+  aviso.innerHTML =
+    "<b>🟢 NUEVO VERIFICADO</b><br>" +
+    "👤 " + (user.discord || "Usuario") + "<br>" +
+    "🌎 " + (user.pais || "Desconocido") + " - " + (user.ciudad || "Desconocida");
 
   aviso.style.position = "fixed";
   aviso.style.top = "25px";
@@ -819,41 +808,36 @@ aviso.innerHTML =
   aviso.style.zIndex = "999999";
   aviso.style.fontSize = "14px";
 
-document.body.appendChild(aviso);
-var logs = document.getElementById("liveLogs");
-var lastActivity = document.getElementById("lastActivity");
+  document.body.appendChild(aviso);
 
-const now = new Date();
-const fechaHora = now.toLocaleDateString("es-AR") + " - " + now.toLocaleTimeString("es-AR");
+  var logs = document.getElementById("liveLogs");
+  var lastActivity = document.getElementById("lastActivity");
 
-lastActivity.innerText = fechaHora;
+  var now = new Date();
+  var fechaHora = now.toLocaleDateString("es-AR") + " - " + now.toLocaleTimeString("es-AR");
 
-logs.innerHTML =
-  const mensaje = document.createElement("p");
+  lastActivity.innerText = fechaHora;
 
-mensaje.innerHTML =
-  "🟢 <b>NUEVO VERIFICADO</b><br>" +
-  "👤 " + (user.discord || "Usuario") + "<br>" +
-  "🌎 " + (user.pais || "Desconocido") +
-  " - " + (user.ciudad || "Desconocida") + "<br>" +
-  "🕒 " + fechaHora;
+  var mensaje = document.createElement("p");
 
-mensaje.style.marginBottom = "15px";
-mensaje.style.paddingBottom = "10px";
-mensaje.style.borderBottom = "1px solid rgba(255,255,255,.08)";
+  mensaje.innerHTML =
+    "🟢 <b>NUEVO VERIFICADO</b><br>" +
+    "👤 " + (user.discord || "Usuario") + "<br>" +
+    "🌎 " + (user.pais || "Desconocido") + " - " + (user.ciudad || "Desconocida") + "<br>" +
+    "🕒 " + fechaHora;
 
-if (logs.innerHTML.includes("Esperando nuevos verificados")) {
-  logs.innerHTML = "";
-}
+  mensaje.style.marginBottom = "15px";
+  mensaje.style.paddingBottom = "10px";
+  mensaje.style.borderBottom = "1px solid rgba(255,255,255,.08)";
 
-logs.prepend(mensaje);
-  "<p>👤 " + (user.discord || "Usuario") + "</p>" +
-  "<p>🌎 " + (user.pais || "Desconocido") + " - " + (user.ciudad || "Desconocida") + "</p>" +
-  "<hr>" +
-  logs.innerHTML;
-  setTimeout(() => {
+  if (logs.innerHTML.includes("Esperando nuevos verificados")) {
+    logs.innerHTML = "";
+  }
+
+  logs.prepend(mensaje);
+
+  setTimeout(function () {
     aviso.remove();
-    location.reload();
   }, 4000);
 
 });
