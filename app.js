@@ -496,17 +496,67 @@ href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 body {
   margin: 0;
-  background: #0f1115;
+  background:
+    radial-gradient(circle at top left, rgba(34,197,94,.12), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(123,92,255,.14), transparent 35%),
+    #05070a;
   color: white;
   font-family: Arial;
   padding: 30px;
+  overflow-x: hidden;
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(34,197,94,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,197,94,.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: -2;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  top: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(34,197,94,.10),
+    transparent
+  );
+  animation: hackerScan 6s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes hackerScan {
+  0% { top: -100%; }
+  100% { top: 100%; }
+}
 .title {
-  font-size: 40px;
+  font-size: 42px;
   margin-bottom: 10px;
+  letter-spacing: 2px;
+  text-shadow:
+    0 0 10px rgba(34,197,94,.55),
+    0 0 25px rgba(123,92,255,.35);
+  animation: titleGlitch 3s infinite;
 }
 
+@keyframes titleGlitch {
+  0%, 100% { transform: translateX(0); }
+  92% { transform: translateX(0); }
+  94% { transform: translateX(-2px); }
+  96% { transform: translateX(2px); }
+  98% { transform: translateX(0); }
+}
 .stats {
   background: #1b1e24;
   padding: 20px;
