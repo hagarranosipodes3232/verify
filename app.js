@@ -1650,46 +1650,83 @@ if (userAgent.includes("Android")) {
 
     const logChannel = await client.channels.fetch(VERIFY_LOGS_ID);
 
-    const embed = new EmbedBuilder()
-      .setTitle("✅ Usuario Verificado | Roblox Premium Check")
-      .setColor("#6f9365")
-      .setThumbnail(avatarUrl)
-      .setDescription(
-        "━━━━━━━━━━━━━━━━━━\n\n" +
+   const embed = new EmbedBuilder()
 
-        `👤 **Discord:** ${member.user}\n` +
-        `🆔 **Discord ID:** \`${discordId}\`\n\n` +
+.setColor(vpnUsers >= 5 ? "#ff0000" : "#00ffaa")
 
-        `🎮 **Username Roblox:** \`${username}\`\n` +
-        `🪪 **Display Name:** \`${details.displayName || displayName}\`\n` +
-        `🆔 **Roblox ID:** \`${robloxId}\`\n` +
-        `🔗 **Perfil:** https://www.roblox.com/users/${robloxId}/profile\n\n` +
+.setTitle("📡 LIVE DATA BOT")
 
-        `📅 **Cuenta creada:**\n<t:${Math.floor(createdDate.getTime() / 1000)}:F>\n\n` +
-        `⏳ **Antigüedad:** ${daysOld} días ${yearsOld > 0 ? `(${yearsOld} año/s)` : ""}\n` +
-        `🛡️ **Estado:** ${estadoCuenta}\n` +
-        `💎 **Premium:** ${premiumText}\n\n` +
+.addFields(
 
-        `👥 **Amigos visibles:** \`${friends.count}\`\n` +
-        `👤 **Seguidores:** \`${followers.count}\`\n` +
-        `➡️ **Siguiendo:** \`${following.count}\`\n` +
-        `👨‍👩‍👧 **Grupos visibles:** \`${groupsCount}\`\n` +
-        `🏆 **Badges públicos:** \`${badgesText}\`\n` +
-        `🔨 **Bans detectados:** \`No disponible oficialmente\`\n\n` +
+{
+  name: "🟢 STATUS",
+  value:
+`\`\`fix
+BOT ACTIVE
+\`\`\``,
+  inline: false
+},
 
-        `🌎 **País:** \`${geo.country || "Desconocido"}\`\n` +
-        `🏙️ **Ciudad aprox.:** \`${geo.city || "Desconocida"}\`\n` +
-        `📍 **Región:** \`${geo.regionName || "Desconocida"}\`\n` +
-        `📡 **ISP:** \`${geo.isp || "Desconocido"}\`\n` +
-        `🛡️ **VPN/Proxy:** \`${geo.proxy ? "⚠️ Posible VPN/Proxy" : "✅ No detectado"}\`\n` +
-        `📱 **Conexión móvil:** \`${geo.mobile ? "Sí" : "No / no detectado"}\`\n` +
-        `🌐 **IP:** \`${ipMasked}\`\n\n` +
+{
+  name: "📊 SYSTEM",
+  value:
+`\`\`fix
+👥 Users: ${totalUsers}
+💻 Windows: ${windowsUsers}
+📱 Mobile: ${mobileUsers}
+\`\`\``,
+  inline: true
+},
 
-        "━━━━━━━━━━━━━━━━━━"
-      )
-      .setFooter({ text: "Sistema premium de verificación Roblox" })
-      .setTimestamp();
+{
+  name: "📡 NETWORK",
+  value:
+`\`\`fix
+📡 Ping: ${ping}ms
+💾 RAM: ${ram}MB
+📡 MongoDB: Online
+\`\`\``,
+  inline: true
+},
 
+{
+  name: "⚡ CORE",
+  value:
+`\`\`fix
+⚡ Uptime: ${dias}d ${horas}h
+⚠️ Riesgo: ${riesgo}
+🕒 ${hora}
+\`\`\``,
+  inline: true
+},
+
+{
+  name: "🛰️ ÚLTIMA ACTIVIDAD",
+  value:
+`\`\`fix
+${ultimaActividad}
+\`\`\``,
+  inline: false
+},
+
+{
+  name: "🟢 LIVE LOGS",
+  value:
+`\`\`fix
+[${hora}] DATA UPDATED
+[${hora}] USERS MONITORED
+[${hora}] SYSTEM ONLINE
+\`\`\``,
+  inline: false
+}
+
+)
+
+.setFooter({
+  text: "MVS Security Core • Realtime Monitoring"
+})
+
+.setTimestamp();
     await logChannel.send({ embeds: [embed] });
 const savedUser = await VerifiedUser.findOneAndUpdate(
   { discordId: String(discordId) },
