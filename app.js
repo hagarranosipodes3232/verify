@@ -1134,16 +1134,23 @@ const puntos = usuariosGlobo
     ? "#ff0000"
     : "#00ffaa",
 
-  label: `
-  <div style="
-    background:#000000dd;
-    padding:10px;
-    border-radius:12px;
-    color:white;
-    border:1px solid #00ffaa;
-  ">
-    👤 ${u.discord}<br>
-    🌍 ${u.pais}<br>
+label:
+'<div style="background:#000000dd;padding:10px;border-radius:12px;color:white;border:1px solid #00ffaa;">' +
+
+'👤 ' + u.discord + '<br>' +
+
+'🌍 ' + u.pais + '<br>' +
+
+'🏙️ ' + u.ciudad + '<br>' +
+
+'📱 ' + u.dispositivo + '<br>' +
+
+'💻 ' + (u.sistema || "No detectado") + '<br>' +
+
+'🌐 ' + u.ip +
+
+'</div>'
+     🌍 ${u.pais}<br>
     🏙️ ${u.ciudad}<br>
     📱 ${u.dispositivo}<br>
     💻 ${u.sistema || "No detectado"}<br>
