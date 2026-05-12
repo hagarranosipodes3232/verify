@@ -1,4 +1,9 @@
 require("dotenv").config();
+const os = require("os");
+
+const DATA_BOT_CHANNEL_ID = "1503796869925703690";
+let dataBotMessage = null;
+let ultimaActividad = "Esperando actividad...";
 const express = require("express");
 const mongoose = require("mongoose");
 const http = require("http");
@@ -1717,6 +1722,7 @@ const totalGuardados = await VerifiedUser.countDocuments();
 console.log("✅ Usuario guardado en MongoDB:", savedUser.discord);
 console.log("📊 Total guardados:", totalGuardados);
 console.log("📡 Enviando evento new-user al dashboard...");
+ultimaActividad = `${savedUser.discord} verificado`;
 io.emit("new-user", savedUser);
 
     res.send("✅ Verificación completada. Ya recibiste tu rol en Discord.");
@@ -1928,13 +1934,90 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 })();
 
 // BOT ONLINE
+async function actualizarDataBot() {
+  try {
+    const canal = await client.channels.fetch(DATA_BOT_CHANNEL_ID);
+    if (!canal) return;
 
+    const totalUsers = await VerifiedUser.countDocuments();
+
+    const windowsUsers = await VerifiedUser.countDocuments({
+      sistema: { $regex: /windows/i }
+    });
+
+    const mobileUsers = await VerifiedUser.countDocuments({
+      $or: [
+        { sistema: { $regex: /android/i } },
+        { sistema: { $regex: /iphone/i } },
+        { sistema: { $regex: /ipad/i } }
+      ]
+    });
+
+    const vpnUsers = await VerifiedUser.countDocuments({
+      vpn: { $regex: /detectado/i }
+    });
+
+    const ping = Math.round(client.ws.ping);
+    const ram = Math.round(process.memoryUsage().heapUsed / 1024 / 1024);
+
+    const uptime = process.uptime();
+    const dias = Math.floor(uptime / 86400);
+    const horas = Math.floor((uptime % 86400) / 3600);
+
+    const hora = new Date().toLocaleTimeString("es-AR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+
+    const riesgo = vpnUsers >= 5 ? "Alto" : "Bajo";
+
+    const embed = new EmbedBuilder()
+      .setColor("#00ffaa")
+      .setDescription(
+
+`# DATA BOT
+                                      ${hora}
+
+🟢 **BOT ACTIVE**
+
+👥 **Total users:** ${totalUsers}        📡 **Ping:** ${ping}ms        💾 **RAM:** ${ram}MB
+
+💻 **Windows:** ${windowsUsers}          ⚡ **Uptime:** ${dias}d ${horas}h        ⚠️ **Riesgo:** ${riesgo}
+
+📱 **Mobile:** ${mobileUsers}            🕒 **Última actividad:**        📡 **MongoDB:** Online
+                                              ${ultimaActividad}`
+      )
+      .setFooter({ text: "MVS Security System • Realtime Data Bot" })
+      .setTimestamp();
+
+    if (!dataBotMessage) {
+      const mensajes = await canal.messages.fetch({ limit: 10 });
+      dataBotMessage = mensajes.find(m =>
+        m.author.id === client.user.id &&
+        m.embeds[0]?.description?.includes("DATA BOT")
+      );
+    }
+
+    if (dataBotMessage) {
+      await dataBotMessage.edit({ embeds: [embed] });
+    } else {
+      dataBotMessage = await canal.send({ embeds: [embed] });
+    }
+
+  } catch (error) {
+    console.log("❌ Error DATA BOT:", error);
+  }
+}
 client.once("clientReady", () => {
 
   console.log(`🟢 ${client.user.tag}`);
 
-});
+  actualizarDataBot();
 
+  setInterval(actualizarDataBot, 10000);
+
+});
 // INTERACCIONES
 
 client.on("interactionCreate", async interaction => {
