@@ -819,9 +819,9 @@ aviso.innerHTML =
   aviso.style.zIndex = "999999";
   aviso.style.fontSize = "14px";
 
-  document.body.appendChild(aviso);
-const logs = document.getElementById("liveLogs");
-const lastActivity = document.getElementById("lastActivity");
+document.body.appendChild(aviso);
+var logs = document.getElementById("liveLogs");
+var lastActivity = document.getElementById("lastActivity");
 
 const now = new Date();
 const fechaHora = now.toLocaleDateString("es-AR") + " - " + now.toLocaleTimeString("es-AR");
