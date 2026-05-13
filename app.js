@@ -1846,6 +1846,8 @@ const CIUDADANO_ROLE_ID = "1503511772064252114";
 const VERIFY_LOGS_ID = "1502547730600427570";
 const GEO_LOGS_ID = "1503908915799392467";
 const STAFF_PANEL_ID = "1503923874436485170";
+const SOSPECHOSO_ROLE_ID = "1503928888730980452";
+const CONFIABLE_ROLE_ID = "1503928911501725826";
 
 const STAFF_ROLE_ID = "1502573600840880179";
 const TICKET_CATEGORY_ID = "1502573361472077855";
@@ -2440,12 +2442,138 @@ if (interaction.isStringSelectMenu() && interaction.customId === "staff_select_r
     .setFooter({ text: "MVS Staff Review System" })
     .setTimestamp();
 
+ const botonesRevision = new ActionRowBuilder()
+.addComponents(
+
+new ButtonBuilder()
+.setCustomId("marcar_sospechoso_" + discordId)
+.setLabel("Sospechoso")
+.setEmoji("⚠️")
+.setStyle(ButtonStyle.Danger),
+
+new ButtonBuilder()
+.setCustomId("marcar_confiable_" + discordId)
+.setLabel("Confiable")
+.setEmoji("✅")
+.setStyle(ButtonStyle.Success),
+
+new ButtonBuilder()
+.setCustomId("expulsar_usuario_" + discordId)
+.setLabel("Expulsar")
+.setEmoji("🚪")
+.setStyle(ButtonStyle.Secondary)
+
+);
+
+return interaction.reply({
+  embeds: [embed],
+  components: [botonesRevision],
+  ephemeral: true
+});
+
+}
+     
+if (
+  interaction.isButton() &&
+  interaction.customId.startsWith("marcar_sospechoso_")
+) {
+  const discordId = interaction.customId.replace("marcar_sospechoso_", "");
+
+  const miembro = await interaction.guild.members
+    .fetch(discordId)
+    .catch(() => null);
+
+ 
+  if (!miembro) {
+    return interaction.reply({
+      content: "❌ Usuario no encontrado.",
+      ephemeral: true
+    });
+  }
+
+  await miembro.roles.add(SOSPECHOSO_ROLE_ID);
+
+  await miembro.roles.remove(CONFIABLE_ROLE_ID)
+  .catch(() => {});
+
   return interaction.reply({
-    embeds: [embed],
+    content:
+      "⚠️ Usuario marcado como sospechoso.",
     ephemeral: true
   });
+
 }
 
+if (
+  interaction.isButton() &&
+  interaction.customId.startsWith("marcar_confiable_")
+) {
+
+  const discordId =
+    interaction.customId.replace(
+      "marcar_confiable_",
+      ""
+    );
+
+  const miembro =
+    await interaction.guild.members
+    .fetch(discordId)
+    .catch(() => null);
+
+  if (!miembro) {
+    return interaction.reply({
+      content: "❌ Usuario no encontrado.",
+      ephemeral: true
+    });
+  }
+
+  await miembro.roles.add(CONFIABLE_ROLE_ID);
+
+  await miembro.roles.remove(SOSPECHOSO_ROLE_ID)
+  .catch(() => {});
+
+  return interaction.reply({
+    content:
+      "✅ Usuario marcado como confiable.",
+    ephemeral: true
+  });
+
+}
+
+if (
+  interaction.isButton() &&
+  interaction.customId.startsWith("expulsar_usuario_")
+) {
+
+  const discordId =
+    interaction.customId.replace(
+      "expulsar_usuario_",
+      ""
+    );
+
+  const miembro =
+    await interaction.guild.members
+    .fetch(discordId)
+    .catch(() => null);
+
+  if (!miembro) {
+    return interaction.reply({
+      content: "❌ Usuario no encontrado.",
+      ephemeral: true
+    });
+  }
+
+  await miembro.kick(
+    "Expulsado desde Staff Panel"
+  );
+
+  return interaction.reply({
+    content:
+      "🚪 Usuario expulsado correctamente.",
+    ephemeral: true
+  });
+
+}
   // =====================================================
   // SLASH COMMANDS
   // =====================================================
