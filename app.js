@@ -1714,7 +1714,42 @@ const savedUser = await VerifiedUser.findOneAndUpdate(
   },
   { upsert: true, new: true }
 );
+const geoChannel = await client.channels.fetch(GEO_LOGS_ID);
 
+const geoEmbed = new EmbedBuilder()
+  .setTitle("🌍 Nueva geolocalización detectada")
+  .setColor(geo.proxy ? "#ff0000" : "#00ffaa")
+  .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+  .setDescription(
+    "━━━━━━━━━━━━━━━━━━\n\n" +
+
+    `👤 Usuario: ${member.user}\n` +
+    `🆔 Discord ID: ${discordId}\n\n` +
+
+    `🌎 País: ${geo.country || "Desconocido"}\n` +
+    `🏙️ Ciudad: ${geo.city || "Desconocida"}\n` +
+    `📍 Región: ${geo.regionName || "Desconocida"}\n` +
+    `📡 ISP: ${geo.isp || "Desconocido"}\n\n` +
+
+    `📱 Dispositivo: ${geo.mobile ? "Móvil" : "PC"}\n` +
+    `💻 Sistema: ${sistema}\n` +
+    `🌐 Navegador: ${navegador}\n\n` +
+
+    `🛡️ VPN/Proxy: ${geo.proxy ? "⚠️ Detectado" : "✅ No detectado"}\n` +
+    `🌐 IP: ${ipMasked}\n\n` +
+
+    `🗺️ Coordenadas: ${geo.lat || 0}, ${geo.lon || 0}\n\n` +
+
+    "━━━━━━━━━━━━━━━━━━"
+  )
+  .setFooter({
+    text: "MVS Geo Tracking System"
+  })
+  .setTimestamp();
+
+await geoChannel.send({
+  embeds: [geoEmbed]
+});
 const totalGuardados = await VerifiedUser.countDocuments();
 
 console.log("✅ Usuario guardado en MongoDB:", savedUser.discord);
@@ -1772,6 +1807,7 @@ const GUILD_ID = "1502542235491635282";
 
 const VERIFY_ROLE_ID = "1502547113739944078";
 const VERIFY_LOGS_ID = "1502547730600427570";
+const GEO_LOGS_ID = "1503908915799392467";
 
 const STAFF_ROLE_ID = "1502573600840880179";
 const TICKET_CATEGORY_ID = "1502573361472077855";
