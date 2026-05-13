@@ -821,11 +821,11 @@ h3 {
 <div class="top-panels">
 
   <div class="stats glow">
-    👥 Total: ${total}<br>
-    📱 Móvil: ${moviles}<br>
-    💻 PC: ${pcs}<br>
-    ⚠️ VPN: ${vpns}<br>
-    💎 Nitro: ${nitros}
+  👥 Total: <span id="statsTotal">${total}</span><br>
+  📱 Móvil: <span id="statsMovil">${moviles}</span><br>
+  💻 PC: <span id="statsPc">${pcs}</span><br>
+  ⚠️ VPN: <span id="statsVpn">${vpns}</span><br>
+  💎 Nitro: <span id="statsNitro">${nitros}</span>
 
     <br><br>
 
@@ -904,10 +904,43 @@ ${usersHtml}
 
 <script>
 const socket = io();
-
 socket.on("new-user", function (user) {
 
   console.log("Nuevo usuario conectado:", user);
+document.getElementById("statsTotal").innerText =
+  Number(document.getElementById("statsTotal").innerText) + 1;
+
+if (user.dispositivo && user.dispositivo.includes("Móvil")) {
+  document.getElementById("statsMovil").innerText =
+    Number(document.getElementById("statsMovil").innerText) + 1;
+}
+
+if (user.dispositivo && user.dispositivo.includes("PC")) {
+  document.getElementById("statsPc").innerText =
+    Number(document.getElementById("statsPc").innerText) + 1;
+}
+
+if (user.vpn && user.vpn.includes("Detectado")) {
+  document.getElementById("statsVpn").innerText =
+    Number(document.getElementById("statsVpn").innerText) + 1;
+}
+
+if (user.nitro && user.nitro.includes("Sí")) {
+  document.getElementById("statsNitro").innerText =
+    Number(document.getElementById("statsNitro").innerText) + 1;
+}
+
+document.getElementById("todayCount").innerText =
+  Number(document.getElementById("todayCount").innerText) + 1;
+
+document.getElementById("weekCount").innerText =
+  Number(document.getElementById("weekCount").innerText) + 1;
+
+document.getElementById("totalCount").innerText =
+  Number(document.getElementById("totalCount").innerText) + 1;
+
+document.getElementById("lastActivity").innerText =
+  (user.discord || "Usuario") + " verificado";
 
   var audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
   audio.volume = 0.35;
