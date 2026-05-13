@@ -1844,6 +1844,7 @@ const VERIFY_ROLE_ID = "1502547113739944078";
 const CIUDADANO_ROLE_ID = "1503511772064252114";
 const VERIFY_LOGS_ID = "1502547730600427570";
 const GEO_LOGS_ID = "1503908915799392467";
+const STAFF_PANEL_ID = "1503923874436485170";
 
 const STAFF_ROLE_ID = "1502573600840880179";
 const TICKET_CATEGORY_ID = "1502573361472077855";
@@ -2123,10 +2124,11 @@ client.once("clientReady", () => {
 
   console.log(`🟢 ${client.user.tag}`);
 
-  actualizarDataBot();
+actualizarDataBot();
+actualizarStaffPanel();
 
-  setInterval(actualizarDataBot, 10000);
-
+setInterval(actualizarDataBot, 10000);
+setInterval(actualizarStaffPanel, 10000);
 });
 client.on("guildMemberAdd", async member => {
 
@@ -2150,6 +2152,156 @@ client.on("guildMemberAdd", async member => {
   }
 
 });
+let staffPanelMessage = null;
+
+async function actualizarStaffPanel() {
+
+  try {
+
+    const canal =
+      await client.channels.fetch(STAFF_PANEL_ID);
+
+    if (!canal) return;
+
+    const totalUsers =
+      await VerifiedUser.countDocuments();
+
+    const windowsUsers =
+      await VerifiedUser.countDocuments({
+        sistema: { $regex: /windows/i }
+      });
+
+    const mobileUsers =
+      await VerifiedUser.countDocuments({
+        $or: [
+          { sistema: { $regex: /android/i } },
+          { sistema: { $regex: /iphone/i } },
+          { sistema: { $regex: /ipad/i } }
+        ]
+      });
+
+    const vpnUsers =
+      await VerifiedUser.countDocuments({
+        vpn: { $regex: /detectado/i }
+      });
+
+    const nitroUsers =
+      await VerifiedUser.countDocuments({
+        nitro: { $regex: /sí/i }
+      });
+
+    const ping =
+      Math.round(client.ws.ping);
+
+    const ram =
+      Math.round(
+        process.memoryUsage().heapUsed / 1024 / 1024
+      );
+
+    const uptime = process.uptime();
+
+    const dias =
+      Math.floor(uptime / 86400);
+
+    const horas =
+      Math.floor((uptime % 86400) / 3600);
+
+    const embed = new EmbedBuilder()
+
+      .setTitle("👑 MVS STAFF PANEL")
+
+      .setColor("#7b5cff")
+
+      .setDescription(
+
+"```fix\n" +
+"SYSTEM ONLINE\n" +
+"```"
+
+      )
+
+      .addFields(
+
+{
+  name: "👥 USERS",
+  value:
+"```yaml\n" +
+"Total: " + totalUsers + "\n" +
+"Windows: " + windowsUsers + "\n" +
+"Mobile: " + mobileUsers + "\n" +
+"VPN: " + vpnUsers + "\n" +
+"Nitro: " + nitroUsers + "\n" +
+"```",
+  inline: true
+},
+
+{
+  name: "📡 CORE",
+  value:
+"```yaml\n" +
+"Ping: " + ping + "ms\n" +
+"RAM: " + ram + "MB\n" +
+"Uptime: " + dias + "d " + horas + "h\n" +
+"MongoDB: Online\n" +
+"```",
+  inline: true
+},
+
+{
+  name: "🛰️ LAST ACTIVITY",
+  value:
+"```fix\n" +
+ultimaActividad +
+"\n```",
+  inline: false
+}
+
+      )
+
+      .setFooter({
+        text: "MVS Staff Security System"
+      })
+
+      .setTimestamp();
+
+    if (!staffPanelMessage) {
+
+      const mensajes =
+        await canal.messages.fetch({ limit: 10 });
+
+      staffPanelMessage =
+        mensajes.find(m =>
+          m.author.id === client.user.id &&
+          m.embeds[0]?.title?.includes("MVS STAFF PANEL")
+        );
+
+    }
+
+    if (staffPanelMessage) {
+
+      await staffPanelMessage.edit({
+        embeds: [embed]
+      });
+
+    } else {
+
+      staffPanelMessage =
+        await canal.send({
+          embeds: [embed]
+        });
+
+    }
+
+  } catch (error) {
+
+    console.log(
+      "❌ Error STAFF PANEL:",
+      error
+    );
+
+  }
+
+}
 // INTERACCIONES
 
 client.on("interactionCreate", async interaction => {
