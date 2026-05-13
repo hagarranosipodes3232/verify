@@ -1816,6 +1816,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  StringSelectMenuBuilder,
   ChannelType,
   PermissionsBitField,
   ModalBuilder,
@@ -2277,21 +2278,39 @@ ultimaActividad +
 
     }
 
-    if (staffPanelMessage) {
+const botones = new ActionRowBuilder()
+.addComponents(
 
-      await staffPanelMessage.edit({
-        embeds: [embed]
-      });
+new ButtonBuilder()
+.setCustomId("staff_review_user")
+.setLabel("Revisar usuario")
+.setEmoji("🔍")
+.setStyle(ButtonStyle.Primary),
 
-    } else {
+new ButtonBuilder()
+.setCustomId("staff_refresh")
+.setLabel("Actualizar")
+.setEmoji("🔄")
+.setStyle(ButtonStyle.Secondary)
 
-      staffPanelMessage =
-        await canal.send({
-          embeds: [embed]
-        });
+);
 
-    }
+if (staffPanelMessage) {
 
+  await staffPanelMessage.edit({
+    embeds: [embed],
+    components: [botones]
+  });
+
+} else {
+
+  staffPanelMessage =
+    await canal.send({
+      embeds: [embed],
+      components: [botones]
+    });
+
+}
   } catch (error) {
 
     console.log(
@@ -2305,6 +2324,127 @@ ultimaActividad +
 // INTERACCIONES
 
 client.on("interactionCreate", async interaction => {
+if (interaction.isButton() && interaction.customId === "staff_review_user") {
+
+  const users = await VerifiedUser.find()
+    .sort({ updatedAt: -1 })
+    .limit(25);
+
+  if (!users.length) {
+    return interaction.reply({
+      content: "❌ No hay usuarios verificados para revisar.",
+      ephemeral: true
+    });
+  }
+
+  const menu = new StringSelectMenuBuilder()
+    .setCustomId("staff_select_review_user")
+    .setPlaceholder("Seleccioná un usuario para revisar")
+    .addOptions(
+      users.map(u => ({
+        label: (u.discord || "Usuario").slice(0, 100),
+        description: `ID: ${u.discordId}`.slice(0, 100),
+        value: String(u.discordId)
+      }))
+    );
+
+  const row = new ActionRowBuilder().addComponents(menu);
+
+  return interaction.reply({
+    content: "🔍 Elegí el usuario que querés revisar:",
+    components: [row],
+    ephemeral: true
+  });
+}
+
+if (interaction.isStringSelectMenu() && interaction.customId === "staff_select_review_user") {
+
+  const discordId = interaction.values[0];
+
+  const data = await VerifiedUser.findOne({ discordId });
+
+  const miembro = await interaction.guild.members
+    .fetch(discordId)
+    .catch(() => null);
+
+  let riesgoPuntos = 0;
+  let motivos = [];
+
+  if (!miembro) {
+    riesgoPuntos += 2;
+    motivos.push("❌ No está en el servidor");
+  }
+
+  if (data?.vpn?.includes("Detectado")) {
+    riesgoPuntos += 3;
+    motivos.push("🛡️ VPN/Proxy detectado");
+  }
+
+  if (data?.sospechosa?.includes("Posible")) {
+    riesgoPuntos += 3;
+    motivos.push("⚠️ Cuenta Roblox sospechosa");
+  }
+
+  if (miembro) {
+    const diasDiscord = Math.floor(
+      (Date.now() - miembro.user.createdTimestamp) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diasDiscord < 7) {
+      riesgoPuntos += 3;
+      motivos.push("⚠️ Discord creado hace menos de 7 días");
+    } else if (diasDiscord < 30) {
+      riesgoPuntos += 1;
+      motivos.push("⚠️ Discord creado hace menos de 30 días");
+    }
+  }
+
+  let estadoRiesgo = "🟢 Bajo";
+  let color = "#00ffaa";
+
+  if (riesgoPuntos >= 3) {
+    estadoRiesgo = "🟠 Medio";
+    color = "#ffaa00";
+  }
+
+  if (riesgoPuntos >= 6) {
+    estadoRiesgo = "🔴 Alto / Peligroso";
+    color = "#ff0000";
+  }
+
+  const fechaDiscord = miembro
+    ? `<t:${Math.floor(miembro.user.createdTimestamp / 1000)}:F>`
+    : "No disponible";
+
+  const embed = new EmbedBuilder()
+    .setTitle("🔍 Revisión de Usuario")
+    .setColor(color)
+    .setThumbnail(
+      miembro
+        ? miembro.user.displayAvatarURL({ extension: "png", size: 256 })
+        : null
+    )
+    .setDescription(
+      `👤 **Usuario:** ${miembro ? miembro.user : data?.discord || "No disponible"}\n` +
+      `🆔 **Discord ID:** \`${discordId}\`\n\n` +
+
+      `📅 **Cuenta Discord creada:**\n${fechaDiscord}\n\n` +
+
+      `📡 **Verificado:** ${data ? "✅ Sí" : "❌ No"}\n` +
+      `⚠️ **Cuenta sospechosa:** ${data?.sospechosa || "No disponible"}\n` +
+      `🛡️ **VPN/Proxy:** ${data?.vpn || "No disponible"}\n\n` +
+
+      `🚨 **Riesgo:** ${estadoRiesgo}\n\n` +
+      `📌 **Motivos:**\n${motivos.length ? motivos.join("\n") : "✅ Sin alertas importantes"}`
+    )
+    .setFooter({ text: "MVS Staff Review System" })
+    .setTimestamp();
+
+  return interaction.reply({
+    embeds: [embed],
+    ephemeral: true
+  });
+}
 
   // =====================================================
   // SLASH COMMANDS
@@ -2790,6 +2930,11 @@ if (interaction.commandName === "stats") {
 
       const botones = new ActionRowBuilder()
         .addComponents(
+new ButtonBuilder()
+.setCustomId("staff_review_user")
+.setLabel("Revisar usuario")
+.setEmoji("🔍")
+.setStyle(ButtonStyle.Primary),
 
           new ButtonBuilder()
             .setCustomId("verify")
