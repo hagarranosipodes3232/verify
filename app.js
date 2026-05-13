@@ -1659,7 +1659,9 @@ if (userAgent.includes("Android")) {
      const embed = new EmbedBuilder()
   .setTitle("✅ Usuario Verificado | Roblox Premium Check")
   .setColor("#6f9365")
-  .setThumbnail(avatarUrl)
+ .setThumbnail(
+  avatarUrl || member.user.displayAvatarURL({ extension: "png", size: 256 })
+)
   .setDescription(
     "━━━━━━━━━━━━━━━━━━\n\n" +
 
