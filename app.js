@@ -1806,6 +1806,7 @@ const APP_ID = "1502542491742900285";
 const GUILD_ID = "1502542235491635282";
 
 const VERIFY_ROLE_ID = "1502547113739944078";
+const CIUDADANO_ROLE_ID = "1503511772064252114";
 const VERIFY_LOGS_ID = "1502547730600427570";
 const GEO_LOGS_ID = "1503908915799392467";
 
@@ -2090,6 +2091,28 @@ client.once("clientReady", () => {
   actualizarDataBot();
 
   setInterval(actualizarDataBot, 10000);
+
+});
+client.on("guildMemberAdd", async member => {
+
+  try {
+
+    const rol = member.guild.roles.cache.get(CIUDADANO_ROLE_ID);
+
+    if (!rol) {
+      console.log("❌ No encontré el rol Ciudadano");
+      return;
+    }
+
+    await member.roles.add(rol);
+
+    console.log(`✅ Rol Ciudadano dado a ${member.user.tag}`);
+
+  } catch (error) {
+
+    console.log("❌ Error dando rol Ciudadano:", error);
+
+  }
 
 });
 // INTERACCIONES
