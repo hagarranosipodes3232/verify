@@ -1907,66 +1907,7 @@ function parseTopic(topic = "") {
 const commands = [
 new SlashCommandBuilder()
   .setName("embedcompra")
-  .setDescription("Crear embed de compras")
-
-  .addStringOption(option =>
-    option
-      .setName("titulo")
-      .setDescription("Título")
-      .setRequired(true)
-  )
-
-  .addStringOption(option =>
-    option
-      .setName("descripcion")
-      .setDescription("Descripción")
-      .setRequired(true)
-  )
-
-  .addStringOption(option =>
-    option
-      .setName("imagen")
-      .setDescription("URL imagen")
-      .setRequired(false)
-  )
-
-  .addStringOption(option =>
-    option
-      .setName("color")
-      .setDescription("Color HEX")
-      .setRequired(false)
-  ),
-new SlashCommandBuilder()
-  .setName("embed")
-  .setDescription("Crear un embed personalizado")
-
-  .addStringOption(option =>
-    option
-      .setName("titulo")
-      .setDescription("Título del embed")
-      .setRequired(true)
-  )
-
-  .addStringOption(option =>
-    option
-      .setName("descripcion")
-      .setDescription("Descripción")
-      .setRequired(true)
-  )
-
-  .addStringOption(option =>
-    option
-      .setName("imagen")
-      .setDescription("URL de imagen")
-      .setRequired(false)
-  )
-
-  .addStringOption(option =>
-    option
-      .setName("color")
-      .setDescription("Color HEX ejemplo #00ffaa")
-      .setRequired(false)
-  ),
+  .setDescription("Crear un embed premium de compras"),
 new SlashCommandBuilder()
   .setName("ban")
   .setDescription("Banear a un usuario")
@@ -2430,38 +2371,97 @@ if (
   interaction.commandName === "embedcompra"
 ) {
 
+  const modal = new ModalBuilder()
+    .setCustomId("modal_embed_compra")
+    .setTitle("Crear Embed Compra");
+
+  const titulo = new TextInputBuilder()
+    .setCustomId("titulo")
+    .setLabel("Título")
+    .setStyle(TextInputStyle.Short)
+    .setRequired(true);
+
+  const descripcion = new TextInputBuilder()
+    .setCustomId("descripcion")
+    .setLabel("Descripción")
+    .setStyle(TextInputStyle.Paragraph)
+    .setRequired(true);
+
+  const imagen = new TextInputBuilder()
+    .setCustomId("imagen")
+    .setLabel("Logo URL")
+    .setStyle(TextInputStyle.Short)
+    .setRequired(false);
+
+  const banner = new TextInputBuilder()
+    .setCustomId("banner")
+    .setLabel("Banner URL")
+    .setStyle(TextInputStyle.Short)
+    .setRequired(false);
+
+  const row1 =
+    new ActionRowBuilder().addComponents(titulo);
+
+  const row2 =
+    new ActionRowBuilder().addComponents(descripcion);
+
+  const row3 =
+    new ActionRowBuilder().addComponents(imagen);
+
+  const row4 =
+    new ActionRowBuilder().addComponents(banner);
+
+  modal.addComponents(
+    row1,
+    row2,
+    row3,
+    row4
+  );
+
+  return interaction.showModal(modal);
+
+}
+if (
+  interaction.isModalSubmit() &&
+  interaction.customId === "modal_embed_compra"
+) {
+
   const titulo =
-    interaction.options.getString("titulo");
+    interaction.fields.getTextInputValue("titulo");
 
   const descripcion =
-    interaction.options.getString("descripcion");
+    interaction.fields.getTextInputValue("descripcion");
 
   const imagen =
-    interaction.options.getString("imagen");
+    interaction.fields.getTextInputValue("imagen");
 
-  const color =
-    interaction.options.getString("color") || "#00ffaa";
+  const banner =
+    interaction.fields.getTextInputValue("banner");
 
   const embed = new EmbedBuilder()
     .setTitle(titulo)
     .setDescription(descripcion)
-    .setColor(color)
+    .setColor("#00ffaa")
     .setTimestamp();
 
   if (imagen) {
     embed.setThumbnail(imagen);
   }
 
+  if (banner) {
+    embed.setImage(banner);
+  }
+
   const row = new ActionRowBuilder()
-  .addComponents(
+    .addComponents(
 
-    new ButtonBuilder()
-      .setCustomId("ticket_compras")
-      .setLabel("Comprar aquí")
-      .setEmoji("🛒")
-      .setStyle(ButtonStyle.Success)
+      new ButtonBuilder()
+        .setCustomId("ticket_compras")
+        .setLabel("Comprar aquí")
+        .setEmoji("🛒")
+        .setStyle(ButtonStyle.Success)
 
-  );
+    );
 
   await interaction.channel.send({
     embeds: [embed],
@@ -2469,7 +2469,7 @@ if (
   });
 
   return interaction.reply({
-    content: "✅ Embed de compras enviado.",
+    content: "✅ Embed compra enviado.",
     ephemeral: true
   });
 
