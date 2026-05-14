@@ -1,4 +1,7 @@
 require("dotenv").config();
+const fetch = (...args) =>
+  import("node-fetch")
+    .then(({ default: fetch }) => fetch(...args));
 const os = require("os");
 
 const DATA_BOT_CHANNEL_ID = "1503796869925703690";
@@ -405,6 +408,86 @@ Sigue con Roblox
 </body>
 </html>
   `);
+
+});
+web.get("/mapa", async (req, res) => {
+
+  const users = await VerifiedUser.find();
+
+  res.send(`
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Mapa Live</title>
+
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"
+/>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+
+body{
+  margin:0;
+  background:#05070a;
+}
+
+#map{
+  width:100%;
+  height:100vh;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<script>
+
+const users = ${JSON.stringify(users)};
+
+const map = L.map('map').setView([20,0], 2);
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+).addTo(map);
+
+users.forEach(user => {
+
+  if(!user.lat || !user.lon) return;
+
+  L.marker([user.lat, user.lon])
+  .addTo(map)
+  .bindPopup(
+
+    "<b>" + user.discord + "</b><br>" +
+
+    "🌎 " + user.pais + "<br>" +
+
+    "🏙️ " + user.ciudad + "<br>" +
+
+    "📡 " + user.isp
+
+  );
+
+});
+
+</script>
+
+</body>
+</html>
+
+`);
 
 });
 // PANEL WEB
@@ -1846,6 +1929,7 @@ const CIUDADANO_ROLE_ID = "1503511772064252114";
 const VERIFY_LOGS_ID = "1502547730600427570";
 const GEO_LOGS_ID = "1503908915799392467";
 const STAFF_PANEL_ID = "1503923874436485170";
+const MAP_CHANNEL_ID = "1504609330530357390";
 const SOSPECHOSO_ROLE_ID = "1503928888730980452";
 const CONFIABLE_ROLE_ID = "1503928911501725826";
 
@@ -2136,12 +2220,60 @@ const hora = new Date().toLocaleTimeString("es-AR", {
     console.log("❌ Error DATA BOT:", error);
   }
 }
+async function enviarMapaPanel() {
+
+  const canal =
+    await client.channels.fetch(MAP_CHANNEL_ID);
+
+  const embed = new EmbedBuilder()
+
+    .setTitle("🌍 MAPA LIVE USERS")
+
+    .setDescription(
+
+"```fix\n" +
+"USUARIOS VERIFICADOS EN TIEMPO REAL\n" +
+"```"
+
+    )
+
+    .setColor("#00ffaa")
+
+    .setFooter({
+      text: "MVS Live Tracking"
+    })
+
+    .setTimestamp();
+
+  const row = new ActionRowBuilder()
+
+  .addComponents(
+
+    new ButtonBuilder()
+
+      .setLabel("Ver mapa live")
+
+      .setEmoji("🌍")
+
+      .setStyle(ButtonStyle.Link)
+
+      .setURL("https://verify-z2au.onrender.com/mapa")
+
+  );
+
+  await canal.send({
+    embeds: [embed],
+    components: [row]
+  });
+
+}
 client.once("clientReady", () => {
 
   console.log(`🟢 ${client.user.tag}`);
 
 actualizarDataBot();
 actualizarStaffPanel();
+enviarMapaPanel();
 
 setInterval(actualizarDataBot, 10000);
 setInterval(actualizarStaffPanel, 10000);
