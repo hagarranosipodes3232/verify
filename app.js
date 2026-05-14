@@ -3555,7 +3555,7 @@ if (interaction.isModalSubmit()) {
 
 const dmEmbed = new EmbedBuilder()
   .setAuthor({
-    name: "Reskate Roleplay | Soporte",
+    name: "${interaction.guild.name} | Soporte",
     iconURL: interaction.guild.iconURL()
   })
   .setTitle("📩 Tu ticket fue cerrado")
