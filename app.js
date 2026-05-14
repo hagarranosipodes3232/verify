@@ -3184,7 +3184,6 @@ if (!searchData.data || searchData.data.length === 0) {
   return interaction.editReply("❌ No encontré ese usuario de Roblox.");
 }
 
-const robloxUser = searchData.data[0];
 
 return interaction.editReply(
   `✅ Usuario encontrado: **${robloxUser.name}**\n🆔 ID: \`${robloxUser.id}\``
