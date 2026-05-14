@@ -1906,6 +1906,37 @@ function parseTopic(topic = "") {
 
 const commands = [
 new SlashCommandBuilder()
+  .setName("embedcompra")
+  .setDescription("Crear embed de compras")
+
+  .addStringOption(option =>
+    option
+      .setName("titulo")
+      .setDescription("Título")
+      .setRequired(true)
+  )
+
+  .addStringOption(option =>
+    option
+      .setName("descripcion")
+      .setDescription("Descripción")
+      .setRequired(true)
+  )
+
+  .addStringOption(option =>
+    option
+      .setName("imagen")
+      .setDescription("URL imagen")
+      .setRequired(false)
+  )
+
+  .addStringOption(option =>
+    option
+      .setName("color")
+      .setDescription("Color HEX")
+      .setRequired(false)
+  ),
+new SlashCommandBuilder()
   .setName("embed")
   .setDescription("Crear un embed personalizado")
 
@@ -2390,6 +2421,55 @@ if (
 
   return interaction.reply({
     content: "✅ Embed enviado.",
+    ephemeral: true
+  });
+
+}
+if (
+  interaction.isChatInputCommand() &&
+  interaction.commandName === "embedcompra"
+) {
+
+  const titulo =
+    interaction.options.getString("titulo");
+
+  const descripcion =
+    interaction.options.getString("descripcion");
+
+  const imagen =
+    interaction.options.getString("imagen");
+
+  const color =
+    interaction.options.getString("color") || "#00ffaa";
+
+  const embed = new EmbedBuilder()
+    .setTitle(titulo)
+    .setDescription(descripcion)
+    .setColor(color)
+    .setTimestamp();
+
+  if (imagen) {
+    embed.setThumbnail(imagen);
+  }
+
+  const row = new ActionRowBuilder()
+  .addComponents(
+
+    new ButtonBuilder()
+      .setCustomId("ticket_compras")
+      .setLabel("Comprar aquí")
+      .setEmoji("🛒")
+      .setStyle(ButtonStyle.Success)
+
+  );
+
+  await interaction.channel.send({
+    embeds: [embed],
+    components: [row]
+  });
+
+  return interaction.reply({
+    content: "✅ Embed de compras enviado.",
     ephemeral: true
   });
 
