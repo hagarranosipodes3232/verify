@@ -3162,19 +3162,40 @@ if (interaction.commandName === "roblox") {
  console.log("COMANDO ROBLOX EJECUTADO");
 
   const username = interaction.options.getString("username");
-
-  const searchResponse = await 
 console.log("BUSCANDO USER ROBLOX");
-fetch("https://users.roblox.com/v1/usernames/users", {
+
+const searchResponse = await fetch(
+  "https://users.roblox.com/v1/usernames/users",
+  {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
       usernames: [username],
       excludeBannedUsers: false
     })
-  });
+  }
+);
+const searchData = await searchResponse.json();
 
-  const searchData = await searchResponse.json();
+console.log("ROBLOX DATA:", searchData);
+
+if (!searchData.data || searchData.data.length === 0) {
+  return interaction.editReply("❌ No encontré ese usuario de Roblox.");
+}
+
+const robloxUser = searchData.data[0];
+
+return interaction.editReply(
+  `✅ Usuario encontrado: **${robloxUser.name}**\n🆔 ID: \`${robloxUser.id}\``
+);
+
+const searchData = await searchResponse.json();
+
+console.log(searchData);
+
+   const searchData = await searchResponse.json();
 console.log("ROBLOX DATA:", searchData);
 console.log("ENVIANDO RESPUESTA");
   if (!searchData.data || searchData.data.length === 0) {
