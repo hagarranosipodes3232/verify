@@ -3191,8 +3191,6 @@ return interaction.editReply(
   `✅ Usuario encontrado: **${robloxUser.name}**\n🆔 ID: \`${robloxUser.id}\``
 );
 
-const searchData = await searchResponse.json();
-
 console.log(searchData);
 
    const searchData = await searchResponse.json();
