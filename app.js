@@ -1909,6 +1909,16 @@ new SlashCommandBuilder()
   .setName("embedcompra")
   .setDescription("Crear un embed premium de compras"),
 new SlashCommandBuilder()
+  .setName("say")
+  .setDescription("Hacer que el bot diga algo")
+
+  .addStringOption(option =>
+    option
+      .setName("mensaje")
+      .setDescription("Mensaje")
+      .setRequired(true)
+  ),
+new SlashCommandBuilder()
   .setName("ban")
   .setDescription("Banear a un usuario")
   .addUserOption(option =>
@@ -2329,6 +2339,22 @@ if (staffPanelMessage) {
 // INTERACCIONES
 
 client.on("interactionCreate", async interaction => {
+if (
+  interaction.isChatInputCommand() &&
+  interaction.commandName === "say"
+) {
+
+  const mensaje =
+    interaction.options.getString("mensaje");
+
+  await interaction.channel.send(mensaje);
+
+  return interaction.reply({
+    content: "✅ Mensaje enviado.",
+    ephemeral: true
+  });
+
+}
 if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "embed"
