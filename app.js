@@ -3177,7 +3177,6 @@ const searchResponse = await fetch(
     })
   }
 );
-const searchData = await searchResponse.json();
 
 console.log("ROBLOX DATA:", searchData);
 
