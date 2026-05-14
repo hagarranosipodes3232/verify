@@ -3561,7 +3561,7 @@ const dmEmbed = new EmbedBuilder()
   .setTitle("📩 Tu ticket fue cerrado")
   .setDescription(
     `Hola <@${topicData.owner}>!\n\n` +
-    `Gracias por contactarte con el soporte de **Reskate RP**.\n\n` +
+    `Gracias por contactarte con el soporte de **${interaction.guild.name}**.\n\n` +
     `Tu ticket **${interaction.channel.name}** fue cerrado por ${interaction.user}.\n\n` +
     `🔎 Adjuntamos el **transcript** del ticket.\n\n` +
     `📝 **Razón:**\n${razon}\n\n` +
