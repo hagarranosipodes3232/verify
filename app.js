@@ -1906,6 +1906,37 @@ function parseTopic(topic = "") {
 
 const commands = [
 new SlashCommandBuilder()
+  .setName("embed")
+  .setDescription("Crear un embed personalizado")
+
+  .addStringOption(option =>
+    option
+      .setName("titulo")
+      .setDescription("Título del embed")
+      .setRequired(true)
+  )
+
+  .addStringOption(option =>
+    option
+      .setName("descripcion")
+      .setDescription("Descripción")
+      .setRequired(true)
+  )
+
+  .addStringOption(option =>
+    option
+      .setName("imagen")
+      .setDescription("URL de imagen")
+      .setRequired(false)
+  )
+
+  .addStringOption(option =>
+    option
+      .setName("color")
+      .setDescription("Color HEX ejemplo #00ffaa")
+      .setRequired(false)
+  ),
+new SlashCommandBuilder()
   .setName("ban")
   .setDescription("Banear a un usuario")
   .addUserOption(option =>
@@ -2326,6 +2357,43 @@ if (staffPanelMessage) {
 // INTERACCIONES
 
 client.on("interactionCreate", async interaction => {
+if (
+  interaction.isChatInputCommand() &&
+  interaction.commandName === "embed"
+) {
+
+  const titulo =
+    interaction.options.getString("titulo");
+
+  const descripcion =
+    interaction.options.getString("descripcion");
+
+  const imagen =
+    interaction.options.getString("imagen");
+
+  const color =
+    interaction.options.getString("color") || "#00ffaa";
+
+  const embed = new EmbedBuilder()
+    .setTitle(titulo)
+    .setDescription(descripcion)
+    .setColor(color)
+    .setTimestamp();
+
+  if (imagen) {
+    embed.setThumbnail(imagen);
+  }
+
+  await interaction.channel.send({
+    embeds: [embed]
+  });
+
+  return interaction.reply({
+    content: "✅ Embed enviado.",
+    ephemeral: true
+  });
+
+}
 if (interaction.isButton() && interaction.customId === "staff_review_user") {
 
   const users = await VerifiedUser.find()
@@ -2577,7 +2645,43 @@ if (
   // =====================================================
   // SLASH COMMANDS
   // =====================================================
+if (
+  interaction.isChatInputCommand() &&
+  interaction.commandName === "embed"
+) {
 
+  const titulo =
+    interaction.options.getString("titulo");
+
+  const descripcion =
+    interaction.options.getString("descripcion");
+
+  const imagen =
+    interaction.options.getString("imagen");
+
+  const color =
+    interaction.options.getString("color") || "#00ffaa";
+
+  const embed = new EmbedBuilder()
+    .setTitle(titulo)
+    .setDescription(descripcion)
+    .setColor(color)
+    .setTimestamp();
+
+  if (imagen) {
+    embed.setThumbnail(imagen);
+  }
+
+  await interaction.channel.send({
+    embeds: [embed]
+  });
+
+  return interaction.reply({
+    content: "✅ Embed enviado.",
+    ephemeral: true
+  });
+
+}
   if (interaction.isChatInputCommand()) {
 if (interaction.commandName === "ban") {
   if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
