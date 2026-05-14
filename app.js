@@ -3897,7 +3897,7 @@ if (interaction.isModalSubmit()) {
 
 const dmEmbed = new EmbedBuilder()
   .setAuthor({
-    name: "${interaction.guild.name} | Soporte",
+    name: "Roblox ┃ Soporte",
     iconURL: interaction.guild.iconURL()
   })
   .setTitle("📩 Tu ticket fue cerrado")
