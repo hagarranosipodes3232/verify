@@ -3159,10 +3159,13 @@ if (interaction.commandName === "scan") {
 if (interaction.commandName === "roblox") {
 
   await interaction.deferReply();
+ console.log("COMANDO ROBLOX EJECUTADO");
 
   const username = interaction.options.getString("username");
 
-  const searchResponse = await fetch("https://users.roblox.com/v1/usernames/users", {
+  const searchResponse = await 
+console.log("BUSCANDO USER ROBLOX");
+fetch("https://users.roblox.com/v1/usernames/users", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -3172,7 +3175,8 @@ if (interaction.commandName === "roblox") {
   });
 
   const searchData = await searchResponse.json();
-
+console.log("ROBLOX DATA:", searchData);
+console.log("ENVIANDO RESPUESTA");
   if (!searchData.data || searchData.data.length === 0) {
     return interaction.editReply("❌ No encontré ese usuario de Roblox.");
   }
@@ -4373,4 +4377,4 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
   });
 
 });
-client.login(process.env.TOKEN)
+client.login(process.env.TOKEN
