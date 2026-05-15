@@ -717,6 +717,9 @@ body::after {
   gap: 20px;
 }
 .card {
+  width: 500px;
+  background: #24262b;
+  border-radius: 18px;
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(123,92,255,.25);
@@ -3005,8 +3008,7 @@ if (
   // =====================================================
 if (
   interaction.isChatInputCommand() &&
-  interaction.commandName === "embed"
-) {
+  ) {
 
   const titulo =
     interaction.options.getString("titulo");
