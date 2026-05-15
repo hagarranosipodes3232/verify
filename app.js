@@ -7,6 +7,7 @@ const os = require("os");
 const DATA_BOT_CHANNEL_ID = "1503796869925703690";
 let dataBotMessage = null;
 let ultimaActividad = "Esperando actividad...";
+const carritos = {};
 const express = require("express");
 const mongoose = require("mongoose");
 const http = require("http");
@@ -1990,6 +1991,9 @@ function parseTopic(topic = "") {
 
 const commands = [
 new SlashCommandBuilder()
+  .setName("carrito")
+  .setDescription("Ver tu carrito"),
+new SlashCommandBuilder()
   .setName("embedcompra")
   .setDescription("Crear un embed premium de compras"),
 new SlashCommandBuilder()
@@ -2496,13 +2500,85 @@ if (staffPanelMessage) {
 // INTERACCIONES
 
 client.on("interactionCreate", async interaction => {
-if (
-  interaction.isChatInputCommand() &&
-  interaction.commandName === "say"
-) {
+if (interaction.isButton() && interaction.customId === "cart_add") {
+  const userId = interaction.user.id;
 
-  const mensaje =
-    interaction.options.getString("mensaje");
+  if (!carritos[userId]) carritos[userId] = [];
+
+  const embed = interaction.message.embeds[0];
+
+  carritos[userId].push({
+    nombre: embed.title || "Producto",
+    precio: embed.description || "Sin precio"
+  });
+
+  return interaction.reply({
+    content: "🛒 Producto añadido al carrito.",
+    ephemeral: true
+  });
+}
+
+if (interaction.isButton() && interaction.customId === "clear_cart") {
+  carritos[interaction.user.id] = [];
+
+  return interaction.reply({
+    content: "🗑️ Carrito vaciado.",
+    ephemeral: true
+  });
+}
+
+if (interaction.isButton() && interaction.customId === "finish_buy") {
+  return interaction.reply({
+    content: "💳 Compra finalizada. Abrí un ticket para completar el pago.",
+    ephemeral: true
+  });
+}
+
+if (interaction.isChatInputCommand() && interaction.commandName === "carrito") {
+  const carrito = carritos[interaction.user.id] || [];
+
+  if (carrito.length === 0) {
+    return interaction.reply({
+      content: "🛒 Tu carrito está vacío.",
+      ephemeral: true
+    });
+  }
+
+  let texto = "";
+
+  carrito.forEach((p, i) => {
+    texto += `${i + 1}. ${p.nombre}\n`;
+  });
+
+  const embed = new EmbedBuilder()
+    .setTitle("🛒 TU CARRITO")
+    .setDescription(texto)
+    .setColor("#00ffaa")
+    .setFooter({ text: "MVS SHOP SYSTEM" });
+
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("finish_buy")
+      .setLabel("Finalizar compra")
+      .setEmoji("💳")
+      .setStyle(ButtonStyle.Success),
+
+    new ButtonBuilder()
+      .setCustomId("clear_cart")
+      .setLabel("Vaciar carrito")
+      .setEmoji("🗑️")
+      .setStyle(ButtonStyle.Danger)
+  );
+
+  return interaction.reply({
+    embeds: [embed],
+    components: [row],
+    ephemeral: true
+  });
+}
+
+if (interaction.isChatInputCommand() && interaction.commandName === "say") {
+  const mensaje = interaction.options.getString("mensaje");
 
   await interaction.channel.send(mensaje);
 
@@ -2510,7 +2586,6 @@ if (
     content: "✅ Mensaje enviado.",
     ephemeral: true
   });
-
 }
 if (
   interaction.isChatInputCommand() &&
@@ -2538,9 +2613,29 @@ if (
   if (imagen) {
     embed.setThumbnail(imagen);
   }
+const row = new ActionRowBuilder()
 
-  await interaction.channel.send({
-    embeds: [embed]
+.addComponents(
+
+new ButtonBuilder()
+.setCustomId("cart_add")
+.setLabel("Añadir al carrito")
+.setEmoji("🛒")
+.setStyle(ButtonStyle.Success),
+
+new ButtonBuilder()
+.setCustomId("buy_now")
+.setLabel("Comprar ahora")
+.setEmoji("💳")
+.setStyle(ButtonStyle.Primary)
+
+);
+
+await interaction.channel.send({
+  embeds: [embed],
+  components: [row]
+});
+      embeds: [embed]
   });
 
   return interaction.reply({
