@@ -2220,6 +2220,8 @@ const hora = new Date().toLocaleTimeString("es-AR", {
     console.log("❌ Error DATA BOT:", error);
   }
 }
+let mapaMessage = null;
+
 async function enviarMapaPanel() {
 
   const canal =
@@ -2230,11 +2232,9 @@ async function enviarMapaPanel() {
     .setTitle("🌍 MAPA LIVE USERS")
 
     .setDescription(
-
-"```fix\n" +
-"USUARIOS VERIFICADOS EN TIEMPO REAL\n" +
-"```"
-
+      "```fix\n" +
+      "USUARIOS VERIFICADOS EN TIEMPO REAL\n" +
+      "```"
     )
 
     .setColor("#00ffaa")
@@ -2247,24 +2247,49 @@ async function enviarMapaPanel() {
 
   const row = new ActionRowBuilder()
 
-  .addComponents(
+    .addComponents(
 
-    new ButtonBuilder()
+      new ButtonBuilder()
 
-      .setLabel("Ver mapa live")
+        .setLabel("Ver mapa live")
 
-      .setEmoji("🌍")
+        .setEmoji("🌍")
 
-      .setStyle(ButtonStyle.Link)
+        .setStyle(ButtonStyle.Link)
 
-      .setURL("https://verify-z2au.onrender.com/mapa")
+        .setURL(
+          "https://verify-z2au.onrender.com/mapa"
+        )
 
-  );
+    );
 
-  await canal.send({
-    embeds: [embed],
-    components: [row]
-  });
+  if (!mapaMessage) {
+
+    const mensajes =
+      await canal.messages.fetch({ limit: 10 });
+
+    mapaMessage = mensajes.find(m =>
+      m.author.id === client.user.id &&
+      m.embeds[0]?.title?.includes("MAPA LIVE USERS")
+    );
+
+  }
+
+  if (mapaMessage) {
+
+    await mapaMessage.edit({
+      embeds: [embed],
+      components: [row]
+    });
+
+  } else {
+
+    mapaMessage = await canal.send({
+      embeds: [embed],
+      components: [row]
+    });
+
+  }
 
 }
 client.once("clientReady", () => {
