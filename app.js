@@ -2969,8 +2969,28 @@ if (
   // =====================================================
 if (
   interaction.isChatInputCommand() &&
-   {
-const nombreJuego =
+  interaction.commandName === "embedcompra"
+) {
+
+  const nombreJuego =
+    interaction.options.getString("titulo");
+
+  const descripcion =
+    interaction.options.getString("descripcion");
+
+  const imagen =
+    interaction.options.getString("imagen");
+
+  const color =
+    interaction.options.getString("color") || "#00ffaa";
+
+  const embed = new EmbedBuilder()
+    .setTitle(nombreJuego)
+    .setDescription(descripcion)
+    .setColor(color)
+    .setTimestamp();
+
+}
   interaction.options.getString("titulo");
 
   const descripcion =
