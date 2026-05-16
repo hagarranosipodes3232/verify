@@ -2579,12 +2579,55 @@ if (
     embeds: [embed]
   });
 }
-
 if (
   interaction.isButton() &&
   interaction.customId === "close_ticket"
 ) {
-  const embed = new EmbedBuilder()
+
+  const modal = new ModalBuilder()
+    .setCustomId("modal_close_ticket")
+    .setTitle("Cerrar ticket");
+
+  const razon = new TextInputBuilder()
+    .setCustomId("razon")
+    .setLabel("Razón del cierre")
+    .setStyle(TextInputStyle.Paragraph)
+    .setRequired(true);
+
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(razon)
+  );
+
+  return interaction.showModal(modal);
+}
+if (
+  interaction.isModalSubmit() &&
+  interaction.customId === "modal_close_ticket"
+) {
+
+  const razon =
+    interaction.fields.getTextInputValue("razon");
+const embed = new EmbedBuilder()
+  .setTitle("🔒 Ticket cerrado")
+  .setDescription(
+    `## Ticket cerrado por ${interaction.user}\n\n` +
+    `📄 Razón:\n` +
+    "```yaml\n" +
+    razon +
+    "\n```"
+  )
+  .setColor("#ff004c")
+  .setTimestamp();
+
+await interaction.reply({
+  embeds: [embed]
+});
+
+setTimeout(() => {
+  interaction.channel.delete().catch(() => {});
+}, 5000);
+}
+    const embed = new EmbedBuilder()
     .setTitle("🔒 Ticket cerrado")
     .setDescription(
       "Este ticket se cerrará en 5 segundos.\n\nGracias por usar el sistema de soporte."
