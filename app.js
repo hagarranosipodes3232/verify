@@ -2674,7 +2674,7 @@ if (
   interaction.commandName === "embed"
 ) {
 
-  const titulo =
+ const titulo =
     interaction.options.getString("titulo");
 
   const descripcion =
