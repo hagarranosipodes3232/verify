@@ -4421,7 +4421,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
     const cambios = [];
 
     if (oldState.serverMute !== newState.serverMute) {
-      cambios.push(newState.serverMute ? "🔇 Fue silenciado por el servidor" : "🔊 Se le quitó el silencio del servidor");
+      cambios.push(newState.serverMute ? "🔇 Fue silenciado por el servidor" : "🔊 Se le quito el silencio del servidor");
     }
 
     if (oldState.serverDeaf !== newState.serverDeaf) {
