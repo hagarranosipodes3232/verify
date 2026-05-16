@@ -3377,7 +3377,7 @@ if (
   const color =
     interaction.options.getString("color") || "#00ffaa";
 
-  const embed = new EmbedBuilder()
+  const closeEmbed = new EmbedBuilder()
     .setTitle(titulo)
     .setDescription(descripcion)
     .setColor(color)
