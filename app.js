@@ -2621,7 +2621,7 @@ const searchData = await searchResponse.json();
 const juego = searchData.searchResults?.find(
   r => r.contentType === "Game"
 );
-  if (!juego) }
+  if (!juego)
     return interaction.editReply("❌ No encontré ese juego en Roblox.");
   }
 
