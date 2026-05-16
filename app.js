@@ -1991,17 +1991,15 @@ function parseTopic(topic = "") {
   return data;
 }
 // COMANDOS
-
-const commands = [
-new SlashCommandBuilder()
-  .setName("juego")
-  .setDescription("Buscar un juego de Roblox")
-  .addStringOption(option =>
-    option
-      .setName("nombre")
-      .setDescription("Nombre del juego")
-      .setRequired(true)
-  ),
+if (
+  interaction.isChatInputCommand() &&
+  interaction.commandName === "embedcompra"
+) {
+  await interaction.reply({
+    content: "🛒 Sistema de compra funcionando.",
+    ephemeral: true
+  });
+}
 new SlashCommandBuilder()
   .setName("carrito")
   .setDescription("Ver tu carrito"),
