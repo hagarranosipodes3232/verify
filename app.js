@@ -2717,6 +2717,7 @@ return;
     name: `${tipo.emoji}-${tipo.nombre}-${interaction.user.username}`,
     type: ChannelType.GuildText,
     parent: TICKET_CATEGORY_ID,
+    topic: `userId=${interaction.user.id};opened=${Date.now()}`,
     topic: `userId=${interaction.user.id};tipo=${tipo.nombre};created=${Date.now()}`,
     permissionOverwrites: [
       {
@@ -4462,6 +4463,39 @@ await dueño.send({
   files: [transcript],
   components: [ratingButtons]
 });
+const topicData = parseTopic(interaction.channel.topic || "");
+const userId = topicData.userId || topicData.owner;
+
+if (userId) {
+  const user = await client.users.fetch(userId).catch(() => null);
+
+  if (user) {
+    await user.send({
+      embeds: [
+        new EmbedBuilder()
+          .setAuthor({
+            name: "Roblox ┃ Soporte",
+            iconURL: interaction.guild.iconURL()
+          })
+          .setTitle("📩 Tu ticket fue cerrado")
+          .setDescription(
+            `Hola ${user}.\n\n` +
+            `Gracias por contactarte con el soporte de **Roblox**.\n\n` +
+            `Tu ticket **${interaction.channel.name}** fue cerrado por ${interaction.user}.\n\n` +
+            `🔎 Adjuntamos el **transcript** del ticket.\n\n` +
+            `📝 **Razón:**\n${razon}\n\n` +
+            `Nos ayudaría mucho si podés calificar la atención con los botones de abajo.`
+          )
+          .setColor("#2ecc71")
+          .setFooter({
+            text: `Staff: ${interaction.user.tag}`
+          })
+          .setTimestamp()
+      ],
+      files: [transcript]
+    }).catch(() => {});
+  }
+}
     } catch {}
 
     await interaction.reply({
