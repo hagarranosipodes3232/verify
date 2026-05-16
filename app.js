@@ -104,6 +104,7 @@ web.get("/", (req, res) => {
       align-items: center;
     }
 
+.card {
        width: 500px;
       background: #24262b;
       border-radius: 18px;
@@ -2680,21 +2681,7 @@ if (
       console.log(err);
     }
   }, 5000);
-}
-
-  try {
-
-    await interaction.channel.delete();
-
-  } catch (err) {
-
-    console.log(err);
-
-  }
-
-}, 5000);
-
-if (
+ if (
   interaction.isButton() &&
   ["ticket_compras", "ticket_soporte", "ticket_reportes"].includes(interaction.customId)
 ) {
