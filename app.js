@@ -2603,9 +2603,10 @@ if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "juego"
 ) {
-  let nombre = interaction.options.getString("nombre");
 
-  return interaction.reply({
+ let nombre = interaction.options.getString("nombre");
+
+  await interaction.reply({
     content: "🎮 Buscando juego: " + nombre,
     ephemeral: true
   });
