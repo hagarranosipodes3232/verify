@@ -1217,7 +1217,7 @@ search.addEventListener("input", () => {
     const data = card.getAttribute("data-search");
 
     if (data.includes(value)) {
-      card.style.display = "block";
+      card.style.display = "";
     } else {
       card.style.display = "none";
     }
@@ -3129,13 +3129,56 @@ if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "juego"
 ) {
-  let nombre = interaction.options.getString("nombre");
+  try {
+    const nombre = interaction.options.getString("nombre");
 
-  await interaction.reply({
-    content: "🎮 Buscando juego: " + nombre,
-    ephemeral: true
-  });
+    await interaction.deferReply();
+
+    const search = await axios.get(
+      `https://apis.roblox.com/search-api/omni-search?searchQuery=${encodeURIComponent(nombre)}&pageToken=&sessionId=&pageType=all`
+    );
+
+    const juego = search.data.searchResults
+      ?.find(r => r.contentType === "Game")
+      ?.contents?.[0];
+
+    if (!juego) {
+      return interaction.editReply("❌ No encontré ese juego.");
+    }
+
+    const placeId = juego.rootPlaceId || juego.placeId;
+    const gameUrl = `https://www.roblox.com/games/${placeId}`;
+
+    const embed = new EmbedBuilder()
+      .setTitle("🎮 " + juego.name)
+      .setURL(gameUrl)
+      .setDescription(juego.description || "Sin descripción.")
+      .setThumbnail(juego.imageUrl || null)
+      .setColor("#00ffaa")
+      .setFooter({ text: "Roblox Game Search System" })
+      .setTimestamp();
+
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setLabel("🎮 Jugar ahora")
+        .setStyle(ButtonStyle.Link)
+        .setURL(gameUrl)
+    );
+
+    return interaction.editReply({
+      embeds: [embed],
+      components: [row]
+    });
+
+  } catch (error) {
+    console.log("❌ Error comando /juego:", error);
+
+    return interaction.editReply(
+      "❌ Ocurrió un error buscando el juego."
+    );
+  }
 }
+
 if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "embedcompra"
