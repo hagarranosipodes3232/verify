@@ -1880,7 +1880,68 @@ console.log("📡 Enviando evento new-user al dashboard...");
 ultimaActividad = `${savedUser.discord} verificado`;
 io.emit("new-user", savedUser);
 
-    res.send("✅ Verificación completada. Ya recibiste tu rol en Discord.");
+  res.send(`
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Verificación exitosa</title>
+
+<style>
+body {
+  margin: 0;
+  background: #05070a;
+  color: white;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  background: #111827;
+  border: 1px solid #00ffaa;
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 0 35px rgba(0,255,170,.25);
+}
+
+h1 {
+  color: #00ffaa;
+  font-size: 34px;
+}
+
+p {
+  font-size: 18px;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 25px;
+  padding: 14px 24px;
+  background: #22c55e;
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>✅ Verificación exitosa</h1>
+    <p>Ya recibiste tu rol en Discord.</p>
+
+    <a class="btn" href="https://discord.com/channels/1502542235491635282">
+      Volver a Discord
+    </a>
+  </div>
+</body>
+</html>
+`);
 
   } catch (error) {
     console.log(error);
