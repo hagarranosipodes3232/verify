@@ -2694,7 +2694,6 @@ if (
 
 }, 5000);
 
-}
 if (
   interaction.isButton() &&
   ["ticket_compras", "ticket_soporte", "ticket_reportes"].includes(interaction.customId)
