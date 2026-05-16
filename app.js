@@ -2602,16 +2602,14 @@ if (interaction.isChatInputCommand() && interaction.commandName === "say") {
 if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "juego"
-) 
+) {
+  let nombre = interaction.options.getString("nombre");
 
-  const nombre =
-    interaction.options.getString("nombre");
-
-  await interaction.reply({
-    content:
-      "🎮 Buscando juego: " + nombre,
+  return interaction.reply({
+    content: "🎮 Buscando juego: " + nombre,
     ephemeral: true
   });
+}
 const searchResponse = await fetch(
   `https://apis.roblox.com/search-api/omni-search?searchQuery=${encodeURIComponent(nombre)}&sessionId=123&pageType=games`
 );
