@@ -2604,45 +2604,24 @@ if (
   interaction.commandName === "juego"
 ) {
 
-  await interaction.deferReply();
+  const nombre =
+    interaction.options.getString("nombre");
+
+  await interaction.reply({
+    content:
+      "🎮 Buscando juego: " + nombre,
+    ephemeral: true
   });
-}
-    .setTimestamp();
+const searchResponse = await fetch(
+  `https://apis.roblox.com/search-api/omni-search?searchQuery=${encodeURIComponent(nombre)}&sessionId=123&pageType=games`
+);
 
-  const row = new ActionRowBuilder()
+const searchData = await searchResponse.json();
 
-    .addComponents(
-
-      new ButtonBuilder()
-
-        .setLabel("Jugar ahora")
-
-        .setEmoji("🎮")
-
-        .setStyle(ButtonStyle.Link)
-
-        .setURL(link)
-
-    );
-
-  return interaction.editReply({
-    embeds: [embed],
-    components: [row]
-  });
-}
-  await interaction.deferReply();
-
-  const nombre = interaction.options.getString("nombre");
-
-  const searchResponse = await fetch(
-    `https://apis.roblox.com/search-api/omni-search?searchQuery=${encodeURIComponent(nombre)}&sessionId=123&pageType=games`
-  );
-
-  const searchData = await searchResponse.json();
-
-  const juego = searchData.searchResults?.find(r => r.contentType === "Game");
-
-  if (!juego) {
+const juego = searchData.searchResults?.find(
+  r => r.contentType === "Game"
+);
+  if (!juego) }
     return interaction.editReply("❌ No encontré ese juego en Roblox.");
   }
 
