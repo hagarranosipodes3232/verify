@@ -2625,10 +2625,10 @@ const closeTicketEmbed = new EmbedBuilder()
   .setDescription(
     `## Ticket cerrado por ${interaction.user}\n\n` +
     `📄 Razón:\n` +
-    "```yaml\n" +
-   + razon +
+"```yaml\n" +
+razon +
 "\n```"
-  )
+     )
   .setColor("#ff004c")
   .setTimestamp();
 
@@ -2651,21 +2651,6 @@ setTimeout(async () => {
 }, 5000);
 
 }
-setTimeout(async () => {
-
-  try {
-    await interaction.channel.delete();
-
-  } catch (err) {
-    console.log(err);
-  }
-
-}, 5000);
-
-  setTimeout(() => {
-    interaction.channel.delete().catch(() => {});
-  }, 5000);
-
 if (
   interaction.isButton() &&
   ["ticket_compras", "ticket_soporte", "ticket_reportes"].includes(interaction.customId)
