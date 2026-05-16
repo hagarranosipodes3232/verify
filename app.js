@@ -2611,32 +2611,76 @@ if (
   interaction.isModalSubmit() &&
   interaction.customId === "modal_close_ticket"
 ) {
-if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
-  return interaction.reply({
-    content: "❌ No puedo borrar este canal porque no pertenece a la categoría de tickets.",
+  if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
+    return interaction.reply({
+      content: "❌ No puedo cerrar este canal porque no pertenece a la categoría de tickets.",
+      ephemeral: true
+    });
+  }
+
+  const razon = interaction.fields.getTextInputValue("razon");
+
+  await interaction.reply({
+    content: "🔒 Cerrando ticket y generando transcript...",
     ephemeral: true
   });
+
+  const transcript = await discordTranscripts.createTranscript(interaction.channel, {
+    limit: -1,
+    returnType: "attachment",
+    filename: `transcript-${interaction.channel.name}.html`,
+    saveImages: true
+  });
+
+  const logChannel = await client.channels.fetch(TICKET_LOGS_ID).catch(() => null);
+
+  const closeTicketEmbed = new EmbedBuilder()
+    .setTitle("🔒 Ticket cerrado")
+    .setDescription(
+      `**Canal:** ${interaction.channel.name}\n` +
+      `**Cerrado por:** ${interaction.user}\n\n` +
+      `**Razón:**\n\`\`\`yaml\n${razon}\n\`\`\``
+    )
+    .setColor("#ff004c")
+    .setTimestamp();
+
+  if (logChannel) {
+    await logChannel.send({
+      embeds: [closeTicketEmbed],
+      files: [transcript]
+    });
+  }
+
+  const topicData = parseTopic(interaction.channel.topic || "");
+  const userId = topicData.userId;
+
+  if (userId) {
+    const user = await client.users.fetch(userId).catch(() => null);
+
+    if (user) {
+      await user.send({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle("🔒 Tu ticket fue cerrado")
+            .setDescription(
+              `Tu ticket **${interaction.channel.name}** fue cerrado.\n\n` +
+              `**Razón:**\n\`\`\`yaml\n${razon}\n\`\`\``
+            )
+            .setColor("#ff004c")
+            .setTimestamp()
+        ]
+      }).catch(() => {});
+    }
+  }
+
+  setTimeout(async () => {
+    try {
+      await interaction.channel.delete();
+    } catch (err) {
+      console.log(err);
+    }
+  }, 5000);
 }
-
-  const razon =
-    interaction.fields.getTextInputValue("razon");
-const closeTicketEmbed = new EmbedBuilder()
-  .setTitle("🔒 Ticket cerrado")
-  .setDescription(
-    `## Ticket cerrado por ${interaction.user}\n\n` +
-    `📄 Razón:\n` +
-"```yaml\n" +
-razon +
-"\n```"
-     )
-  .setColor("#ff004c")
-  .setTimestamp();
-
-await interaction.reply({
-  embeds: [closeTicketEmbed]
-});
-
-setTimeout(async () => {
 
   try {
 
@@ -2682,6 +2726,7 @@ if (
     name: `${tipo.emoji}-${tipo.nombre}-${interaction.user.username}`,
     type: ChannelType.GuildText,
     parent: TICKET_CATEGORY_ID,
+    topic: `userId=${interaction.user.id};tipo=${tipo.nombre};created=${Date.now()}`,
     permissionOverwrites: [
       {
         id: interaction.guild.id,
