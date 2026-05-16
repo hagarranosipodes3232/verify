@@ -3,6 +3,7 @@ const fetch = (...args) =>
   import("node-fetch")
     .then(({ default: fetch }) => fetch(...args));
 const os = require("os");
+const axios = require("axios");
 
 const DATA_BOT_CHANNEL_ID = "1503796869925703690";
 let dataBotMessage = null;
@@ -2154,7 +2155,17 @@ new SlashCommandBuilder()
 
   new SlashCommandBuilder()
     .setName("ticketpanel")
-    .setDescription("Panel de tickets")
+    .setDescription("Panel de tickets"),
+
+new SlashCommandBuilder()
+  .setName("juego")
+  .setDescription("Buscar un juego de Roblox")
+  .addStringOption(option =>
+    option
+      .setName("nombre")
+      .setDescription("Nombre del juego")
+      .setRequired(true)
+  ),
 
 ].map(c => c.toJSON());
 
@@ -2573,6 +2584,62 @@ if (staffPanelMessage) {
 // INTERACCIONES
 
 client.on("interactionCreate", async interaction => {
+if (
+  interaction.isChatInputCommand() &&
+  interaction.commandName === "juego"
+) {
+  const nombre = interaction.options.getString("nombre");
+
+  await interaction.deferReply();
+
+  const res = await axios.get(
+    `https://games.roblox.com/v1/games/list?model.keyword=${encodeURIComponent(nombre)}&model.maxRows=1`
+  );
+
+  const juego = res.data.games[0];
+
+  if (!juego) {
+    return interaction.editReply("❌ No encontré ese juego.");
+  }
+
+  const embed = new EmbedBuilder()
+    .setTitle("🎮 " + juego.name)
+    .setURL(`https://www.roblox.com/games/${juego.placeId}`)
+    .setDescription(juego.gameDescription || "Sin descripción.")
+    .addFields(
+      {
+        name: "👥 Jugadores",
+        value: `${juego.playerCount || 0}`,
+        inline: true
+      },
+      {
+        name: "⭐ Favoritos",
+        value: `${juego.favoriteCount || 0}`,
+        inline: true
+      },
+      {
+        name: "👨‍💻 Creador",
+        value: juego.creatorName || "Desconocido",
+        inline: true
+      }
+    )
+    .setThumbnail(juego.gameThumbnail?.url || null)
+    .setColor("#00ffaa")
+    .setFooter({ text: "Roblox Game Search System" })
+    .setTimestamp();
+
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setLabel("🎮 Jugar ahora")
+      .setStyle(ButtonStyle.Link)
+      .setURL(`https://www.roblox.com/games/${juego.placeId}`)
+  );
+
+  return interaction.editReply({
+    embeds: [embed],
+    components: [row]
+  });
+}
 if (
   interaction.isButton() &&
   interaction.customId === "claim_ticket"
