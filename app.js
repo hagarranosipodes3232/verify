@@ -1991,7 +1991,7 @@ function parseTopic(topic = "") {
   return data;
 }
 // COMANDOS
-
+const commands = [
 new SlashCommandBuilder()
   .setName("carrito")
   .setDescription("Ver tu carrito"),
