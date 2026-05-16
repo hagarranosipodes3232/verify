@@ -1991,15 +1991,7 @@ function parseTopic(topic = "") {
   return data;
 }
 // COMANDOS
-if (
-  interaction.isChatInputCommand() &&
-  interaction.commandName === "embedcompra"
-) {
-  await interaction.reply({
-    content: "🛒 Sistema de compra funcionando.",
-    ephemeral: true
-  });
-}
+
 new SlashCommandBuilder()
   .setName("carrito")
   .setDescription("Ver tu carrito"),
@@ -2510,6 +2502,15 @@ if (staffPanelMessage) {
 // INTERACCIONES
 
 client.on("interactionCreate", async interaction => {
+if (
+  interaction.isChatInputCommand() &&
+  interaction.commandName === "embedcompra"
+) {
+  await interaction.reply({
+    content: "🛒 Sistema de compra funcionando.",
+    ephemeral: true
+  });
+}
 if (interaction.isButton() && interaction.customId === "cart_add") {
   const userId = interaction.user.id;
 
