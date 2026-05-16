@@ -2529,7 +2529,7 @@ if (
       .setLabel("Verificarme")
       .setEmoji("✅")
       .setStyle(ButtonStyle.Link)
-      .setURL("https://verify-z2au.onrender.com/roblox")
+      .setURL("https://verify-z2au.onrender.com")
   );
 
   return interaction.reply({
