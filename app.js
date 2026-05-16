@@ -3021,7 +3021,7 @@ if (
     ephemeral: true
   });
 
-}
+
   if (interaction.isChatInputCommand()) {
 if (interaction.commandName === "ban") {
   if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
