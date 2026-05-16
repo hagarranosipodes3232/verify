@@ -712,14 +712,15 @@ body::after {
   font-size: 16px;
 }
 .container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-  gap: 20px;
-  align-items: start;
+  justify-items:center;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:18px;
+  align-items:start;
 }
-.card {
-  width: 100%;
-  max-width: 100%;
+ .card {
+  width:100%;
+  max-width:320px;
   background: #24262b;
   border-radius: 18px;
   position: relative;
@@ -727,8 +728,9 @@ body::after {
   border: 1px solid rgba(123,92,255,.25);
   background: #1b1e24;
   border-left: 5px solid #7b5cff;
-  padding: 20px;
+  padding:16px;
   border-radius: 15px;
+  margin:auto;
 
   transition: 0.25s;
   cursor: pointer;
@@ -776,8 +778,8 @@ h3 {
 }
 
 .avatar{
-  width:60px;
-  height:60px;
+  width:52px;
+  height:52px;
   border-radius:50%;
   border:2px solid #7b5cff;
   object-fit:cover;
@@ -796,12 +798,12 @@ h3 {
 
   margin-top: 10px;
   margin-right: 8px;
-  padding: 9px 12px;
+  padding:7px 10px;
   border-radius: 8px;
   color: white;
   text-decoration: none;
   font-weight: bold;
-  font-size: 14px;
+  font-size:12px;
 }
 
 .btn-action {
@@ -811,19 +813,15 @@ h3 {
 .btn-danger {
   background: #dc2626;
 }
-.mini-map {
-  height: 160px;
-  width: 100%;
-  max-width: 100%;
-  border-radius: 12px;
-  margin-top: 12px;
-  margin-bottom: 10px;
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-  display: block;
+.mini-map{
+  height:110px;
+  width:100%;
+  max-width:280px;
+  border-radius:12px;
+  margin:10px auto;
+  overflow:hidden;
 }
-.modal {
+   .modal {
   display: none;
   position: fixed;
   z-index: 9999;
