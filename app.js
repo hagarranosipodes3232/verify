@@ -2659,19 +2659,50 @@ if (
     const user = await client.users.fetch(userId).catch(() => null);
 
     if (user) {
-      await user.send({
-        embeds: [
-          new EmbedBuilder()
-            .setTitle("🔒 Tu ticket fue cerrado")
-            .setDescription(
-              `Tu ticket **${interaction.channel.name}** fue cerrado.\n\n` +
-              `**Razón:**\n\`\`\`yaml\n${razon}\n\`\`\``
-            )
-            .setColor("#ff004c")
-            .setTimestamp()
-        ]
-      }).catch(() => {});
-    }
+const ratingButtons = new ActionRowBuilder()
+  .addComponents(
+    new ButtonBuilder()
+      .setCustomId(`rating_mala_${interaction.user.id}`)
+      .setLabel("Mala")
+      .setStyle(ButtonStyle.Danger),
+
+    new ButtonBuilder()
+      .setCustomId(`rating_buena_${interaction.user.id}`)
+      .setLabel("Buena")
+      .setStyle(ButtonStyle.Primary),
+
+    new ButtonBuilder()
+      .setCustomId(`rating_excelente_${interaction.user.id}`)
+      .setLabel("Excelente")
+      .setStyle(ButtonStyle.Success)
+  );
+
+await user.send({
+  embeds: [
+    new EmbedBuilder()
+      .setAuthor({
+        name: "Roblox ┃ Soporte",
+        iconURL: interaction.guild.iconURL()
+      })
+      .setTitle("📩 Tu ticket fue cerrado")
+      .setDescription(
+        `Hola ${user}.\n\n` +
+        `Gracias por contactarte con el soporte de **Roblox**.\n\n` +
+        `Tu ticket **${interaction.channel.name}** fue cerrado por ${interaction.user}.\n\n` +
+        `🔎 Adjuntamos el **transcript** del ticket.\n\n` +
+        `📝 **Razón:**\n${razon}\n\n` +
+        `Nos ayudaría mucho si podés calificar la atención con los botones de abajo.`
+      )
+      .setColor("#2ecc71")
+      .setFooter({
+        text: `Staff: ${interaction.user.tag}`
+      })
+      .setTimestamp()
+  ],
+  files: [transcript],
+  components: [ratingButtons]
+}).catch(() => {});
+        }
   }
 
   setTimeout(async () => {
