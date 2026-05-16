@@ -401,7 +401,7 @@ href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 Estás a punto de vincular tu cuenta Roblox.
 </p>
 
-<a class="btn" href="/roblox">
+<a class="btn" href="/roblox?discord_id=manual">
 Sigue con Roblox
 </a>
 
@@ -2529,8 +2529,8 @@ if (
       .setLabel("Verificarme")
       .setEmoji("✅")
       .setStyle(ButtonStyle.Link)
-      .setURL("https://verify-z2au.onrender.com")
-  );
+      .setURL("https://verify-z2au.onrender.com/roblox?discord_id=" + interaction.user.id)
+ );
 
   return interaction.reply({
     embeds: [embed],
