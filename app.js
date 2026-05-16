@@ -2567,9 +2567,41 @@ if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "ticketpanel"
 ) {
+
+  const embed = new EmbedBuilder()
+    .setTitle("🎫 SISTEMA DE TICKETS")
+    .setDescription(
+      "## Centro de soporte\n\nSeleccioná una opción abajo para abrir un ticket con el staff."
+    )
+    .setThumbnail("https://cdn-icons-png.flaticon.com/512/1828/1828919.png")
+    .setColor("#00ffaa")
+    .setFooter({ text: "Sistema oficial de soporte" })
+    .setTimestamp();
+
+  const row = new ActionRowBuilder().addComponents(
+
+    new ButtonBuilder()
+      .setCustomId("ticket_compras")
+      .setLabel("Compras")
+      .setEmoji("🛒")
+      .setStyle(ButtonStyle.Success),
+
+    new ButtonBuilder()
+      .setCustomId("ticket_soporte")
+      .setLabel("Soporte")
+      .setEmoji("🛠️")
+      .setStyle(ButtonStyle.Primary),
+
+    new ButtonBuilder()
+      .setCustomId("ticket_reportes")
+      .setLabel("Reportes")
+      .setEmoji("🚨")
+      .setStyle(ButtonStyle.Danger)
+  );
+
   return interaction.reply({
-    content: "🎫 Panel de tickets funcionando.",
-    ephemeral: true
+    embeds: [embed],
+    components: [row]
   });
 }
 if (
