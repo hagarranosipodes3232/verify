@@ -4282,27 +4282,29 @@ if (TICKET_TYPES[interaction.customId]) {
 
     // CERRAR TICKET
 
-    if (interaction.customId === "cerrar_ticket") {
+   if (
+  interaction.isButton() &&
+  interaction.customId === "close_ticket"
+) {
 
-      const modal = new ModalBuilder()
-        .setCustomId("cerrar_modal")
-        .setTitle("Cerrar Ticket");
+  const modal = new ModalBuilder()
+    .setCustomId("modal_close_ticket")
+    .setTitle("Cerrar ticket");
 
-      const razon = new TextInputBuilder()
-        .setCustomId("razon")
-        .setLabel("Razón del cierre")
-        .setStyle(TextInputStyle.Paragraph)
-        .setRequired(true);
+  const razon = new TextInputBuilder()
+    .setCustomId("razon")
+    .setLabel("Razón del cierre")
+    .setStyle(TextInputStyle.Paragraph)
+    .setRequired(true);
 
-      const row = new ActionRowBuilder().addComponents(razon);
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(razon)
+  );
 
-      modal.addComponents(row);
-
-      return interaction.showModal(modal);
-
-    }
-
-  }
+  await interaction.showModal(modal);
+  return;
+   }
+ }
 
   // =====================================================
   // MODAL CERRAR TICKET
