@@ -2971,8 +2971,8 @@ if (
 if (
   interaction.isChatInputCommand() &&
    {
-const titulo =
-    interaction.options.getString("titulo");
+const nombreJuego =
+  interaction.options.getString("titulo");
 
   const descripcion =
     interaction.options.getString("descripcion");
