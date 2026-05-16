@@ -2584,7 +2584,7 @@ if (
   interaction.customId === "close_ticket"
 ) {
 
-if (!interaction.channel.name.includes("ticket")) {
+if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
   return interaction.reply({
     content: "❌ Este botón solo funciona dentro de un ticket abierto.",
     ephemeral: true
