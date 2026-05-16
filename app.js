@@ -2668,7 +2668,7 @@ const juego = searchData.searchResults?.find(
     embeds: [embed],
     components: [row]
   });
-}
+
 if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "embed"
