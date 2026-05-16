@@ -3087,7 +3087,7 @@ if (
   interaction.isChatInputCommand() &&
    {
 
-  const titulo =
+  const  =
     interaction.options.getString("titulo");
 
   const descripcion =
