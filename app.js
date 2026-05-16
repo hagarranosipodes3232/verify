@@ -2648,7 +2648,7 @@ setTimeout(async () => {
   }
 
 }, 5000);
-}
+
   setTimeout(() => {
     interaction.channel.delete().catch(() => {});
   }, 5000);
