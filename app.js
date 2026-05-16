@@ -2609,7 +2609,6 @@ if (
     content: "🎮 Buscando juego: " + nombre,
     ephemeral: true
   });
-}
 const searchResponse = await fetch(
   `https://apis.roblox.com/search-api/omni-search?searchQuery=${encodeURIComponent(nombre)}&sessionId=123&pageType=games`
 );
