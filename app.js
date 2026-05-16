@@ -2717,10 +2717,8 @@ await interaction.channel.send({
   embeds: [embed],
   components: [row]
 });
-      embeds: [embed]
-  });
-
-  return interaction.reply({
+      
+   return interaction.reply({
     content: "✅ Embed enviado.",
     ephemeral: true
   });
