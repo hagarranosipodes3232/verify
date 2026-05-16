@@ -4126,7 +4126,7 @@ const dmEmbed = new EmbedBuilder()
     `Tu ticket **${interaction.channel.name}** fue cerrado por ${interaction.user}.\n\n` +
     `🔎 Adjuntamos el **transcript** del ticket.\n\n` +
     `📝 **Razón:**\n${razon}\n\n` +
-    `Nos ayudaría mucho si podés calificar la atención con los botones de abajo.\n\n` +
+    `Nos ayudaría mucho si podés calificar la atención con los siguientes botones de abajo.\n\n` +
     `**Staff:** ${interaction.user} • <t:${Math.floor(Date.now() / 1000)}:f>`
   )
   .setColor("#2ecc71")
