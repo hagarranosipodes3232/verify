@@ -2503,6 +2503,43 @@ if (staffPanelMessage) {
 
 client.on("interactionCreate", async interaction => {
 if (
+  interaction.isModalSubmit() &&
+  interaction.customId === "modal_embedcompra"
+) {
+  const titulo = interaction.fields.getTextInputValue("titulo");
+  const descripcion = interaction.fields.getTextInputValue("descripcion");
+  const imagen = interaction.fields.getTextInputValue("imagen");
+  const banner = interaction.fields.getTextInputValue("banner");
+
+  const embed = new EmbedBuilder()
+    .setTitle(titulo)
+    .setDescription(descripcion)
+    .setColor("#00ffaa")
+    .setTimestamp();
+
+  if (imagen) embed.setThumbnail(imagen);
+  if (banner) embed.setImage(banner);
+
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("cart_add")
+      .setLabel("Agregar al carrito")
+      .setEmoji("🛒")
+      .setStyle(ButtonStyle.Success),
+
+    new ButtonBuilder()
+      .setLabel("Comprar aquí")
+      .setEmoji("💰")
+      .setStyle(ButtonStyle.Link)
+      .setURL("https://discord.com/channels/1502542235491635282")
+  );
+
+  return interaction.reply({
+    embeds: [embed],
+    components: [row]
+  });
+}
+if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "embedcompra"
 ) {
