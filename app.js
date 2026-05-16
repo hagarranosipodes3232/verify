@@ -2584,6 +2584,13 @@ if (
   interaction.customId === "close_ticket"
 ) {
 
+if (!interaction.channel.name.includes("ticket")) {
+  return interaction.reply({
+    content: "❌ Este botón solo funciona dentro de un ticket abierto.",
+    ephemeral: true
+  });
+}
+
   const modal = new ModalBuilder()
     .setCustomId("modal_close_ticket")
     .setTitle("Cerrar ticket");
