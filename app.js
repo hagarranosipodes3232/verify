@@ -711,14 +711,15 @@ body::after {
   color: white;
   font-size: 16px;
 }
-
 .container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
   gap: 20px;
+  align-items: start;
 }
 .card {
-  width: 500px;
+  width: 100%;
+  max-width: 100%;
   background: #24262b;
   border-radius: 18px;
   position: relative;
@@ -734,7 +735,8 @@ body::after {
 }
 
 .card:hover{
-   transform: translateY(-5px);
+  border-color:#22c55e;
+  transform: translateY(-5px);
   box-shadow: 0 0 25px rgba(123,92,255,.35);
 }
 .card::before{
@@ -787,7 +789,11 @@ h3 {
   margin-top:-8px;
 }
 .btn-action, .btn-danger {
-  display: inline-block;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+
   margin-top: 10px;
   margin-right: 8px;
   padding: 9px 12px;
@@ -808,10 +814,14 @@ h3 {
 .mini-map {
   height: 160px;
   width: 100%;
+  max-width: 100%;
   border-radius: 12px;
   margin-top: 12px;
   margin-bottom: 10px;
   overflow: hidden;
+  position: relative;
+  z-index: 1;
+  display: block;
 }
 .modal {
   display: none;
@@ -1901,6 +1911,7 @@ body {
 }
 
 .card {
+  overflow: hidden;
   background: #111827;
   border: 1px solid #00ffaa;
   border-radius: 20px;
