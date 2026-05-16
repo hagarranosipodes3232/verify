@@ -2567,7 +2567,7 @@ if (
   interaction.isButton() &&
   interaction.customId === "claim_ticket"
 ) {
-  const embed = new EmbedBuilder()
+  const closeEmbed = new EmbedBuilder()
     .setTitle("👑 Ticket atendido")
     .setDescription(
       `Este ticket ahora está siendo atendido por ${interaction.user}.`
@@ -2576,7 +2576,7 @@ if (
     .setTimestamp();
 
   return interaction.reply({
-    embeds: [embed]
+    embeds: [closeEmbed]
   });
 }
 if (
