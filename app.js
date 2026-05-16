@@ -2527,12 +2527,12 @@ if (
       .setEmoji("🛒")
       .setStyle(ButtonStyle.Success),
 
-    new ButtonBuilder()
-      .setLabel("Comprar aquí")
-      .setEmoji("💰")
-      .setStyle(ButtonStyle.Link)
-      .setURL("https://discord.com/channels/1502542235491635282")
-  );
+new ButtonBuilder()
+  .setLabel("Comprar aquí")
+  .setEmoji("💰")
+  .setStyle(ButtonStyle.Link)
+  .setURL("https://discord.com/channels/1502542235491635282/1502569650544967730")
+     );
 
   return interaction.reply({
     embeds: [embed],
