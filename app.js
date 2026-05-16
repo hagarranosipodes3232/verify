@@ -2515,15 +2515,15 @@ if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "verifypanel"
 ) {
-  const embed = new EmbedBuilder()
-    .setTitle("✅ Verificación Roblox")
-    .setDescription(
-      "Presioná el botón de abajo para vincular tu cuenta de Roblox y recibir tu rol automáticamente."
-    )
-    .setColor("#00ffaa")
-    .setFooter({ text: "Sistema oficial de verificación" })
-    .setTimestamp();
-
+ const embed = new EmbedBuilder()
+  .setTitle("✅ VERIFICACIÓN ROBLOX")
+  .setDescription(
+    "## Vinculá tu cuenta de Roblox\n\nPresioná el botón de abajo para verificarte y recibir tu rol automáticamente."
+  )
+  .setThumbnail("https://upload.wikimedia.org/wikipedia/commons/7/7e/Roblox_Logo_2022.jpg")
+  .setColor("#00ffaa")
+  .setFooter({ text: "Sistema oficial de verificación" })
+  .setTimestamp();
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setLabel("Verificarme")
