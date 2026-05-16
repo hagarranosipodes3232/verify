@@ -2511,14 +2511,30 @@ if (
     ephemeral: true
   });
 }
-
 if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "verifypanel"
 ) {
+  const embed = new EmbedBuilder()
+    .setTitle("✅ Verificación Roblox")
+    .setDescription(
+      "Presioná el botón de abajo para vincular tu cuenta de Roblox y recibir tu rol automáticamente."
+    )
+    .setColor("#00ffaa")
+    .setFooter({ text: "Sistema oficial de verificación" })
+    .setTimestamp();
+
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setLabel("Verificarme")
+      .setEmoji("✅")
+      .setStyle(ButtonStyle.Link)
+      .setURL("https://verify-z2au.onrender.com/roblox")
+  );
+
   return interaction.reply({
-    content: "✅ Panel de verificación funcionando.",
-    ephemeral: true
+    embeds: [embed],
+    components: [row]
   });
 }
 if (
