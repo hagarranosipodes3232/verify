@@ -2603,73 +2603,13 @@ if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "juego"
 ) {
-
- let nombre = interaction.options.getString("nombre");
+  let nombre = interaction.options.getString("nombre");
 
   await interaction.reply({
     content: "🎮 Buscando juego: " + nombre,
     ephemeral: true
   });
-const searchResponse = await fetch(
-  `https://apis.roblox.com/search-api/omni-search?searchQuery=${encodeURIComponent(nombre)}&sessionId=123&pageType=games`
-);
-
-const searchData = await searchResponse.json();
-
-const juego = searchData.searchResults?.find(
-  r => r.contentType === "Game"
-);
-  if (!juego)
-    return interaction.editReply("❌ No encontré ese juego en Roblox.");
-  }
-
-  const placeId = juego.contents?.[0]?.rootPlaceId || juego.contents?.[0]?.placeId;
-
-  if (!placeId) {
-    return interaction.editReply("❌ Encontré el juego, pero no pude sacar el link.");
-  }
-
-  const infoResponse = await fetch(
-    `https://games.roblox.com/v1/games/multiget-place-details?placeIds=${placeId}`
-  );
-
-  const infoData = await infoResponse.json();
-  const info = infoData[0];
-
-  const thumbResponse = await fetch(
-    `https://thumbnails.roblox.com/v1/places/gameicons?placeIds=${placeId}&size=150x150&format=Png&isCircular=false`
-  );
-
-  const thumbData = await thumbResponse.json();
-  const imagen = thumbData.data?.[0]?.imageUrl;
-
-  const link = `https://www.roblox.com/games/${placeId}`;
-
-  const embed = new EmbedBuilder()
-    .setTitle(`🎮 ${info.name}`)
-    .setDescription(
-      `📝 **Descripción:**\n${info.description || "Sin descripción."}\n\n` +
-      `👤 **Creador:** ${info.builder || "Desconocido"}`
-    )
-    .setColor("#00ffaa")
-    .setThumbnail(imagen)
-    .setFooter({ text: "Roblox Game Finder" })
-    .setTimestamp();
-
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setLabel("Jugar ahora")
-      .setEmoji("🎮")
-      .setStyle(ButtonStyle.Link)
-      .setURL(link)
-  );
-
-  return interaction.editReply({
-    embeds: [embed],
-    components: [row]
-  });
-
-if (
+}
   interaction.isChatInputCommand() &&
   interaction.commandName === "embed"
 ) {
