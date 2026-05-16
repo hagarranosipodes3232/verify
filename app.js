@@ -2565,6 +2565,43 @@ if (staffPanelMessage) {
 client.on("interactionCreate", async interaction => {
 if (
   interaction.isButton() &&
+  interaction.customId === "claim_ticket"
+) {
+  const embed = new EmbedBuilder()
+    .setTitle("👑 Ticket atendido")
+    .setDescription(
+      `Este ticket ahora está siendo atendido por ${interaction.user}.`
+    )
+    .setColor("#5865f2")
+    .setTimestamp();
+
+  return interaction.reply({
+    embeds: [embed]
+  });
+}
+
+if (
+  interaction.isButton() &&
+  interaction.customId === "close_ticket"
+) {
+  const embed = new EmbedBuilder()
+    .setTitle("🔒 Ticket cerrado")
+    .setDescription(
+      "Este ticket se cerrará en 5 segundos.\n\nGracias por usar el sistema de soporte."
+    )
+    .setColor("#ff004c")
+    .setTimestamp();
+
+  await interaction.reply({
+    embeds: [embed]
+  });
+
+  setTimeout(() => {
+    interaction.channel.delete().catch(() => {});
+  }, 5000);
+}
+if (
+  interaction.isButton() &&
   ["ticket_compras", "ticket_soporte", "ticket_reportes"].includes(interaction.customId)
 ) {
   const tipos = {
