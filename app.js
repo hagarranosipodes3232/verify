@@ -2503,6 +2503,25 @@ if (staffPanelMessage) {
 
 client.on("interactionCreate", async interaction => {
 if (
+  interaction.isChatInputCommand() &&
+  interaction.commandName === "ticketpanel"
+) {
+  return interaction.reply({
+    content: "🎫 Panel de tickets funcionando.",
+    ephemeral: true
+  });
+}
+
+if (
+  interaction.isChatInputCommand() &&
+  interaction.commandName === "verifypanel"
+) {
+  return interaction.reply({
+    content: "✅ Panel de verificación funcionando.",
+    ephemeral: true
+  });
+}
+if (
   interaction.isModalSubmit() &&
   interaction.customId === "modal_embedcompra"
 ) {
@@ -2578,9 +2597,9 @@ if (
     new ActionRowBuilder().addComponents(banner)
   );
 
-  return interaction.showModal(modal);
+  await interaction.showModal(modal);
 }
-if (interaction.isButton() && interaction.customId === "cart_add") {
+ if (interaction.isButton() && interaction.customId === "cart_add") {
   const userId = interaction.user.id;
 
   if (!carritos[userId]) carritos[userId] = [];
