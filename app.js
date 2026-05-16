@@ -2602,7 +2602,7 @@ if (interaction.isChatInputCommand() && interaction.commandName === "say") {
 if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "juego"
-) {
+) 
 
   const nombre =
     interaction.options.getString("nombre");
