@@ -4472,8 +4472,6 @@ await dueño.send({
 
 }
 
-});
-
 // LOGIN
 // =========================
 // BIENVENIDAS
