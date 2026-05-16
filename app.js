@@ -2612,7 +2612,7 @@ if (
 }
   interaction.isChatInputCommand() &&
   interaction.commandName === "embed"
-) {
+
 
  const titulo =
     interaction.options.getString("titulo");
