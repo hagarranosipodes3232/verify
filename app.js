@@ -2506,10 +2506,42 @@ if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "embedcompra"
 ) {
-  await interaction.reply({
-    content: "🛒 Sistema de compra funcionando.",
-    ephemeral: true
-  });
+  const modal = new ModalBuilder()
+    .setCustomId("modal_embedcompra")
+    .setTitle("Crear embed de compra");
+
+  const titulo = new TextInputBuilder()
+    .setCustomId("titulo")
+    .setLabel("Título del producto")
+    .setStyle(TextInputStyle.Short)
+    .setRequired(true);
+
+  const descripcion = new TextInputBuilder()
+    .setCustomId("descripcion")
+    .setLabel("Descripción / precio")
+    .setStyle(TextInputStyle.Paragraph)
+    .setRequired(true);
+
+  const imagen = new TextInputBuilder()
+    .setCustomId("imagen")
+    .setLabel("Imagen URL")
+    .setStyle(TextInputStyle.Short)
+    .setRequired(false);
+
+  const banner = new TextInputBuilder()
+    .setCustomId("banner")
+    .setLabel("Banner URL")
+    .setStyle(TextInputStyle.Short)
+    .setRequired(false);
+
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(titulo),
+    new ActionRowBuilder().addComponents(descripcion),
+    new ActionRowBuilder().addComponents(imagen),
+    new ActionRowBuilder().addComponents(banner)
+  );
+
+  return interaction.showModal(modal);
 }
 if (interaction.isButton() && interaction.customId === "cart_add") {
   const userId = interaction.user.id;
