@@ -2613,8 +2613,8 @@ const closeTicketEmbed = new EmbedBuilder()
     `## Ticket cerrado por ${interaction.user}\n\n` +
     `📄 Razón:\n` +
     "```yaml\n" +
-    razon +
-    "\n```"
+   + razon +
+"\n```"
   )
   .setColor("#ff004c")
   .setTimestamp();
@@ -2623,6 +2623,21 @@ await interaction.reply({
   embeds: [closeTicketEmbed]
 });
 
+setTimeout(async () => {
+
+  try {
+
+    await interaction.channel.delete();
+
+  } catch (err) {
+
+    console.log(err);
+
+  }
+
+}, 5000);
+
+}
 setTimeout(async () => {
 
   try {
