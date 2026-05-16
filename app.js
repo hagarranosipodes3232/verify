@@ -2607,7 +2607,7 @@ if (
 
   const razon =
     interaction.fields.getTextInputValue("razon");
-const embed = new EmbedBuilder()
+const closeTicketEmbed = new EmbedBuilder()
   .setTitle("🔒 Ticket cerrado")
   .setDescription(
     `## Ticket cerrado por ${interaction.user}\n\n` +
@@ -2620,25 +2620,13 @@ const embed = new EmbedBuilder()
   .setTimestamp();
 
 await interaction.reply({
-  embeds: [embed]
+  embeds: [closeTicketEmbed]
 });
 
 setTimeout(() => {
   interaction.channel.delete().catch(() => {});
 }, 5000);
 }
-    const embed = new EmbedBuilder()
-    .setTitle("🔒 Ticket cerrado")
-    .setDescription(
-      "Este ticket se cerrará en 5 segundos.\n\nGracias por usar el sistema de soporte."
-    )
-    .setColor("#ff004c")
-    .setTimestamp();
-
-  await interaction.reply({
-    embeds: [embed]
-  });
-
   setTimeout(() => {
     interaction.channel.delete().catch(() => {});
   }, 5000);
