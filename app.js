@@ -2913,8 +2913,8 @@ new ButtonBuilder()
   .setLabel("Comprar aquí")
   .setEmoji("💰")
   .setStyle(ButtonStyle.Link)
-  .setURL("https://discord.com/channels/1502542235491635282/1502569650544967730")
-     );
+  .setURL("https://discord.com/channels/1502542235491635282/1505281827278028941")
+       );
 
   return interaction.reply({
     embeds: [embed],
