@@ -2670,8 +2670,7 @@ if (
   interaction.customId === "modal_embed_compra"
 ) {
 
-  const titulo =
-    interaction.fields.getTextInputValue("titulo");
+ const titulo = interaction.options.getString("titulo");
 
   const descripcion =
     interaction.fields.getTextInputValue("descripcion");
