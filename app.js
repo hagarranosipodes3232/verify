@@ -2623,8 +2623,15 @@ await interaction.reply({
   embeds: [closeTicketEmbed]
 });
 
-setTimeout(() => {
-  interaction.channel.delete().catch(() => {});
+setTimeout(async () => {
+
+  try {
+    await interaction.channel.delete();
+
+  } catch (err) {
+    console.log(err);
+  }
+
 }, 5000);
 }
   setTimeout(() => {
