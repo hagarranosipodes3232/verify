@@ -2564,6 +2564,104 @@ if (staffPanelMessage) {
 
 client.on("interactionCreate", async interaction => {
 if (
+  interaction.isButton() &&
+  ["ticket_compras", "ticket_soporte", "ticket_reportes"].includes(interaction.customId)
+) {
+  const tipos = {
+    ticket_compras: {
+      nombre: "compras",
+      emoji: "🛒",
+      titulo: "TICKET DE COMPRAS",
+      color: "#00ffaa"
+    },
+    ticket_soporte: {
+      nombre: "soporte",
+      emoji: "🛠️",
+      titulo: "TICKET DE SOPORTE",
+      color: "#5865f2"
+    },
+    ticket_reportes: {
+      nombre: "reportes",
+      emoji: "🚨",
+      titulo: "TICKET DE REPORTE",
+      color: "#ff004c"
+    }
+  };
+
+  const tipo = tipos[interaction.customId];
+
+  const canal = await interaction.guild.channels.create({
+    name: `${tipo.emoji}-${tipo.nombre}-${interaction.user.username}`,
+    type: ChannelType.GuildText,
+    parent: TICKET_CATEGORY_ID,
+    permissionOverwrites: [
+      {
+        id: interaction.guild.id,
+        deny: [PermissionsBitField.Flags.ViewChannel]
+      },
+      {
+        id: interaction.user.id,
+        allow: [
+          PermissionsBitField.Flags.ViewChannel,
+          PermissionsBitField.Flags.SendMessages,
+          PermissionsBitField.Flags.ReadMessageHistory
+        ]
+      },
+      {
+        id: STAFF_ROLE_ID,
+        allow: [
+          PermissionsBitField.Flags.ViewChannel,
+          PermissionsBitField.Flags.SendMessages,
+          PermissionsBitField.Flags.ReadMessageHistory,
+          PermissionsBitField.Flags.ManageChannels
+        ]
+      }
+    ]
+  });
+
+  const embed = new EmbedBuilder()
+    .setTitle(`${tipo.emoji} ${tipo.titulo}`)
+    .setDescription(
+      `## Bienvenido, ${interaction.user}\n\n` +
+      "Gracias por abrir un ticket. Un miembro del staff te atenderá pronto.\n\n" +
+      "```yaml\n" +
+      `Tipo: ${tipo.nombre}\n` +
+      `Usuario: ${interaction.user.tag}\n` +
+      `ID: ${interaction.user.id}\n` +
+      "Estado: Abierto\n" +
+      "```"
+    )
+    .setColor(tipo.color)
+    .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+    .setFooter({ text: "Sistema premium de tickets" })
+    .setTimestamp();
+
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("close_ticket")
+      .setLabel("Cerrar ticket")
+      .setEmoji("🔒")
+      .setStyle(ButtonStyle.Danger),
+
+    new ButtonBuilder()
+      .setCustomId("claim_ticket")
+      .setLabel("Atender")
+      .setEmoji("👑")
+      .setStyle(ButtonStyle.Primary)
+  );
+
+  await canal.send({
+    content: `${interaction.user} <@&${STAFF_ROLE_ID}>`,
+    embeds: [embed],
+    components: [row]
+  });
+
+  return interaction.reply({
+    content: `✅ Ticket creado: ${canal}`,
+    ephemeral: true
+  });
+}
+if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "ticketpanel"
 ) {
