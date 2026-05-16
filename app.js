@@ -2610,60 +2610,6 @@ if (
     ephemeral: true
   });
 }
-  interaction.isChatInputCommand() &&
-  interaction.commandName === "embed"
-
-
- const titulo =
-    interaction.options.getString("titulo");
-
-  const descripcion =
-    interaction.options.getString("descripcion");
-
-  const imagen =
-    interaction.options.getString("imagen");
-
-  const color =
-    interaction.options.getString("color") || "#00ffaa";
-
-  const embed = new EmbedBuilder()
-    .setTitle(titulo)
-    .setDescription(descripcion)
-    .setColor(color)
-    .setTimestamp();
-
-  if (imagen) {
-    embed.setThumbnail(imagen);
-  }
-const row = new ActionRowBuilder()
-
-.addComponents(
-
-new ButtonBuilder()
-.setCustomId("cart_add")
-.setLabel("Añadir al carrito")
-.setEmoji("🛒")
-.setStyle(ButtonStyle.Success),
-
-new ButtonBuilder()
-.setCustomId("buy_now")
-.setLabel("Comprar ahora")
-.setEmoji("💳")
-.setStyle(ButtonStyle.Primary)
-
-);
-
-await interaction.channel.send({
-  embeds: [embed],
-  components: [row]
-});
-      
-   return interaction.reply({
-    content: "✅ Embed enviado.",
-    ephemeral: true
-  });
-
-}
 if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "embedcompra"
