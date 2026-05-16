@@ -2676,11 +2676,16 @@ if (
 
   setTimeout(async () => {
     try {
-      await interaction.channel.delete();
+   await interaction.channel.delete("Ticket cerrado por " + interaction.user.tag);
     } catch (err) {
-      console.log(err);
-    }
+   console.log("❌ No pude borrar el ticket:", err);
+
+         }
   }, 5000);
+
+return;
+}
+
  if (
   interaction.isButton() &&
   ["ticket_compras", "ticket_soporte", "ticket_reportes"].includes(interaction.customId)
