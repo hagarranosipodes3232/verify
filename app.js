@@ -2611,6 +2611,12 @@ if (
   interaction.isModalSubmit() &&
   interaction.customId === "modal_close_ticket"
 ) {
+if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
+  return interaction.reply({
+    content: "❌ No puedo borrar este canal porque no pertenece a la categoría de tickets.",
+    ephemeral: true
+  });
+}
 
   const razon =
     interaction.fields.getTextInputValue("razon");
