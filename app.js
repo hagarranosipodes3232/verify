@@ -2622,12 +2622,6 @@ if (
   }
 }
 
-if (
-  interaction.channel.parentId !== TICKET_CATEGORY_ID
-) {
-   }
-
-    
   if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
     return interaction.reply({
       content: "❌ No puedo cerrar este canal porque no pertenece a la categoría de tickets.",
