@@ -2587,64 +2587,45 @@ if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "juego"
 ) {
-try {
-  await interaction.deferReply();
+  try {
+    await interaction.deferReply();
 
-  const nombre = interaction.options.getString("nombre");
+    const nombre = interaction.options.getString("nombre");
 
- const res = await axios.post(
-  "https://games.roblox.com/v1/games/list",
-  {
-    model: {
-      keyword: nombre,
-      maxRows: 1
-    }
-  }
-);
+    const gameUrl = `https://www.roblox.com/discover/?Keyword=${encodeURIComponent(nombre)}`;
 
-const juego = res.data.games?.[0];
-   
-    if (!juego || !juego.placeId) {
-      return interaction.editReply("❌ No encontré ese juego.");
-    }
+    const embed = new EmbedBuilder()
+      .setTitle("🎮 Buscar juego en Roblox")
+      .setDescription(`Resultado para: **${nombre}**`)
+      .setColor("#00ffaa")
+      .setFooter({ text: "Roblox Game Search System" })
+      .setTimestamp();
 
-    const gameUrl = `https://www.roblox.com/games/${juego.placeId}`;
-
-    const thumb = await axios.get(
-      `https://thumbnails.roblox.com/v1/games/icons?universeIds=${juego.universeId}&size=512x512&format=Png`
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setLabel("🎮 Buscar en Roblox")
+        .setStyle(ButtonStyle.Link)
+        .setURL(gameUrl)
     );
 
-   const imagen = thumb.data.data[0]?.imageUrl || null;
-
-const embed = new EmbedBuilder()
-  .setTitle("🎮 " + juego.name)
-  .setURL(gameUrl)
-  .setDescription(juego.gameDescription || "Sin descripción.")
-  .setThumbnail(imagen)
-  .setColor("#00ffaa")
-  .setFooter({ text: "Roblox Game Search System" })
-  .setTimestamp();
-
-const row = new ActionRowBuilder().addComponents(
-  new ButtonBuilder()
-    .setLabel("🎮 Jugar ahora")
-    .setStyle(ButtonStyle.Link)
-    .setURL(gameUrl)
-);
-
-return interaction.editReply({
-  embeds: [embed],
-  components: [row]
-});
+    return interaction.editReply({
+      embeds: [embed],
+      components: [row]
+    });
 
   } catch (error) {
-    console.log("❌ Error comando /juego:");
-    console.log(error.response?.data || error.message || error);
+    console.log("❌ Error comando /juego:", error);
 
-    if (interaction.deferred || interaction.replied) {
-      return interaction.editReply("❌ Ocurrió un error buscando el juego.");
-    }
+    return interaction.editReply(
+      "❌ Ocurrió un error buscando el juego."
+    );
   }
+}
+
+if (
+  interaction.channel.parentId !== TICKET_CATEGORY_ID
+) {
+   }
 
     
   if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
