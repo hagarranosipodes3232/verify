@@ -2583,7 +2583,6 @@ if (staffPanelMessage) {
 }
 // INTERACCIONES
 client.on("interactionCreate", async interaction => {
-
 if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "juego"
@@ -2603,55 +2602,58 @@ if (
       return interaction.editReply("❌ No encontré ese juego.");
     }
 
+    const gameUrl = `https://www.roblox.com/games/${juego.placeId}`;
+
     const thumb = await axios.get(
       `https://thumbnails.roblox.com/v1/games/icons?universeIds=${juego.universeId}&size=512x512&format=Png`
     );
 
-    const imagen = thumb.data.data[0]?.imageUrl;
+    const imagen = thumb.data.data[0]?.imageUrl || null;
 
-const embed = new EmbedBuilder()
-  .setTitle("🎮 " + juego.name)
-  .setURL(`https://www.roblox.com/games/${juego.placeId}`)
-  .setDescription(juego.gameDescription || "Sin descripción.")
-  .addFields(
-    {
-      name: "👥 Jugadores",
-      value: `${juego.playerCount || 0}`,
-      inline: true
-    },
-    {
-      name: "👍 Likes",
-      value: `${juego.totalUpVotes || 0}`,
-      inline: true
-    },
-    {
-      name: "⭐ Favoritos",
-      value: `${juego.favoriteCount || 0}`,
-      inline: true
-    }
-  )
-  .setThumbnail(imagen || null)
-  .setColor("#ff4655")
-  .setFooter({ text: "Sistema de juegos Roblox" })
-  .setTimestamp();
+    const embed = new EmbedBuilder()
+      .setTitle("🎮 " + juego.name)
+      .setURL(gameUrl)
+      .setDescription(juego.gameDescription || "Sin descripción.")
+      .addFields(
+        {
+          name: "👥 Jugadores",
+          value: `${juego.playerCount || 0}`,
+          inline: true
+        },
+        {
+          name: "⭐ Favoritos",
+          value: `${juego.favoriteCount || 0}`,
+          inline: true
+        },
+        {
+          name: "👨‍💻 Creador",
+          value: juego.creatorName || "Desconocido",
+          inline: true
+        }
+      )
+      .setThumbnail(imagen)
+      .setColor("#00ffaa")
+      .setFooter({ text: "Roblox Game Search System" })
+      .setTimestamp();
 
-const row = new ActionRowBuilder().addComponents(
-  new ButtonBuilder()
-    .setLabel("🎮 Jugar ahora")
-    .setStyle(ButtonStyle.Link)
-    .setURL(`https://www.roblox.com/games/${juego.placeId}`)
-);
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setLabel("🎮 Jugar ahora")
+        .setStyle(ButtonStyle.Link)
+        .setURL(gameUrl)
+    );
 
-return interaction.editReply({
-  embeds: [embed],
-  components: [row]
-});
+    return interaction.editReply({
+      embeds: [embed],
+      components: [row]
+    });
 
-  } catch (err) {
-    console.log("Error /juego:", err);
-    return interaction.editReply("❌ Error buscando el juego.");
+  } catch (error) {
+    console.log("❌ Error comando /juego:", error);
+    return interaction.editReply("❌ Ocurrió un error buscando el juego.");
   }
 }
+
 if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
   return interaction.reply({
     content: "❌ Este botón solo funciona dentro de un ticket abierto.",
