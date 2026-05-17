@@ -2614,8 +2614,38 @@ const juego = res.data.games?.[0];
       `https://thumbnails.roblox.com/v1/games/icons?universeIds=${juego.universeId}&size=512x512&format=Png`
     );
 
-    const imagen = thumb.data.data[0]?.imageUrl || null;
+   const imagen = thumb.data.data[0]?.imageUrl || null;
 
+const embed = new EmbedBuilder()
+  .setTitle("🎮 " + juego.name)
+  .setURL(gameUrl)
+  .setDescription(juego.gameDescription || "Sin descripción.")
+  .setThumbnail(imagen)
+  .setColor("#00ffaa")
+  .setFooter({ text: "Roblox Game Search System" })
+  .setTimestamp();
+
+const row = new ActionRowBuilder().addComponents(
+  new ButtonBuilder()
+    .setLabel("🎮 Jugar ahora")
+    .setStyle(ButtonStyle.Link)
+    .setURL(gameUrl)
+);
+
+return interaction.editReply({
+  embeds: [embed],
+  components: [row]
+});
+
+  } catch (error) {
+    console.log("❌ Error comando /juego:");
+    console.log(error.response?.data || error.message || error);
+
+    if (interaction.deferred || interaction.replied) {
+      return interaction.editReply("❌ Ocurrió un error buscando el juego.");
+    }
+  }
+}
     const embed = new EmbedBuilder()
       .setTitle("🎮 " + juego.name)
       .setURL(gameUrl)
