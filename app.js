@@ -2613,14 +2613,20 @@ if (
       components: [row]
     });
 
-  } catch (error) {
-    console.log("❌ Error comando /juego:", error);
+ } catch (error) {
+  console.log("❌ Error comando /juego:", error);
 
-    return interaction.editReply(
-      "❌ Ocurrió un error buscando el juego."
-    );
+  return interaction.editReply({
+    content: "❌ Ocurrió un error buscando el juego."
+  });
+
   }
+
 }
+if (
+  interaction.isModalSubmit() &&
+  interaction.customId === "modal_close_ticket"
+) {
 
   if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
     return interaction.reply({
@@ -2628,21 +2634,13 @@ if (
       ephemeral: true
     });
   }
-
+ }
   const razon = interaction.fields.getTextInputValue("razon");
 
   await interaction.reply({
     content: "🔒 Cerrando ticket y generando transcript...",
     ephemeral: true
   });
-
-  const transcript = await discordTranscripts.createTranscript(interaction.channel, {
-    limit: -1,
-    returnType: "attachment",
-    filename: `transcript-${interaction.channel.name}.html`,
-    saveImages: true
-  });
-
   const logChannel = await client.channels.fetch(TICKET_LOGS_ID).catch(() => null);
 
   const closeTicketEmbed = new EmbedBuilder()
