@@ -2592,13 +2592,19 @@ if (
   await interaction.deferReply();
 
   try {
-    const res = await axios.get(
-      `https://games.roblox.com/v1/games/list?model.keyword=${encodeURIComponent(nombre)}&model.maxRows=1`
-    );
+const res = await axios.post(
+  "https://games.roblox.com/v1/games/list",
+  {
+    model: {
+      keyword: nombre,
+      maxRows: 1
+    }
+  }
+);
 
-    const juego = res.data.games[0];
-
-    if (!juego) {
+const juego = res.data.games?.[0];
+   
+    if (!juego || !juego.placeId) {
       return interaction.editReply("❌ No encontré ese juego.");
     }
 
