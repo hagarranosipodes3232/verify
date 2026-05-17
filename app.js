@@ -5014,6 +5014,6 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
     embeds: [embed]
   });
 
-  }
+  
 });
 client.login(process.env.TOKEN);
