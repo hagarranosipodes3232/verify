@@ -2649,7 +2649,8 @@ if (
     });
 
   } catch (error) {
-    console.log("❌ Error comando /juego:", error);
+    console.log("❌ Error comando /juego:");
+console.log(error.response?.data || error.message || error);
     return interaction.editReply("❌ Ocurrió un error buscando el juego.");
   }
 }
