@@ -2587,12 +2587,12 @@ if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "juego"
 ) {
-  const nombre = interaction.options.getString("nombre");
-
+try {
   await interaction.deferReply();
 
-  try {
-const res = await axios.post(
+  const nombre = interaction.options.getString("nombre");
+
+ const res = await axios.post(
   "https://games.roblox.com/v1/games/list",
   {
     model: {
@@ -2657,8 +2657,11 @@ const juego = res.data.games?.[0];
   } catch (error) {
     console.log("❌ Error comando /juego:");
 console.log(error.response?.data || error.message || error);
-    return interaction.editReply("❌ Ocurrió un error buscando el juego.");
-  }
+
+if (interaction.deferred || interaction.replied) {
+  return interaction.editReply("❌ Ocurrió un error buscando el juego.");
+}
+
 }
 
 if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
