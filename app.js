@@ -3161,34 +3161,22 @@ if (
   interaction.isChatInputCommand() &&
   interaction.commandName === "juego"
 ) {
-  const nombre = interaction.options.getString("nombre");
-
-  await interaction.deferReply();
-
   try {
-    const res = await axios.get(
-      `https://games.roblox.com/v1/games/list?model.keyword=${encodeURIComponent(nombre)}&model.maxRows=1`
-    );
+    await interaction.deferReply();
 
-    const juego = res.data.games[0];
-
-    if (!juego) {
-      return interaction.editReply("❌ No encontré ese juego.");
-    }
-
-    const gameUrl = `https://www.roblox.com/games/${juego.placeId}`;
+    const nombre = interaction.options.getString("nombre");
+    const gameUrl = `https://www.roblox.com/discover/?Keyword=${encodeURIComponent(nombre)}`;
 
     const embed = new EmbedBuilder()
-      .setTitle("🎮 " + juego.name)
-      .setURL(gameUrl)
-      .setDescription(juego.gameDescription || "Sin descripción.")
+      .setTitle("🎮 Buscar juego en Roblox")
+      .setDescription(`Resultado para: **${nombre}**\n\nTocá el botón para abrir la búsqueda en Roblox.`)
       .setColor("#00ffaa")
       .setFooter({ text: "Roblox Game Search System" })
       .setTimestamp();
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setLabel("🎮 Jugar ahora")
+        .setLabel("🎮 Buscar en Roblox")
         .setStyle(ButtonStyle.Link)
         .setURL(gameUrl)
     );
@@ -3200,7 +3188,10 @@ if (
 
   } catch (error) {
     console.log("❌ Error comando /juego:", error);
-    return interaction.editReply("❌ Ocurrió un error buscando el juego.");
+
+    if (interaction.deferred || interaction.replied) {
+      return interaction.editReply("❌ Ocurrió un error buscando el juego.");
+    }
   }
 }
 if (
