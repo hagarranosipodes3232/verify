@@ -2645,81 +2645,9 @@ return interaction.editReply({
       return interaction.editReply("❌ Ocurrió un error buscando el juego.");
     }
   }
-}
-    const embed = new EmbedBuilder()
-      .setTitle("🎮 " + juego.name)
-      .setURL(gameUrl)
-      .setDescription(juego.gameDescription || "Sin descripción.")
-      .addFields(
-        {
-          name: "👥 Jugadores",
-          value: `${juego.playerCount || 0}`,
-          inline: true
-        },
-        {
-          name: "⭐ Favoritos",
-          value: `${juego.favoriteCount || 0}`,
-          inline: true
-        },
-        {
-          name: "👨‍💻 Creador",
-          value: juego.creatorName || "Desconocido",
-          inline: true
-        }
-      )
-      .setThumbnail(imagen)
-      .setColor("#00ffaa")
-      .setFooter({ text: "Roblox Game Search System" })
-      .setTimestamp();
 
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setLabel("🎮 Jugar ahora")
-        .setStyle(ButtonStyle.Link)
-        .setURL(gameUrl)
-    );
-
-    return interaction.editReply({
-      embeds: [embed],
-      components: [row]
-    });
-
-  } catch (error) {
-    console.log("❌ Error comando /juego:");
-console.log(error.response?.data || error.message || error);
-
-if (interaction.deferred || interaction.replied) {
-  return interaction.editReply("❌ Ocurrió un error buscando el juego.");
-    }
-  }
-}
-
-if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
-  return interaction.reply({
-    content: "❌ Este botón solo funciona dentro de un ticket abierto.",
-    ephemeral: true
-  });
-}
-
-  const modal = new ModalBuilder()
-    .setCustomId("modal_close_ticket")
-    .setTitle("Cerrar ticket");
-
-  const razon = new TextInputBuilder()
-    .setCustomId("razon")
-    .setLabel("Razón del cierre")
-    .setStyle(TextInputStyle.Paragraph)
-    .setRequired(true);
-
-  modal.addComponents(
-    new ActionRowBuilder().addComponents(razon)
-  );
-
-  return interaction.showModal(modal);
-if (
-  interaction.isModalSubmit() &&
-  interaction.customId === "modal_close_ticket"
-) {
+});
+    
   if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
     return interaction.reply({
       content: "❌ No puedo cerrar este canal porque no pertenece a la categoría de tickets.",
