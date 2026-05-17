@@ -2731,7 +2731,6 @@ await user.send({
   }, 5000);
 
 return;
-}
 
  if (
   interaction.isButton() &&
