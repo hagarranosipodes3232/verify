@@ -3183,6 +3183,8 @@ if (
     return interaction.editReply("❌ Error buscando el juego.");
   }
 }
+const embed = new EmbedBuilder()
+  .setTitle("🎮 " + juego.name)
       .setURL(gameUrl)
       .setDescription(juego.description || "Sin descripción.")
       .setThumbnail(juego.imageUrl || null)
