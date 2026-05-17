@@ -4996,7 +4996,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
       "📍 Canal: " + (canalDespues ? canalDespues.toString() : "Desconocido") + "\n\n" +
       cambios.join("\n");
 
-  }
+   }
 
   const embed = new EmbedBuilder()
 
@@ -5014,5 +5014,6 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
     embeds: [embed]
   });
 
+  }
 });
 client.login(process.env.TOKEN);
