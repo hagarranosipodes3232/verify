@@ -3192,13 +3192,12 @@ const embed = new EmbedBuilder()
       .setFooter({ text: "Roblox Game Search System" })
       .setTimestamp();
 
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setLabel("🎮 Jugar ahora")
-        .setStyle(ButtonStyle.Link)
-        .setURL(gameUrl)
-    );
-
+   const row = new ActionRowBuilder().addComponents(
+  new ButtonBuilder()
+    .setLabel("🎮 Jugar ahora")
+    .setStyle(ButtonStyle.Link)
+    .setURL(gameUrl)
+);
     return interaction.editReply({
       embeds: [embed],
       components: [row]
