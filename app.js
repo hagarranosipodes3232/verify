@@ -2646,7 +2646,6 @@ return interaction.editReply({
     }
   }
 
-});
     
   if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
     return interaction.reply({
