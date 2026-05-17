@@ -2660,8 +2660,8 @@ console.log(error.response?.data || error.message || error);
 
 if (interaction.deferred || interaction.replied) {
   return interaction.editReply("❌ Ocurrió un error buscando el juego.");
-}
-
+    }
+  }
 }
 
 if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
