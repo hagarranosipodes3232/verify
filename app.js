@@ -3203,7 +3203,7 @@ const embed = new EmbedBuilder()
       components: [row]
     });
 
-  } catch (error) {
+   catch (error) {
     console.log("❌ Error comando /juego:", error);
 
     return interaction.editReply(
