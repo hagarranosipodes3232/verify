@@ -2674,7 +2674,8 @@ if (interaction.channel.parentId !== TICKET_CATEGORY_ID) {
   );
 
   return interaction.showModal(modal);
-}
+);
+
 if (
   interaction.isModalSubmit() &&
   interaction.customId === "modal_close_ticket"
